@@ -1,618 +1,171 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!doctype html>
+<html lang="fr" data-fr-scheme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Espace Connexion & Gestion — Préfecture de l'Essonne</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    .auth-wrapper { max-width: 1100px; margin: 30px auto; padding: 0 16px; }
-    .card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #000091; padding-bottom: 10px; }
-    .tab-btn { background: #f0f0f0; border: none; padding: 10px 16px; cursor: pointer; font-weight: 600; border-radius: 4px; color: #333; }
-    .tab-btn.active { background: #000091; color: #fff; }
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-    .form-group { display: flex; flex-direction: column; margin-bottom: 12px; }
-    .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #1e1e1e; }
-    .form-group input, .form-group select, .form-group textarea { padding: 9px 10px; border: 1px solid #bbb; border-radius: 4px; font-size: 0.95rem; }
-    .btn-primary { background: #000091; color: #fff; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: 600; }
-    .btn-primary:hover { background: #1212ff; }
-    .btn-danger { background: #c9191e; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
-    .btn-success { background: #18753c; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
-    .btn-warning { background: #b34000; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
-    .alert { padding: 12px 15px; border-radius: 4px; margin-bottom: 15px; font-weight: 500; display: none; }
-    .alert.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
-    .alert.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-    th { background: #f5f5fe; color: #000091; }
-    .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; display: inline-block; }
-    .badge-ok { background: #d4edda; color: #155724; }
-    .badge-wait { background: #fff3cd; color: #856404; }
-    .badge-refuse { background: #f8d7da; color: #721c24; }
-    .hidden { display: none !important; }
-    .header-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Les services de l’État dans l’Essonne : actualités, démarches et informations pratiques.">
+  <meta name="theme-color" content="#f5f5fe">
+  <title>Préfecture de l’Essonne — Les services de l’État</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.15.4/dist/dsfr.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.15.4/dist/dsfr.module.min.js"></script>
 </head>
 <body>
+  <div class="fr-skiplinks">
+    <nav class="fr-container" aria-label="Accès rapide"><ul class="fr-skiplinks__list">
+      <li><a class="fr-link" href="#contenu">Aller au contenu</a></li>
+      <li><a class="fr-link" href="#menu">Aller au menu</a></li>
+      <li><a class="fr-link" href="#footer">Aller au pied de page</a></li>
+    </ul></nav>
+  </div>
 
-  <header class="fr-header">
-    <div class="fr-container header-bar">
-      <div>
-        <a href="index.html" style="text-decoration:none; color:inherit;">
-          <strong>RÉPUBLIQUE FRANÇAISE</strong> — Préfecture de l'Essonne
-        </a>
+  <header class="fr-header" role="banner">
+    <div class="fr-header__body">
+      <div class="fr-container">
+        <div class="fr-header__body-row">
+          <div class="fr-header__brand fr-enlarge-link">
+            <div class="fr-header__brand-top">
+              <div class="fr-header__logo"><a href="#accueil" aria-label="Accueil — Préfecture de l’Essonne"><p class="fr-logo">Préfète<br>de l’Essonne</p></a></div>
+              <div class="fr-header__navbar">
+                <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="menu-mobile" aria-label="Ouvrir le menu" title="Menu">Menu</button>
+              </div>
+            </div>
+            <div class="fr-header__service">
+              <a href="#accueil" title="Accueil — Préfecture de l’Essonne"><p class="fr-header__service-title">Les services de l’État<br class="mobile-break"> dans l’Essonne</p></a>
+              <p class="fr-header__service-tagline">Liberté · Égalité · Fraternité</p>
+            </div>
+          </div>
+          <div class="fr-header__tools">
+            <div class="fr-header__tools-links">
+              <ul class="fr-btns-group">
+                <li><a class="fr-btn fr-icon-search-line" href="#recherche">Rechercher</a></li>
+                <li><a class="fr-btn fr-icon-account-line" href="connexion.html">Connexion</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
-      <div>
-        <a href="index.html" class="btn-primary" style="text-decoration:none;">← Retour au site</a>
+    </div>
+    <div class="fr-header__menu fr-modal" id="menu-mobile" aria-label="Menu principal">
+      <div class="fr-container">
+        <button class="fr-btn--close fr-btn" aria-controls="menu-mobile" title="Fermer">Fermer</button>
+        <nav class="fr-nav" id="menu" role="navigation" aria-label="Menu principal">
+          <ul class="fr-nav__list">
+            <li class="fr-nav__item"><a class="fr-nav__link" href="#actualites">Actualités</a></li>
+            <li class="fr-nav__item"><a class="fr-nav__link" href="#demarches">Démarches</a></li>
+            <li class="fr-nav__item"><a class="fr-nav__link" href="#services">Services de l’État</a></li>
+            <li class="fr-nav__item"><a class="fr-nav__link" href="#prefecture">La préfecture</a></li>
+            <li class="fr-nav__item"><a class="fr-nav__link" href="#contact">Contact et horaires</a></li>
+          </ul>
+        </nav>
       </div>
     </div>
   </header>
 
-  <main class="auth-wrapper">
-    <div id="global-alert" class="alert"></div>
-
-    <!-- SECTION AUTHENTIFICATION -->
-    <div id="auth-section" class="card">
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchAuthTab('login')">Connexion</button>
-        <button class="tab-btn" onclick="switchAuthTab('register')">Créer un compte</button>
-        <button class="tab-btn" onclick="switchAuthTab('reset')">Mot de passe oublié</button>
-      </div>
-
-      <!-- CONNEXION -->
-      <form id="form-login" onsubmit="handleLogin(event)">
-        <h2>Connexion à votre espace</h2>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Adresse mail (RP)</label>
-            <input type="email" id="login-email" required />
-          </div>
-          <div class="form-group">
-            <label>Mot de passe</label>
-            <input type="password" id="login-password" required />
-          </div>
+  <main id="contenu" tabindex="-1">
+    <section class="welcome-band" id="accueil" aria-labelledby="page-title">
+      <div class="fr-container welcome-grid">
+        <div class="welcome-copy">
+          <p class="eyebrow"><span class="eyebrow-mark" aria-hidden="true"></span> L’État près de chez vous <span class="eyebrow-sep">/</span> Essonne (91)</p>
+          <h1 id="page-title">Les services de l’État<br><span>dans l’Essonne</span></h1>
+          <p class="welcome-intro">Toutes les informations, actualités et démarches utiles auprès des services de l’État dans votre département.</p>
+          <a class="fr-btn fr-btn--secondary hero-cta" href="#services">Découvrir les services de l’État</a>
         </div>
-        <button type="submit" class="btn-primary">Se connecter</button>
-      </form>
-
-      <!-- INSCRIPTION -->
-      <form id="form-register" class="hidden" onsubmit="handleRegister(event)">
-        <h2>Créer un compte</h2>
-        <div class="form-group">
-          <label>Type de compte</label>
-          <select id="reg-type" onchange="toggleRegisterFields()" required>
-            <option value="civil">Civil</option>
-            <option value="prefecture">Professionnel (Personnel de la Préfecture)</option>
-            <option value="service_etat">Services de l'État (Gendarmerie / Police / Pompiers / SAMU)</option>
-            <option value="entreprise">Entreprise</option>
-          </select>
-        </div>
-
-        <!-- Champs spécifiques Préfecture -->
-        <div id="fields-prefecture" class="hidden">
-          <div class="form-group">
-            <label>Code Préfecture (Obligatoire)</label>
-            <input type="password" id="reg-code-pref" placeholder="Code secret Préfecture" />
-          </div>
-        </div>
-
-        <!-- Champs spécifiques Services de l'État -->
-        <div id="fields-service" class="hidden">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Service</label>
-              <select id="reg-service">
-                <option value="Gendarmerie">Gendarmerie Nationale</option>
-                <option value="Police Nationale">Police Nationale</option>
-                <option value="Sapeurs-Pompiers">Sapeurs-Pompiers</option>
-                <option value="SAMU">SAMU</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>NIGEND / Matricule</label>
-              <input type="text" id="reg-identifiant-service" placeholder="Ex: NIGEND ou Matricule" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Champs spécifiques Entreprise -->
-        <div id="fields-entreprise" class="hidden">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Nom de l'entreprise</label>
-              <input type="text" id="reg-entreprise-nom" />
-            </div>
-            <div class="form-group">
-              <label>SIRET (optionnel)</label>
-              <input type="text" id="reg-siret" />
-            </div>
-            <div class="form-group">
-              <label>Secteur d'activité</label>
-              <input type="text" id="reg-secteur" />
-            </div>
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Nom</label>
-            <input type="text" id="reg-nom" required />
-          </div>
-          <div class="form-group">
-            <label>Prénom</label>
-            <input type="text" id="reg-prenom" required />
-          </div>
-          <div class="form-group">
-            <label>Date de Naissance</label>
-            <input type="date" id="reg-dob" required />
-          </div>
-          <div class="form-group">
-            <label>Adresse mail (RP)</label>
-            <input type="email" id="reg-email" required />
-          </div>
-          <div class="form-group">
-            <label>#Discord</label>
-            <input type="text" id="reg-discord" placeholder="Ex: pseudo#1234 ou @pseudo" required />
-          </div>
-          <div class="form-group">
-            <label>Mot de passe</label>
-            <input type="password" id="reg-password" required />
-          </div>
-          <div class="form-group">
-            <label>Confirmer mot de passe</label>
-            <input type="password" id="reg-password-confirm" required />
-          </div>
-        </div>
-        <button type="submit" class="btn-primary">Créer mon compte</button>
-      </form>
-
-      <!-- MOT DE PASSE OUBLIE -->
-      <form id="form-reset" class="hidden" onsubmit="handleResetPassword(event)">
-        <h2>Modifier / Réinitialiser mon mot de passe</h2>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Adresse mail (RP)</label>
-            <input type="email" id="reset-email" required />
-          </div>
-          <div class="form-group">
-            <label>#Discord (pour vérification)</label>
-            <input type="text" id="reset-discord" required />
-          </div>
-          <div class="form-group">
-            <label>Nouveau mot de passe</label>
-            <input type="password" id="reset-password" required />
-          </div>
-        </div>
-        <button type="submit" class="btn-primary">Mettre à jour le mot de passe</button>
-      </form>
-    </div>
-
-    <!-- TABLEAU DE BORD CONNECTÉ -->
-    <div id="dashboard-section" class="hidden">
-      <div class="card header-bar">
-        <div>
-          <h2 id="dash-welcome" style="margin:0;">Bienvenue</h2>
-          <small id="dash-role" style="color:#555;"></small>
-        </div>
-        <button class="btn-danger" onclick="logout()">Se déconnecter</button>
-      </div>
-
-      <!-- ESPACE PRÉFECTURE : GESTION GRADES & VALIDATION PROMOTIONS -->
-      <div id="panel-prefecture" class="hidden">
-        <div class="card">
-          <h3>🏛️ Gestion des Grades par Service</h3>
-          <form onsubmit="addGrade(event)" class="form-grid">
-            <div class="form-group">
-              <label>Service</label>
-              <select id="grade-service">
-                <option value="Gendarmerie">Gendarmerie</option>
-                <option value="Police Nationale">Police Nationale</option>
-                <option value="Sapeurs-Pompiers">Sapeurs-Pompiers</option>
-                <option value="SAMU">SAMU</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Nom du Grade</label>
-              <input type="text" id="grade-nom" required placeholder="Ex: Brigadier-Chef" />
-            </div>
-            <div class="form-group">
-              <label>Ordre hiérarchique</label>
-              <input type="number" id="grade-ordre" value="1" min="1" required />
-            </div>
-            <div class="form-group">
-              <label>Jours requis (ancienneté)</label>
-              <input type="number" id="grade-jours" value="7" min="0" required />
-            </div>
-            <div class="form-group" style="justify-content:flex-end;">
-              <button type="submit" class="btn-primary">+ Ajouter le grade</button>
-            </div>
-          </form>
-          <table>
-            <thead>
-              <tr><th>Service</th><th>Ordre</th><th>Grade</th><th>Jours requis</th><th>Action</th></tr>
-            </thead>
-            <tbody id="table-grades"></tbody>
-          </table>
-        </div>
-
-        <div class="card">
-          <h3>📋 Demandes de Promotion en attente</h3>
-          <table>
-            <thead>
-              <tr><th>Service</th><th>Effectif</th><th>Grade actuel → Visé</th><th>Type</th><th>Motif</th><th>Statut</th><th>Actions</th></tr>
-            </thead>
-            <tbody id="table-demandes-pref"></tbody>
-          </table>
+        <div class="welcome-art" aria-hidden="true">
+          <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+          <div class="art-seal"><span>91</span><small>ESSONNE<br>RÉPUBLIQUE FRANÇAISE</small></div>
+          <span class="art-coordinate">48° 37′ N<br>2° 25′ E</span>
+          <span class="art-caption">Territoire · proximité · service public</span>
         </div>
       </div>
+      <div class="band-rule"><span></span></div>
+    </section>
 
-      <!-- ESPACE SERVICES DE L'ÉTAT : EFFECTIFS & PROMOTIONS -->
-      <div id="panel-service" class="hidden">
-        <div class="card">
-          <h3>👮 Ajouter un Effectif</h3>
-          <form onsubmit="addEffectif(event)" class="form-grid">
-            <div class="form-group">
-              <label>Nom</label>
-              <input type="text" id="eff-nom" required />
-            </div>
-            <div class="form-group">
-              <label>Prénom</label>
-              <input type="text" id="eff-prenom" required />
-            </div>
-            <div class="form-group">
-              <label>Matricule / NIGEND</label>
-              <input type="text" id="eff-matricule" required />
-            </div>
-            <div class="form-group">
-              <label>Grade actuel</label>
-              <select id="eff-grade" required></select>
-            </div>
-            <div class="form-group">
-              <label>Date d'arrivée</label>
-              <input type="date" id="eff-date-arrivee" required />
-            </div>
-            <div class="form-group">
-              <label>Date du grade actuel</label>
-              <input type="date" id="eff-date-grade" required />
-            </div>
-            <div class="form-group" style="justify-content:flex-end;">
-              <button type="submit" class="btn-primary">+ Inscrire l'effectif</button>
-            </div>
-          </form>
-        </div>
-
-        <div class="card">
-          <h3>📊 Effectifs & Avancements</h3>
-          <table>
-            <thead>
-              <tr><th>Nom & Prénom</th><th>Matricule</th><th>Grade actuel</th><th>Jours dans le grade</th><th>Prochain grade</th><th>Action</th></tr>
-            </thead>
-            <tbody id="table-effectifs"></tbody>
-          </table>
+    <section class="fr-container news-section" id="actualites" aria-labelledby="news-title">
+      <div class="section-heading">
+        <div><p class="section-kicker">À suivre dans le département</p><h2 id="news-title">À la une</h2></div>
+        <a class="fr-link fr-link--icon-right fr-icon-arrow-right-line all-link" href="#actualites">Toutes les actualités</a>
+      </div>
+      <div class="news-grid">
+        <article class="feature-card">
+          <a class="feature-visual" href="#catastrophe" aria-label="Lire l’actualité sur la reconnaissance de catastrophe naturelle">
+            <div class="visual-lines" aria-hidden="true"></div><span class="visual-label">Vigilance &amp; solidarité</span>
+            <div class="visual-stamp"><span>33</span><small>COMMUNES<br>CONCERNÉES</small></div>
+          </a>
+          <div class="feature-copy">
+            <p class="fr-badge fr-badge--info">Actualité</p>
+            <h3><a href="#catastrophe">Reconnaissance de l’état de catastrophe naturelle pour 33 communes de l’Essonne</a></h3>
+            <p>Consultez les informations relatives à la reconnaissance au titre de la sécheresse et de la réhydratation des sols.</p>
+            <a class="fr-link fr-link--icon-right fr-icon-arrow-right-line" href="#catastrophe">Lire l’article</a>
+          </div>
+        </article>
+        <div class="news-side">
+          <article class="news-card news-card--urgent">
+            <div class="news-card-index">01 <span>—</span> Information pratique</div>
+            <p class="news-date">Samedi 28 novembre 2026</p>
+            <h3><a href="#ouverture">Accueil des usagers : ouverture exceptionnelle</a></h3>
+            <p>La préfecture renforce l’accueil pour la remise de titres sur ses sites d’Évry-Courcouronnes.</p>
+            <a class="fr-link fr-link--icon-right fr-icon-arrow-right-line" href="#ouverture">En savoir plus</a>
+          </article>
+          <article class="news-card">
+            <div class="news-card-index">02 <span>—</span> État &amp; territoire</div>
+            <p class="news-date">Repères essentiels</p>
+            <h3><a href="#missions">Les missions des services de l’État en Essonne</a></h3>
+            <p>Un service public mobilisé au quotidien auprès des habitants et des communes.</p>
+            <a class="fr-link fr-link--icon-right fr-icon-arrow-right-line" href="#services">Découvrir</a>
+          </article>
         </div>
       </div>
+    </section>
 
-      <!-- ESPACE CIVIL / ENTREPRISE -->
-      <div id="panel-standard" class="hidden card">
-        <h3>Mon Profil</h3>
-        <p id="profil-details"></p>
+    <section class="actions-section" id="demarches" aria-labelledby="actions-title">
+      <div class="fr-container">
+        <div class="section-heading section-heading--light">
+          <div><p class="section-kicker">Accéder rapidement</p><h2 id="actions-title">Besoin d’effectuer une démarche&nbsp;?</h2><p class="section-lede">Choisissez un service pour trouver les informations qui vous concernent.</p></div>
+          <a class="fr-link fr-link--icon-right fr-icon-arrow-right-line" href="#services">Toutes les démarches</a>
+        </div>
+        <div class="action-grid">
+          <a class="action-tile" href="#titres"><span class="tile-number">01</span><span class="tile-icon" aria-hidden="true">↗</span><strong>Titres de séjour<br>et de voyage</strong><span class="tile-arrow" aria-hidden="true">→</span></a>
+          <a class="action-tile" href="#circulation"><span class="tile-number">02</span><span class="tile-icon" aria-hidden="true">⌁</span><strong>Circulation<br>et véhicules</strong><span class="tile-arrow" aria-hidden="true">→</span></a>
+          <a class="action-tile" href="#identite"><span class="tile-number">03</span><span class="tile-icon" aria-hidden="true">◎</span><strong>Identité<br>et citoyenneté</strong><span class="tile-arrow" aria-hidden="true">→</span></a>
+          <a class="action-tile" href="#rassemblements"><span class="tile-number">04</span><span class="tile-icon" aria-hidden="true">✳</span><strong>Rassemblements<br>et événements</strong><span class="tile-arrow" aria-hidden="true">→</span></a>
+          <a class="action-tile" href="#professions"><span class="tile-number">05</span><span class="tile-icon" aria-hidden="true">⌂</span><strong>Professions<br>réglementées</strong><span class="tile-arrow" aria-hidden="true">→</span></a>
+          <a class="action-tile" href="#naturalisation"><span class="tile-number">06</span><span class="tile-icon" aria-hidden="true">✦</span><strong>Naturalisation</strong><span class="tile-arrow" aria-hidden="true">→</span></a>
+        </div>
+        <p class="actions-note">Un doute sur votre démarche&nbsp;? <a href="#contact">Consultez les coordonnées des services et les modalités d’accueil.</a></p>
       </div>
-    </div>
+    </section>
+
+    <section class="fr-container services-section" id="services" aria-labelledby="services-title">
+      <div class="services-intro">
+        <p class="section-kicker">Nos services</p><h2 id="services-title">Un service public<br>à votre écoute.</h2>
+        <p>La préfecture et les services de l’État agissent au plus près des Essonniennes et des Essonniens.</p>
+        <a class="fr-link fr-link--icon-right fr-icon-arrow-right-line" href="#prefecture">Voir l’organisation des services</a>
+      </div>
+      <div class="service-list">
+        <a class="service-row" id="contact" href="#contact-details"><span class="service-symbol" aria-hidden="true">⌖</span><span><small>Nous trouver</small><strong>Horaires et coordonnées</strong></span><span class="service-arrow" aria-hidden="true">↗</span></a>
+        <a class="service-row" href="#rendezvous"><span class="service-symbol" aria-hidden="true">▦</span><span><small>Accueil des usagers</small><strong>Prendre un rendez-vous ou déposer un dossier</strong></span><span class="service-arrow" aria-hidden="true">↗</span></a>
+        <a class="service-row" href="#accesibilite"><span class="service-symbol" aria-hidden="true">◉</span><span><small>Accessibilité</small><strong>Échanger avec nous via ACCEO</strong></span><span class="service-arrow" aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <section class="follow-strip" id="prefecture">
+      <div class="fr-container follow-inner"><div><p class="section-kicker">L’Essonne, au quotidien</p><h2>Restez informé·e.</h2><p>Suivez les actualités et les informations pratiques du département.</p></div><a class="fr-btn fr-btn--secondary" href="#actualites">Voir les dernières actualités</a></div>
+      <div class="follow-ornament" aria-hidden="true">91</div>
+    </section>
   </main>
 
-  <script>
-    // ==========================================
-    // CONFIGURATION SUPABASE
-    // ==========================================
-    const SUPABASE_URL = "https://mvmrnfpvmsyydmcmgsmm.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_YrRFbpLvZJl039FNhmdbLA_0egHR5NN";
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // Code secret pour créer un compte Préfecture
-    const CODE_PREFECTURE = "PREF91-ESSONNE-2026!";
-
-    let currentUser = JSON.parse(localStorage.getItem("pref91_user")) || null;
-    let allGrades = [];
-    let allEffectifs = [];
-
-    function showAlert(msg, type = "success") {
-      const el = document.getElementById("global-alert");
-      el.textContent = msg;
-      el.className = "alert " + type;
-      setTimeout(() => { el.className = "alert"; }, 5000);
-    }
-
-    function switchAuthTab(tab) {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      event.target.classList.add("active");
-      document.getElementById("form-login").classList.toggle("hidden", tab !== "login");
-      document.getElementById("form-register").classList.toggle("hidden", tab !== "register");
-      document.getElementById("form-reset").classList.toggle("hidden", tab !== "reset");
-    }
-
-    function toggleRegisterFields() {
-      const type = document.getElementById("reg-type").value;
-      document.getElementById("fields-prefecture").classList.toggle("hidden", type !== "prefecture");
-      document.getElementById("fields-service").classList.toggle("hidden", type !== "service_etat");
-      document.getElementById("fields-entreprise").classList.toggle("hidden", type !== "entreprise");
-    }
-
-    // ==========================================
-    // AUTHENTIFICATION (SUPABASE)
-    // ==========================================
-    async function handleRegister(e) {
-      e.preventDefault();
-      const type = document.getElementById("reg-type").value;
-      const pw = document.getElementById("reg-password").value;
-      const pwConfirm = document.getElementById("reg-password-confirm").value;
-
-      if (pw !== pwConfirm) return showAlert("Les mots de passe ne correspondent pas.", "error");
-      if (type === "prefecture" && document.getElementById("reg-code-pref").value !== CODE_PREFECTURE) {
-        return showAlert("Code Préfecture invalide.", "error");
-      }
-
-      const payload = {
-        type_compte: type,
-        service: type === "service_etat" ? document.getElementById("reg-service").value : null,
-        identifiant_service: type === "service_etat" ? document.getElementById("reg-identifiant-service").value : null,
-        entreprise_nom: type === "entreprise" ? document.getElementById("reg-entreprise-nom").value : null,
-        siret: type === "entreprise" ? document.getElementById("reg-siret").value : null,
-        secteur: type === "entreprise" ? document.getElementById("reg-secteur").value : null,
-        nom: document.getElementById("reg-nom").value.trim(),
-        prenom: document.getElementById("reg-prenom").value.trim(),
-        date_naissance: document.getElementById("reg-dob").value,
-        email: document.getElementById("reg-email").value.trim().toLowerCase(),
-        discord: document.getElementById("reg-discord").value.trim(),
-        mot_de_passe: pw
-      };
-
-      const { error } = await db.from("comptes").insert([payload]);
-      if (error) return showAlert("Erreur lors de l'inscription : " + error.message, "error");
-
-      showAlert("Compte créé avec succès ! Vous pouvez maintenant vous connecter.");
-      document.getElementById("form-register").reset();
-      switchAuthTab("login");
-    }
-
-    async function handleLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById("login-email").value.trim().toLowerCase();
-      const pw = document.getElementById("login-password").value;
-
-      const { data, error } = await db.from("comptes")
-        .select("*")
-        .eq("email", email)
-        .eq("mot_de_passe", pw)
-        .maybeSingle();
-
-      if (error || !data) return showAlert("Identifiants incorrects.", "error");
-
-      currentUser = data;
-      localStorage.setItem("pref91_user", JSON.stringify(data));
-      showDashboard();
-    }
-
-    async function handleResetPassword(e) {
-      e.preventDefault();
-      const email = document.getElementById("reset-email").value.trim().toLowerCase();
-      const discord = document.getElementById("reset-discord").value.trim();
-      const newPw = document.getElementById("reset-password").value;
-
-      const { data, error } = await db.from("comptes")
-        .update({ mot_de_passe: newPw })
-        .eq("email", email)
-        .eq("discord", discord)
-        .select();
-
-      if (error || !data || data.length === 0) {
-        return showAlert("Aucun compte trouvé avec cet email et ce Discord.", "error");
-      }
-      showAlert("Mot de passe mis à jour avec succès !");
-      document.getElementById("form-reset").reset();
-    }
-
-    function logout() {
-      currentUser = null;
-      localStorage.removeItem("pref91_user");
-      document.getElementById("auth-section").classList.remove("hidden");
-      document.getElementById("dashboard-section").classList.add("hidden");
-    }
-
-    // ==========================================
-    // TABLEAU DE BORD & CHARGEMENT DES DONNÉES
-    // ==========================================
-    async function showDashboard() {
-      if (!currentUser) return;
-      document.getElementById("auth-section").classList.add("hidden");
-      document.getElementById("dashboard-section").classList.remove("hidden");
-
-      document.getElementById("dash-welcome").textContent = `Bienvenue, ${currentUser.prenom} ${currentUser.nom}`;
-      document.getElementById("dash-role").textContent = `Type : ${currentUser.type_compte.toUpperCase()} ${currentUser.service ? "— " + currentUser.service : ""}`;
-
-      document.getElementById("panel-prefecture").classList.toggle("hidden", currentUser.type_compte !== "prefecture");
-      document.getElementById("panel-service").classList.toggle("hidden", currentUser.type_compte !== "service_etat");
-      document.getElementById("panel-standard").classList.toggle("hidden", !["civil", "entreprise"].includes(currentUser.type_compte));
-
-      await loadGrades();
-      if (currentUser.type_compte === "prefecture") {
-        await loadDemandesPrefecture();
-      } else if (currentUser.type_compte === "service_etat") {
-        await loadEffectifs();
-      } else {
-        document.getElementById("profil-details").innerHTML = `
-          <strong>Email :</strong> ${currentUser.email}<br>
-          <strong>Discord :</strong> ${currentUser.discord}<br>
-          ${currentUser.entreprise_nom ? `<strong>Entreprise :</strong> ${currentUser.entreprise_nom} (${currentUser.secteur || ""})` : ""}
-        `;
-      }
-    }
-
-    // ==========================================
-    // GESTION DES GRADES (PRÉFECTURE)
-    // ==========================================
-    async function loadGrades() {
-      const { data } = await db.from("grades").select("*").order("service").order("ordre", { ascending: true });
-      allGrades = data || [];
-
-      const tbody = document.getElementById("table-grades");
-      if (tbody) {
-        tbody.innerHTML = allGrades.map(g => `
-          <tr>
-            <td>${g.service}</td>
-            <td>${g.ordre}</td>
-            <td><strong>${g.nom_grade}</strong></td>
-            <td>${g.jours_requis} jours</td>
-            <td><button class="btn-danger" onclick="deleteGrade(${g.id})">Supprimer</button></td>
-          </tr>
-        `).join("");
-      }
-
-      // Remplir le select des grades pour le service connecté
-      if (currentUser && currentUser.service) {
-        const serviceGrades = allGrades.filter(g => g.service === currentUser.service);
-        const select = document.getElementById("eff-grade");
-        select.innerHTML = serviceGrades.map(g => `<option value="${g.nom_grade}">${g.nom_grade}</option>`).join("");
-      }
-    }
-
-    async function addGrade(e) {
-      e.preventDefault();
-      const payload = {
-        service: document.getElementById("grade-service").value,
-        nom_grade: document.getElementById("grade-nom").value.trim(),
-        ordre: parseInt(document.getElementById("grade-ordre").value),
-        jours_requis: parseInt(document.getElementById("grade-jours").value)
-      };
-      const { error } = await db.from("grades").insert([payload]);
-      if (error) return showAlert("Erreur : " + error.message, "error");
-      showAlert("Grade ajouté et sauvegardé en base de données !");
-      e.target.reset();
-      await loadGrades();
-    }
-
-    async function deleteGrade(id) {
-      await db.from("grades").delete().eq("id", id);
-      await loadGrades();
-    }
-
-    // ==========================================
-    // GESTION DES EFFECTIFS (SERVICES DE L'ÉTAT)
-    // ==========================================
-    async function loadEffectifs() {
-      const { data } = await db.from("effectifs").select("*").eq("service", currentUser.service);
-      allEffectifs = data || [];
-
-      const serviceGrades = allGrades.filter(g => g.service === currentUser.service).sort((a, b) => a.ordre - b.ordre);
-      const tbody = document.getElementById("table-effectifs");
-
-      tbody.innerHTML = allEffectifs.map(eff => {
-        const jours = Math.floor((new Date() - new Date(eff.date_grade_actuel)) / (1000 * 60 * 60 * 24));
-        const idx = serviceGrades.findIndex(g => g.nom_grade === eff.grade_actuel);
-        const nextGrade = (idx !== -1 && idx + 1 < serviceGrades.length) ? serviceGrades[idx + 1] : null;
-
-        let actionHtml = "Grade max atteint";
-        if (nextGrade) {
-          const eligible = jours >= nextGrade.jours_requis;
-          if (eligible) {
-            actionHtml = `<button class="btn-success" onclick="demanderPromotion(${eff.id}, '${eff.nom} ${eff.prenom}', '${eff.grade_actuel}', '${nextGrade.nom_grade}', 'standard')">Promouvoir (${nextGrade.nom_grade})</button>`;
-          } else {
-            actionHtml = `<button class="btn-warning" onclick="demanderPromotion(${eff.id}, '${eff.nom} ${eff.prenom}', '${eff.grade_actuel}', '${nextGrade.nom_grade}', 'derogatoire')">Dérogation (${jours}/${nextGrade.jours_requis}j)</button>`;
-          }
-        }
-
-        return `
-          <tr>
-            <td>${eff.nom} ${eff.prenom}</td>
-            <td>${eff.matricule}</td>
-            <td><strong>${eff.grade_actuel}</strong></td>
-            <td>${jours} jours</td>
-            <td>${nextGrade ? nextGrade.nom_grade : "—"}</td>
-            <td>${actionHtml}</td>
-          </tr>
-        `;
-      }).join("");
-    }
-
-    async function addEffectif(e) {
-      e.preventDefault();
-      const payload = {
-        service: currentUser.service,
-        nom: document.getElementById("eff-nom").value.trim(),
-        prenom: document.getElementById("eff-prenom").value.trim(),
-        matricule: document.getElementById("eff-matricule").value.trim(),
-        grade_actuel: document.getElementById("eff-grade").value,
-        date_arrivee: document.getElementById("eff-date-arrivee").value,
-        date_grade_actuel: document.getElementById("eff-date-grade").value,
-        ajoute_par: `${currentUser.prenom} ${currentUser.nom}`
-      };
-      const { error } = await db.from("effectifs").insert([payload]);
-      if (error) return showAlert("Erreur : " + error.message, "error");
-      showAlert("Effectif ajouté !");
-      e.target.reset();
-      await loadEffectifs();
-    }
-
-    async function demanderPromotion(effId, nomEff, gradeActuel, gradeVise, typeDemande) {
-      let motif = "Ancienneté requise atteinte";
-      if (typeDemande === "derogatoire") {
-        motif = prompt("Motif de la demande dérogatoire (obligatoire) :");
-        if (!motif) return;
-      }
-
-      const { error } = await db.from("demandes").insert([{
-        effectif_id: effId,
-        service: currentUser.service,
-        nom_effectif: nomEff,
-        grade_actuel: gradeActuel,
-        grade_vise: gradeVise,
-        type_demande: typeDemande,
-        motif: motif,
-        statut: "en_attente",
-        demandeur: `${currentUser.prenom} ${currentUser.nom}`
-      }]);
-
-      if (error) return showAlert("Erreur : " + error.message, "error");
-      showAlert("Demande de promotion envoyée à la Préfecture !");
-    }
-
-    // ==========================================
-    // VALIDATION DES DEMANDES (PRÉFECTURE)
-    // ==========================================
-    async function loadDemandesPrefecture() {
-      const { data } = await db.from("demandes").select("*").order("created_at", { ascending: false });
-      const tbody = document.getElementById("table-demandes-pref");
-      tbody.innerHTML = (data || []).map(d => `
-        <tr>
-          <td>${d.service}</td>
-          <td>${d.nom_effectif}</td>
-          <td>${d.grade_actuel} → <strong>${d.grade_vise}</strong></td>
-          <td>${d.type_demande === "derogatoire" ? "⚠️ Dérogatoire" : "✅ Standard"}</td>
-          <td>${d.motif}</td>
-          <td><span class="badge ${d.statut === 'validee' ? 'badge-ok' : d.statut === 'refusee' ? 'badge-refuse' : 'badge-wait'}">${d.statut}</span></td>
-          <td>
-            ${d.statut === "en_attente" ? `
-              <button class="btn-success" onclick="traiterDemande(${d.id}, ${d.effectif_id}, '${d.grade_vise}', 'validee')">Valider</button>
-              <button class="btn-danger" onclick="traiterDemande(${d.id}, ${d.effectif_id}, '${d.grade_vise}', 'refusee')">Refuser</button>
-            ` : "Traitée"}
-          </td>
-        </tr>
-      `).join("");
-    }
-
-    async function traiterDemande(demandeId, effId, nouveauGrade, statut) {
-      await db.from("demandes").update({ statut }).eq("id", demandeId);
-      if (statut === "validee") {
-        const today = new Date().toISOString().split("T")[0];
-        await db.from("effectifs").update({ grade_actuel: nouveauGrade, date_grade_actuel: today }).eq("id", effId);
-      }
-      showAlert(`Demande ${statut} !`);
-      await loadDemandesPrefecture();
-    }
-
-    // Initialisation si déjà connecté
-    if (currentUser) showDashboard();
-  </script>
+  <footer class="fr-footer" id="footer" role="contentinfo">
+    <div class="fr-container">
+      <div class="footer-main">
+        <div class="footer-identity"><p class="fr-logo">Préfète<br>de l’Essonne</p><p>Les services de l’État<br>dans l’Essonne</p></div>
+        <div class="footer-col"><h2>Informations</h2><ul><li><a href="#contact">Nous contacter</a></li><li><a href="#accessibilite">Accessibilité : partiellement conforme</a></li><li><a href="#mentions">Mentions légales</a></li></ul></div>
+        <div class="footer-col"><h2>Services publics</h2><ul><li><a href="https://www.service-public.fr/">service-public.fr</a></li><li><a href="https://www.info.gouv.fr/">info.gouv.fr</a></li><li><a href="https://www.legifrance.gouv.fr/">legifrance.gouv.fr</a></li></ul></div>
+        <div class="footer-col footer-contact"><h2>Préfecture de l’Essonne</h2><p>Évry-Courcouronnes<br>Essonne (91)</p><a class="fr-link fr-link--icon-right fr-icon-arrow-right-line" href="#contact">Coordonnées et horaires</a></div>
+      </div>
+      <div class="footer-bottom"><p>République Française <span>•</span> Liberté, Égalité, Fraternité</p><p>Site statique de démonstration inspiré de la présentation institutionnelle DSFR.</p></div>
+    </div>
+  </footer>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
