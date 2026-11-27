@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="fr" data-fr-scheme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Connexion et création d’un espace personnel — Les services de l’État dans l’Essonne.">
+  <meta name="theme-color" content="#f5f5fe">
+  <title>Mon espace — Préfecture de l’Essonne</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.15.4/dist/dsfr.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.15.4/dist/dsfr.module.min.js"></script>
+  <style>
+    :root { --account-blue:#000091; --account-ink:#161616; --account-muted:#666; --account-line:#dedee8; }
+    body { background:#f7f7f5; color:var(--account-ink); }
+    .account-topline { height:7px; background:linear-gradient(90deg,#000091 0 58%,#fff 58% 67%,#e1000f 67% 100%); }
+    .account-header .fr-container { max-width:1200px; }
+    .account-main { padding:clamp(2rem,5vw,4.5rem) 1rem 5rem; }
+    .account-layout { max-width:1120px; margin:0 auto; display:grid; grid-template-columns:minmax(230px,.78fr) minmax(0,1.22fr); gap:clamp(2rem,6vw,5rem); align-items:start; }
+    .account-intro { padding-top:1.2rem; }
+    .account-kicker { display:flex; align-items:center; gap:.65rem; color:var(--account-blue); font-size:.76rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; margin:0 0 .9rem; }
+    .account-kicker::before { content:""; width:8px; height:8px; background:#e1000f; border-radius:50%; }
+    .account-intro h1 { font-family:Georgia,"Times New Roman",serif; font-size:clamp(2.5rem,5vw,4.1rem); letter-spacing:-.045em; line-height:1.02; margin:0 0 1.25rem; }
+    .account-intro h1 span { color:var(--account-blue); }
+    .account-intro > p:not(.account-kicker) { color:#414141; font-size:1.08rem; line-height:1.65; max-width:31rem; }
+    .account-note { margin-top:2.3rem; padding:1rem 1.15rem; border-left:3px solid var(--account-blue); background:#fff; color:#555; font-size:.88rem; line-height:1.55; }
+    .account-note strong { display:block; color:#222; margin-bottom:.2rem; }
+    .account-panel { background:#fff; border:1px solid #e6e6e6; box-shadow:0 12px 38px rgba(16,27,72,.07); }
+    .account-panel__top { padding:1.6rem 1.7rem 0; border-bottom:1px solid var(--account-line); }
+    .account-panel__top h2 { font-family:Georgia,"Times New Roman",serif; font-size:1.65rem; letter-spacing:-.025em; margin:0 0 1rem; }
+    .account-tabs { display:flex; gap:.2rem; overflow-x:auto; }
+    .account-tab { flex:1 0 auto; border:0; border-bottom:3px solid transparent; background:transparent; color:#3a3a3a; padding:.7rem .65rem .8rem; font:inherit; font-size:.91rem; font-weight:650; cursor:pointer; }
+    .account-tab:hover { background:#f6f6fe; }
+    .account-tab[aria-selected="true"] { color:var(--account-blue); border-bottom-color:var(--account-blue); }
+    .account-panel__body { padding:1.65rem 1.7rem 1.8rem; }
+    .account-form { max-width:34rem; }
+    .account-form [hidden], [hidden] { display:none !important; }
+    .account-form .fr-input-group { margin-bottom:1.25rem; }
+    .account-form .fr-label { font-weight:600; }
+    .account-form .fr-hint-text { margin-top:.3rem; }
+    .account-form .fr-btn { margin-top:.25rem; }
+    .account-form__actions { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; margin-top:.5rem; }
+    .account-link-button { border:0; background:transparent; padding:.5rem .15rem; color:var(--account-blue); text-decoration:underline; text-underline-offset:.2em; font:inherit; cursor:pointer; }
+    .account-link-button:hover { color:#1212b5; }
+    .account-message { min-height:1.5rem; margin:1rem 0 0; font-size:.94rem; line-height:1.5; }
+    .account-message[data-kind="error"] { color:#b34000; }
+    .account-message[data-kind="success"] { color:#18753c; }
+    .account-message[data-kind="info"] { color:#3a3a3a; }
+    .account-type-choice { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin:.45rem 0 1.25rem; }
+    .type-option { display:flex; align-items:flex-start; gap:.65rem; min-height:5.3rem; padding:.85rem; border:1px solid #d8d8d8; cursor:pointer; }
+    .type-option:has(input:checked) { border:2px solid var(--account-blue); background:#f6f6fe; padding:calc(.85rem - 1px); }
+    .type-option input { margin-top:.2rem; accent-color:var(--account-blue); }
+    .type-option strong,.type-option small { display:block; }
+    .type-option small { margin-top:.22rem; color:#666; line-height:1.4; }
+    .account-dashboard { max-width:900px; margin:0 auto; }
+    .dashboard-heading { margin-bottom:1.7rem; }
+    .dashboard-heading .account-kicker { margin-bottom:.55rem; }
+    .dashboard-heading h1 { font-family:Georgia,"Times New Roman",serif; font-size:clamp(2.3rem,4vw,3.5rem); letter-spacing:-.04em; margin:0; }
+    .dashboard-card { background:#fff; border:1px solid #e6e6e6; box-shadow:0 12px 38px rgba(16,27,72,.07); padding:clamp(1.3rem,4vw,2.2rem); }
+    .dashboard-person { display:flex; align-items:center; gap:1rem; padding-bottom:1.45rem; border-bottom:1px solid var(--account-line); }
+    .person-mark { flex:0 0 3.3rem; height:3.3rem; border-radius:50%; display:grid; place-items:center; background:#e3e3fd; color:var(--account-blue); font-family:Georgia,serif; font-size:1.45rem; font-weight:bold; }
+    .dashboard-person h2 { margin:0 0 .3rem; font-family:Georgia,"Times New Roman",serif; font-size:1.5rem; }
+    .dashboard-email { margin:0; color:#666; }
+    .type-badge { display:inline-flex; align-items:center; margin-top:.45rem; padding:.22rem .65rem; border-radius:2rem; background:#e3e3fd; color:#000091; font-size:.78rem; font-weight:700; }
+    .dashboard-actions { display:flex; flex-wrap:wrap; gap:.8rem; margin-top:1.4rem; }
+    .change-password { max-width:32rem; margin-top:1.6rem; padding-top:1.3rem; border-top:1px solid var(--account-line); }
+    .change-password h3 { margin-bottom:.8rem; font-size:1.2rem; }
+    .account-footer { background:#fff; border-top:1px solid #e5e5e5; padding:1.2rem 1rem; color:#666; font-size:.82rem; }
+    .account-footer .fr-container { display:flex; flex-wrap:wrap; justify-content:space-between; gap:.75rem; }
+    @media (max-width:850px) { .account-layout { grid-template-columns:1fr; gap:1.6rem; } .account-intro { padding-top:0; } .account-intro h1 { max-width:12ch; } .account-note { margin-top:1.25rem; } }
+    @media (max-width:540px) { .account-panel__top { padding:1.15rem 1rem 0; } .account-panel__body { padding:1.2rem 1rem 1.4rem; } .account-tab { font-size:.82rem; padding-left:.45rem; padding-right:.45rem; } .account-type-choice { grid-template-columns:1fr; } .dashboard-person { align-items:flex-start; } }
+    @media (prefers-reduced-motion:no-preference) { .account-panel,.account-intro { animation:rise-in .48s both; } .account-panel { animation-delay:.08s; } @keyframes rise-in { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } } }
+  </style>
+</head>
+<body>
+  <div class="fr-skiplinks"><nav class="fr-container" aria-label="Accès rapide"><ul class="fr-skiplinks__list"><li><a class="fr-link" href="#contenu">Aller au contenu</a></li></ul></nav></div>
+  <header class="fr-header account-header" role="banner">
+    <div class="fr-header__body"><div class="fr-container"><div class="fr-header__body-row">
+      <div class="fr-header__brand fr-enlarge-link"><div class="fr-header__brand-top"><div class="fr-header__logo"><a href="index.html" aria-label="Accueil — Préfecture de l’Essonne"><p class="fr-logo">Préfète<br>de l’Essonne</p></a></div><div class="fr-header__navbar"><button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="menu-mobile" aria-label="Ouvrir le menu" title="Menu">Menu</button></div></div><div class="fr-header__service"><a href="index.html" title="Accueil — Préfecture de l’Essonne"><p class="fr-header__service-title">Les services de l’État<br>dans l’Essonne</p></a><p class="fr-header__service-tagline">Liberté · Égalité · Fraternité</p></div></div>
+      <div class="fr-header__tools"><div class="fr-header__tools-links"><ul class="fr-btns-group"><li><a class="fr-btn fr-icon-home-4-line" href="index.html">Accueil</a></li></ul></div></div>
+    </div></div></div>
+    <div class="fr-header__menu fr-modal" id="menu-mobile" aria-label="Menu principal"><div class="fr-container"><button class="fr-btn--close fr-btn" aria-controls="menu-mobile" title="Fermer">Fermer</button><nav class="fr-nav" id="menu" role="navigation" aria-label="Menu principal"><ul class="fr-nav__list"><li class="fr-nav__item"><a class="fr-nav__link" href="index.html">Accueil</a></li><li class="fr-nav__item"><a class="fr-nav__link" href="#contenu">Mon espace</a></li></ul></nav></div></div>
+  </header>
+  <div class="account-topline" aria-hidden="true"></div>
+  <main id="contenu" class="account-main" tabindex="-1">
+    <section id="auth-view" class="account-layout" aria-labelledby="page-title">
+      <div class="account-intro"><p class="account-kicker">Services en ligne · Essonne (91)</p><h1 id="page-title">Votre espace,<br><span>en toute simplicité.</span></h1><p>Retrouvez vos démarches et services dans un espace personnel, adapté aux particuliers comme aux professionnels.</p><div class="account-note"><strong>Un espace de démonstration</strong>Ce compte est enregistré uniquement dans le navigateur utilisé. Il ne constitue pas un compte officiel de l’administration.</div></div>
+      <section class="account-panel" aria-label="Accès à votre espace">
+        <div class="account-panel__top"><h2>Mon espace personnel</h2><div class="account-tabs" role="tablist" aria-label="Actions de compte">
+          <button class="account-tab" id="tab-login" type="button" role="tab" aria-selected="true" aria-controls="panel-login" tabindex="0" data-tab="login">Connexion</button>
+          <button class="account-tab" id="tab-register" type="button" role="tab" aria-selected="false" aria-controls="panel-register" tabindex="-1" data-tab="register">Créer un compte</button>
+          <button class="account-tab" id="tab-password" type="button" role="tab" aria-selected="false" aria-controls="panel-password" tabindex="-1" data-tab="password">Mot de passe oublié / Modifier</button>
+        </div></div>
+        <div class="account-panel__body">
+          <form class="account-form" id="panel-login" role="tabpanel" aria-labelledby="tab-login" novalidate>
+            <div class="fr-input-group"><label class="fr-label" for="login-id">E-mail ou identifiant</label><input class="fr-input" id="login-id" name="identifier" type="text" autocomplete="username" required></div>
+            <div class="fr-input-group"><label class="fr-label" for="login-password">Mot de passe</label><input class="fr-input" id="login-password" name="password" type="password" autocomplete="current-password" required></div>
+            <div class="account-form__actions"><button class="fr-btn" type="submit">Se connecter</button><button class="account-link-button" type="button" data-open-tab="password">Mot de passe oublié ?</button></div>
+            <p class="account-message" id="login-message" role="status" aria-live="polite"></p>
+          </form>
+          <form class="account-form" id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden novalidate>
+            <fieldset class="fr-fieldset" aria-describedby="account-type-hint"><legend class="fr-label">Type de compte</legend><p class="fr-hint-text" id="account-type-hint">Choisissez le profil associé à votre espace.</p><div class="account-type-choice">
+              <label class="type-option"><input type="radio" name="accountType" value="civil" checked><span><strong>Particulier / Civil</strong><small>Pour vos démarches personnelles</small></span></label>
+              <label class="type-option"><input type="radio" name="accountType" value="pro"><span><strong>Professionnel</strong><small>Pour votre activité ou organisation</small></span></label>
+            </div></fieldset>
+            <div class="fr-input-group"><label class="fr-label" for="register-name">Nom complet ou raison sociale</label><input class="fr-input" id="register-name" name="name" type="text" autocomplete="name" required></div>
+            <div class="fr-input-group"><label class="fr-label" for="register-email">Adresse e-mail</label><input class="fr-input" id="register-email" name="email" type="email" autocomplete="email" required></div>
+            <div class="fr-input-group"><label class="fr-label" for="register-password">Mot de passe</label><input class="fr-input" id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" aria-describedby="password-hint" required><p class="fr-hint-text" id="password-hint">8 caractères minimum.</p></div>
+            <div class="fr-input-group"><label class="fr-label" for="register-confirm">Confirmer le mot de passe</label><input class="fr-input" id="register-confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" required></div>
+            <button class="fr-btn" type="submit">Créer mon espace</button><p class="account-message" id="register-message" role="status" aria-live="polite"></p>
+          </form>
+          <form class="account-form" id="panel-password" role="tabpanel" aria-labelledby="tab-password" hidden novalidate>
+            <p class="fr-text--sm">Vous avez déjà un compte ? Identifiez-le avec son adresse e-mail ou son nom, puis choisissez un nouveau mot de passe. Aucun courriel de vérification ne peut être envoyé depuis cette démonstration.</p>
+            <div class="fr-input-group"><label class="fr-label" for="reset-id">E-mail ou identifiant du compte</label><input class="fr-input" id="reset-id" name="identifier" type="text" autocomplete="username" required></div>
+            <div class="fr-input-group"><label class="fr-label" for="reset-password">Nouveau mot de passe</label><input class="fr-input" id="reset-password" name="password" type="password" autocomplete="new-password" minlength="8" required></div>
+            <div class="fr-input-group"><label class="fr-label" for="reset-confirm">Confirmer le nouveau mot de passe</label><input class="fr-input" id="reset-confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" required></div>
+            <button class="fr-btn" type="submit">Réinitialiser le mot de passe</button><p class="account-message" id="reset-message" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    </section>
+    <section id="dashboard-view" class="account-dashboard" aria-labelledby="dashboard-title" hidden>
+      <header class="dashboard-heading"><p class="account-kicker">Espace connecté · Essonne (91)</p><h1 id="dashboard-title">Bienvenue dans votre espace.</h1></header>
+      <div class="dashboard-card">
+        <div class="dashboard-person"><div class="person-mark" id="person-initial" aria-hidden="true">•</div><div><h2 id="person-name">Compte</h2><p class="dashboard-email" id="person-email"></p><span class="type-badge" id="person-type">Civil</span></div></div>
+        <p class="fr-text--sm" style="margin:1.2rem 0 0">Votre espace personnel est prêt. Vous pouvez gérer votre mot de passe ou vous déconnecter de cet appareil.</p>
+        <div class="dashboard-actions"><button class="fr-btn fr-btn--secondary" id="show-change-password" type="button" aria-expanded="false" aria-controls="change-password-form">Modifier mon mot de passe</button><button class="fr-btn fr-btn--tertiary" id="logout-button" type="button">Se déconnecter</button></div>
+        <form class="account-form change-password" id="change-password-form" hidden novalidate><h3>Modifier le mot de passe</h3><div class="fr-input-group"><label class="fr-label" for="current-password">Mot de passe actuel</label><input class="fr-input" id="current-password" type="password" autocomplete="current-password" required></div><div class="fr-input-group"><label class="fr-label" for="new-password">Nouveau mot de passe</label><input class="fr-input" id="new-password" type="password" autocomplete="new-password" minlength="8" required></div><div class="fr-input-group"><label class="fr-label" for="new-password-confirm">Confirmer le nouveau mot de passe</label><input class="fr-input" id="new-password-confirm" type="password" autocomplete="new-password" minlength="8" required></div><button class="fr-btn" type="submit">Enregistrer le nouveau mot de passe</button><p class="account-message" id="change-message" role="status" aria-live="polite"></p></form>
+      </div>
+    </section>
+  </main>
+  <footer class="account-footer"><div class="fr-container"><span>République Française · Liberté, Égalité, Fraternité</span><a class="fr-link" href="index.html">Retour à l’accueil</a></div></footer>
+  <script>
+  (() => {
+    'use strict';
+    const ACCOUNTS_KEY = 'essonneDemoAccounts';
+    const SESSION_KEY = 'essonneDemoSession';
+    const iterations = 120000;
+    const byId = (id) => document.getElementById(id);
+    const message = (id, text = '', kind = 'info') => {
+      const el = byId(id);
+      el.textContent = text;
+      el.dataset.kind = text ? kind : '';
+    };
+    const readAccounts = () => {
+      const raw = localStorage.getItem(ACCOUNTS_KEY);
+      const accounts = raw ? JSON.parse(raw) : [];
+      return Array.isArray(accounts) ? accounts : [];
+    };
+    const saveAccounts = (accounts) => localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+    const normalize = (value) => value.trim().toLocaleLowerCase('fr');
+    const accountIndex = (accounts, identifier) => {
+      const query = normalize(identifier);
+      return accounts.findIndex((account) => normalize(account.email) === query || normalize(account.name) === query);
+    };
+    const encode = (bytes) => Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+    const makePasswordHash = async (password, saltHex = null) => {
+      if (!window.crypto || !window.crypto.subtle) throw new Error('Le navigateur doit fournir Web Crypto (HTTPS) pour sécuriser les mots de passe.');
+      const salt = saltHex ? Uint8Array.from(saltHex.match(/.{2}/g), (pair) => parseInt(pair, 16)) : crypto.getRandomValues(new Uint8Array(16));
+      const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+      const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, key, 256);
+      return { salt: encode(salt), hash: encode(new Uint8Array(bits)) };
+    };
+    const passwordMatches = async (password, account) => {
+      const result = await makePasswordHash(password, account.salt);
+      return result.hash === account.passwordHash;
+    };
+    const getSessionAccount = () => {
+      const email = localStorage.getItem(SESSION_KEY);
+      if (!email) return null;
+      return readAccounts().find((account) => account.email === email) || null;
+    };
+    const setView = (loggedIn) => {
+      byId('auth-view').hidden = loggedIn;
+      byId('dashboard-view').hidden = !loggedIn;
+    };
+    const renderDashboard = (account) => {
+      byId('person-name').textContent = account.name;
+      byId('person-email').textContent = account.email;
+      byId('person-type').textContent = account.type === 'pro' ? 'Pro' : 'Civil';
+      byId('person-initial').textContent = Array.from(account.name.trim())[0]?.toLocaleUpperCase('fr') || '•';
+      setView(true);
+    };
+    const showTab = (tabName) => {
+      document.querySelectorAll('.account-tab').forEach((tab) => {
+        const selected = tab.dataset.tab === tabName;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        byId(tab.getAttribute('aria-controls')).hidden = !selected;
+      });
+    };
+    document.querySelectorAll('.account-tab').forEach((tab) => tab.addEventListener('click', () => showTab(tab.dataset.tab)));
+    document.querySelectorAll('[data-open-tab]').forEach((button) => button.addEventListener('click', () => showTab(button.dataset.openTab)));
+    document.querySelectorAll('.account-tab').forEach((tab) => tab.addEventListener('keydown', (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const tabs = Array.from(document.querySelectorAll('.account-tab'));
+      const index = tabs.indexOf(tab);
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+      tabs[next].focus();
+      showTab(tabs[next].dataset.tab);
+    }));
+    const formValuesMatch = (password, confirmation, messageId) => {
+      if (password.length < 8) { message(messageId, 'Le mot de passe doit contenir au moins 8 caractères.', 'error'); return false; }
+      if (password !== confirmation) { message(messageId, 'Les deux mots de passe ne correspondent pas.', 'error'); return false; }
+      return true;
+    };
+    byId('panel-login').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      message('login-message');
+      const form = event.currentTarget;
+      const identifier = form.elements.identifier.value.trim();
+      const password = form.elements.password.value;
+      if (!identifier || !password) { message('login-message', 'Renseignez votre identifiant et votre mot de passe.', 'error'); return; }
+      try {
+        const accounts = readAccounts();
+        const index = accountIndex(accounts, identifier);
+        if (index < 0 || !(await passwordMatches(password, accounts[index]))) { message('login-message', 'Identifiant ou mot de passe incorrect.', 'error'); return; }
+        localStorage.setItem(SESSION_KEY, accounts[index].email);
+        form.reset();
+        renderDashboard(accounts[index]);
+      } catch (error) { message('login-message', error.name === 'SyntaxError' ? 'Les données locales du compte sont illisibles.' : error.message || 'Connexion impossible dans ce navigateur.', 'error'); }
+    });
+    byId('panel-register').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      message('register-message');
+      const form = event.currentTarget;
+      const name = form.elements.name.value.trim();
+      const email = normalize(form.elements.email.value);
+      const password = form.elements.password.value;
+      if (!name || !email || !form.elements.email.validity.valid) { message('register-message', 'Saisissez un nom et une adresse e-mail valides.', 'error'); return; }
+      if (!formValuesMatch(password, form.elements.confirm.value, 'register-message')) return;
+      try {
+        const accounts = readAccounts();
+        if (accounts.some((account) => normalize(account.email) === email)) { message('register-message', 'Un compte existe déjà avec cette adresse e-mail.', 'error'); return; }
+        const credentials = await makePasswordHash(password);
+        const account = { name, email, type: form.elements.accountType.value, salt: credentials.salt, passwordHash: credentials.hash, createdAt: new Date().toISOString() };
+        accounts.push(account);
+        saveAccounts(accounts);
+        localStorage.setItem(SESSION_KEY, email);
+        form.reset();
+        renderDashboard(account);
+      } catch (error) { message('register-message', error.message || 'Création impossible : le stockage local est indisponible.', 'error'); }
+    });
+    byId('panel-password').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      message('reset-message');
+      const form = event.currentTarget;
+      const identifier = form.elements.identifier.value.trim();
+      const password = form.elements.password.value;
+      if (!identifier) { message('reset-message', 'Saisissez l’e-mail ou l’identifiant du compte.', 'error'); return; }
+      if (!formValuesMatch(password, form.elements.confirm.value, 'reset-message')) return;
+      try {
+        const accounts = readAccounts();
+        const index = accountIndex(accounts, identifier);
+        if (index < 0) { message('reset-message', 'Aucun compte correspondant n’a été trouvé sur cet appareil.', 'error'); return; }
+        const credentials = await makePasswordHash(password);
+        accounts[index].salt = credentials.salt;
+        accounts[index].passwordHash = credentials.hash;
+        saveAccounts(accounts);
+        form.reset();
+        message('reset-message', 'Mot de passe modifié. Vous pouvez maintenant vous connecter.', 'success');
+        showTab('login');
+      } catch (error) { message('reset-message', error.message || 'Modification impossible : stockage local indisponible.', 'error'); }
+    });
+    byId('show-change-password').addEventListener('click', (event) => {
+      const form = byId('change-password-form');
+      form.hidden = !form.hidden;
+      event.currentTarget.setAttribute('aria-expanded', String(!form.hidden));
+      if (!form.hidden) byId('current-password').focus();
+    });
+    byId('change-password-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      message('change-message');
+      const form = event.currentTarget;
+      const account = getSessionAccount();
+      if (!account) { localStorage.removeItem(SESSION_KEY); setView(false); message('login-message', 'Session expirée. Veuillez vous reconnecter.', 'info'); showTab('login'); return; }
+      const currentPassword = byId('current-password').value;
+      const nextPassword = byId('new-password').value;
+      if (!formValuesMatch(nextPassword, byId('new-password-confirm').value, 'change-message')) return;
+      try {
+        if (!(await passwordMatches(currentPassword, account))) { message('change-message', 'Le mot de passe actuel est incorrect.', 'error'); return; }
+        const credentials = await makePasswordHash(nextPassword);
+        const accounts = readAccounts();
+        const index = accounts.findIndex((entry) => entry.email === account.email);
+        if (index < 0) throw new Error('Compte introuvable dans ce navigateur.');
+        accounts[index].salt = credentials.salt;
+        accounts[index].passwordHash = credentials.hash;
+        saveAccounts(accounts);
+        form.reset();
+        message('change-message', 'Votre mot de passe a été modifié.', 'success');
+      } catch (error) { message('change-message', error.message || 'Modification impossible : stockage local indisponible.', 'error'); }
+    });
+    byId('logout-button').addEventListener('click', () => {
+      localStorage.removeItem(SESSION_KEY);
+      byId('change-password-form').reset();
+      byId('change-password-form').hidden = true;
+      byId('show-change-password').setAttribute('aria-expanded', 'false');
+      setView(false);
+      showTab('login');
+      message('login-message', 'Vous êtes déconnecté(e).', 'success');
+      byId('login-id').focus();
+    });
+    try {
+      const account = getSessionAccount();
+      if (account) renderDashboard(account);
+      else { localStorage.removeItem(SESSION_KEY); setView(false); }
+    } catch (error) {
+      setView(false);
+      message('login-message', 'Le stockage local est inaccessible dans ce navigateur.', 'error');
+    }
+  })();
+  </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
