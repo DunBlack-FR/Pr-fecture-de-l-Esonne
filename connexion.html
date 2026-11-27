@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Espace Connexion & Gestion RH — Préfecture de l'Essonne</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -402,6 +402,30 @@
     </div>
   </div>
 
+  <!-- MODALE ÉDITION EFFECTIF (PRÉFECTURE) -->
+  <div id="modal-edit-eff" class="modal-bg hidden">
+    <div class="modal-box">
+      <h3>✏️ Modifier l'effectif</h3>
+      <p id="edit-eff-name" style="font-weight:600; color:var(--bleu-etat);"></p>
+      <div class="form-group">
+        <label>Grade actuel</label>
+        <select id="edit-eff-grade"></select>
+      </div>
+      <div class="form-group">
+        <label>Matricule / NIGEND</label>
+        <input type="text" id="edit-eff-matricule" />
+      </div>
+      <div class="form-group">
+        <label>Date d'obtention du grade</label>
+        <input type="date" id="edit-eff-date-grade" />
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
+        <button class="btn btn-outline" onclick="closeEditEffModal()">Annuler</button>
+        <button class="btn btn-primary" onclick="saveEditEff()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODALE RECRUTEMENT / LIAISON COMPTE -> EFFECTIF -->
   <div id="modal-recruit" class="modal-bg hidden">
     <div class="modal-box">
@@ -435,7 +459,7 @@
     </div>
   </div>
 
-    <script>
+  <script>
     const SUPABASE_URL = "https://mvmrnfpvmsyydmcmgsmm.supabase.co";
     const SUPABASE_KEY = "sb_publishable_YrRFbpLvZJl039FNhmdbLA_0egHR5NN";
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -724,6 +748,7 @@
       await refreshAllData();
       if (currentUser.type_compte === "prefecture") {
         renderPrefEffectifsTable();
+        renderPrefComptesTable();
       } else {
         renderServiceUnlinked();
         renderServiceTable();
@@ -810,7 +835,7 @@
     }
 
     // ==========================================
-    // MODALES PERMISSIONS & RECRUTEMENT
+    // MODALES PERMISSIONS, ÉDITION & RECRUTEMENT
     // ==========================================
     function openPermModal(effId) {
       editingEffId = effId;
@@ -833,6 +858,43 @@
       closePermModal();
       await refreshAllData();
       currentUser.type_compte === "prefecture" ? renderPrefEffectifsTable() : renderServiceTable();
+    }
+
+    function openEditEffModal(effId) {
+      editingEffId = effId;
+      const eff = allEffectifs.find(e => e.id === effId);
+      if (!eff) return;
+      document.getElementById("edit-eff-name").textContent = `${eff.nom} ${eff.prenom} — ${eff.service}`;
+      document.getElementById("edit-eff-matricule").value = eff.matricule || "";
+      document.getElementById("edit-eff-date-grade").value = eff.date_grade_actuel || new Date().toISOString().split("T")[0];
+
+      const srvGrades = allGrades.filter(g => g.service === eff.service);
+      let options = srvGrades.map(g => `<option value="${g.nom_grade}" ${g.nom_grade === eff.grade_actuel ? "selected" : ""}>${g.nom_grade}</option>`).join("");
+      if (!srvGrades.some(g => g.nom_grade === eff.grade_actuel)) {
+        options = `<option value="${eff.grade_actuel}" selected>${eff.grade_actuel}</option>` + options;
+      }
+      document.getElementById("edit-eff-grade").innerHTML = options;
+      document.getElementById("modal-edit-eff").classList.remove("hidden");
+    }
+
+    function closeEditEffModal() {
+      document.getElementById("modal-edit-eff").classList.add("hidden");
+      editingEffId = null;
+    }
+
+    async function saveEditEff() {
+      const grade_actuel = document.getElementById("edit-eff-grade").value;
+      const matricule = document.getElementById("edit-eff-matricule").value.trim();
+      const date_grade_actuel = document.getElementById("edit-eff-date-grade").value;
+
+      const { error } = await db.from("effectifs").update({ grade_actuel, matricule, date_grade_actuel }).eq("id", editingEffId);
+      if (error) return showAlert("Erreur : " + error.message, "err");
+
+      showAlert("Effectif mis à jour !");
+      closeEditEffModal();
+      await refreshAllData();
+      renderPrefEffectifsTable();
+      renderPrefComptesTable();
     }
 
     function openRecruitModal(compteId) {
@@ -888,38 +950,32 @@
     function renderPrefEffectifsTable() {
       document.getElementById("pref-stat-comptes").textContent = allComptes.length;
       document.getElementById("pref-stat-eff").textContent = allEffectifs.length;
-      const attenteCount = allDemandes.filter(d => d.statut === "en_attente").length;
-      document.getElementById("pref-stat-attente").textContent = attenteCount;
       document.getElementById("pref-stat-grades").textContent = allGrades.length;
-
-      const badge = document.getElementById("badge-demandes-count");
-      badge.textContent = attenteCount;
-      badge.classList.toggle("hidden", attenteCount === 0);
 
       const search = document.getElementById("pref-search").value.toLowerCase();
       const fSrv = document.getElementById("pref-filter-service").value;
       const fGrade = document.getElementById("pref-filter-grade").value;
 
-      let list = allEffectifs.filter(e =>
+      let list = applySort(allEffectifs.filter(e =>
         `${e.nom} ${e.prenom} ${e.matricule}`.toLowerCase().includes(search) &&
         (!fSrv || e.service === fSrv) &&
         (!fGrade || e.grade_actuel === fGrade)
-      );
-      list = applySort(list, "pref");
+      ), "pref");
 
       document.getElementById("table-eff-pref").innerHTML = list.map(e => {
         const jours = calcJours(e.date_grade_actuel);
         const perms = (e.permissions_perso || []).map(p => `<span class="badge badge-rh">${p}</span>`).join("");
         return `<tr>
           <td><strong>${e.service}</strong></td>
-          <td>${e.nom} ${e.prenom}</td>
+          <td><strong>${e.nom}</strong> ${e.prenom}</td>
           <td>${e.matricule || "-"}</td>
-          <td>${e.grade_actuel}</td>
+          <td><span class="badge badge-ok">${e.grade_actuel}</span></td>
           <td>${jours} j</td>
           <td>${e.compte_id ? '<span class="badge badge-ok">🔗 Lié</span>' : '<span class="badge badge-wait">Non lié</span>'} ${perms}</td>
           <td style="display:flex; gap:4px;">
-            <button class="btn btn-outline" onclick="openPermModal(${e.id})">🔐</button>
-            <button class="btn btn-danger" onclick="supprimerEffectif(${e.id})">🗑️</button>
+            <button class="btn btn-outline" title="Modifier grade/matricule" onclick="openEditEffModal(${e.id})">✏️</button>
+            <button class="btn btn-outline" title="Gérer permissions" onclick="openPermModal(${e.id})">🔐</button>
+            <button class="btn btn-danger" title="Supprimer" onclick="supprimerEffectif(${e.id})">🗑️</button>
           </td>
         </tr>`;
       }).join("");
@@ -939,10 +995,17 @@
       document.getElementById("table-comptes-pref").innerHTML = list.map(c => {
         const eff = allEffectifs.find(e => e.compte_id === c.id);
         let statutHtml = `<span class="badge badge-wait">N/A</span>`;
+        let editBtns = "";
         if (c.type_compte === "service") {
-          statutHtml = eff
-            ? `<span class="badge badge-ok">✅ ${eff.grade_actuel}</span>`
-            : `<button class="btn btn-success" onclick="openRecruitModal(${c.id})">➕ Créer fiche</button>`;
+          if (eff) {
+            statutHtml = `<span class="badge badge-ok">✅ ${eff.grade_actuel}</span>`;
+            editBtns = `
+              <button class="btn btn-outline" title="Modifier grade" onclick="openEditEffModal(${eff.id})">✏️</button>
+              <button class="btn btn-outline" title="Permissions" onclick="openPermModal(${eff.id})">🔐</button>
+            `;
+          } else {
+            statutHtml = `<button class="btn btn-success" onclick="openRecruitModal(${c.id})">➕ Créer fiche</button>`;
+          }
         }
         const info = c.type_compte === "service" ? (c.identifiant_service || "-") : (c.entreprise_nom || "-");
         return `<tr>
@@ -951,7 +1014,7 @@
           <td>${c.email}<br><small>${c.discord}</small></td>
           <td>${info}</td>
           <td>${statutHtml}</td>
-          <td><button class="btn btn-danger" onclick="supprimerCompte(${c.id})">🗑️</button></td>
+          <td style="display:flex; gap:4px;">${editBtns}<button class="btn btn-danger" onclick="supprimerCompte(${c.id})">🗑️</button></td>
         </tr>`;
       }).join("");
     }
@@ -962,62 +1025,69 @@
       showAlert("Compte supprimé.");
       await refreshAllData();
       renderPrefComptesTable();
+      renderPrefEffectifsTable();
     }
 
     function renderDemandesPref() {
+      const attente = allDemandes.filter(d => d.statut === "en_attente");
+      document.getElementById("pref-stat-attente").textContent = attente.length;
+      const badge = document.getElementById("badge-demandes-count");
+      badge.textContent = attente.length;
+      badge.classList.toggle("hidden", attente.length === 0);
+
       document.getElementById("table-demandes-pref").innerHTML = allDemandes.map(d => {
-        const badge = d.statut === "en_attente" ? "badge-wait" : d.statut === "validee" ? "badge-ok" : "badge-err";
-        const actions = d.statut === "en_attente"
+        let actions = d.statut === "en_attente"
           ? `<button class="btn btn-success" onclick="traiterDemande(${d.id}, ${d.effectif_id}, '${d.grade_vise}', 'validee')">Valider</button>
              <button class="btn btn-danger" onclick="traiterDemande(${d.id}, ${d.effectif_id}, '${d.grade_vise}', 'refusee')">Refuser</button>`
-          : "-";
+          : `<span class="badge ${d.statut === 'validee' ? 'badge-ok' : 'badge-err'}">${d.statut.toUpperCase()}</span>`;
+
         return `<tr>
           <td>${d.service}</td>
-          <td>${d.nom_effectif}</td>
-          <td>${d.grade_actuel} → <strong>${d.grade_vise}</strong></td>
-          <td>${d.type_demande}</td>
+          <td><strong>${d.nom_effectif}</strong></td>
+          <td>${d.grade_actuel} ➔ <strong>${d.grade_vise}</strong></td>
+          <td><span class="badge ${d.type_demande === 'derogatoire' ? 'badge-wait' : 'badge-ok'}">${d.type_demande}</span></td>
           <td>${d.motif}</td>
-          <td><span class="badge ${badge}">${d.statut}</span></td>
-          <td style="display:flex; gap:4px;">${actions}</td>
+          <td>${actions}</td>
         </tr>`;
       }).join("");
     }
 
-    async function traiterDemande(demandeId, effId, nouveauGrade, decision) {
-      await db.from("demandes").update({ statut: decision }).eq("id", demandeId);
+    async function traiterDemande(id, effId, gradeVise, decision) {
+      await db.from("demandes").update({ statut: decision }).eq("id", id);
       if (decision === "validee") {
         const today = new Date().toISOString().split("T")[0];
-        await db.from("effectifs").update({ grade_actuel: nouveauGrade, date_grade_actuel: today }).eq("id", effId);
+        await db.from("effectifs").update({ grade_actuel: gradeVise, date_grade_actuel: today }).eq("id", effId);
       }
       showAlert(`Demande ${decision === "validee" ? "validée" : "refusée"} !`);
       await refreshAllData();
-      renderPrefEffectifsTable();
       renderDemandesPref();
+      renderPrefEffectifsTable();
     }
 
     function renderGradesPref() {
-      document.getElementById("table-grades-pref").innerHTML = allGrades.map(g => {
-        const perms = [...(g.est_rh ? ["👑 RH"] : []), ...(g.permissions || [])].map(p => `<span class="badge badge-rh">${p}</span>`).join("");
-        return `<tr>
-          <td>${g.service}</td>
+      document.getElementById("table-grades-pref").innerHTML = allGrades.map(g => `
+        <tr>
+          <td><strong>${g.service}</strong></td>
           <td>${g.ordre}</td>
           <td><strong>${g.nom_grade}</strong></td>
           <td>${g.jours_requis} j</td>
-          <td>${perms || "-"}</td>
+          <td>${g.est_rh ? '<span class="badge badge-rh">👑 RH Admin</span>' : '-'}</td>
+          <td>${(g.permissions || []).map(p => `<span class="badge badge-rh">${p}</span>`).join("") || "-"}</td>
           <td><button class="btn btn-danger" onclick="supprimerGrade(${g.id})">🗑️</button></td>
-        </tr>`;
-      }).join("");
+        </tr>
+      `).join("");
     }
 
     async function ajouterGrade(e) {
       e.preventDefault();
+      const perms = [...document.querySelectorAll(".g-perm:checked")].map(cb => cb.value);
       const payload = {
-        service: document.getElementById("grade-service").value,
-        nom_grade: document.getElementById("grade-nom").value.trim(),
-        ordre: parseInt(document.getElementById("grade-ordre").value, 10),
-        jours_requis: parseInt(document.getElementById("grade-jours").value, 10),
-        est_rh: document.getElementById("grade-est-rh").checked,
-        permissions: [...document.querySelectorAll(".g-perm:checked")].map(cb => cb.value)
+        service: document.getElementById("g-service").value,
+        nom_grade: document.getElementById("g-nom").value.trim(),
+        ordre: parseInt(document.getElementById("g-ordre").value),
+        jours_requis: parseInt(document.getElementById("g-jours").value),
+        est_rh: document.getElementById("g-est-rh").checked,
+        permissions: perms
       };
       const { error } = await db.from("grades").insert([payload]);
       if (error) return showAlert("Erreur : " + error.message, "err");
