@@ -7,63 +7,76 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    .auth-wrapper { max-width: 1100px; margin: 30px auto; padding: 0 16px; }
-    .card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #000091; padding-bottom: 10px; }
-    .tab-btn { background: #f0f0f0; border: none; padding: 10px 16px; cursor: pointer; font-weight: 600; border-radius: 4px; color: #333; }
-    .tab-btn.active { background: #000091; color: #fff; }
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-    .form-group { display: flex; flex-direction: column; margin-bottom: 12px; }
-    .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; color: #1e1e1e; }
-    .form-group input, .form-group select, .form-group textarea { padding: 9px 10px; border: 1px solid #bbb; border-radius: 4px; font-size: 0.95rem; }
-    .btn-primary { background: #000091; color: #fff; border: none; padding: 10px 18px; border-radius: 4px; cursor: pointer; font-weight: 600; }
-    .btn-primary:hover { background: #1212ff; }
-    .btn-danger { background: #c9191e; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
-    .btn-success { background: #18753c; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
-    .btn-warning { background: #b34000; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
-    .alert { padding: 12px 15px; border-radius: 4px; margin-bottom: 15px; font-weight: 500; display: none; }
-    .alert.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
-    .alert.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9rem; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-    th { background: #f5f5fe; color: #000091; }
-    .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; display: inline-block; }
+    :root {
+      --bleu-etat: #000091;
+      --bleu-hover: #1212ff;
+      --rouge-etat: #e1000f;
+      --vert-ok: #18753c;
+      --orange-warn: #b34000;
+      --gris-fond: #f6f6f6;
+    }
+    body { background: var(--gris-fond); font-family: "Marianne", Arial, sans-serif; margin: 0; color: #1e1e1e; }
+    .top-bar { background: var(--bleu-etat); color: #fff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .top-bar a { color: #fff; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+    .auth-wrapper { max-width: 1250px; margin: 28px auto; padding: 0 16px; }
+    .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 6px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .card h2, .card h3 { margin-top: 0; color: var(--bleu-etat); }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--bleu-etat); padding-bottom: 10px; }
+    .tab-btn { background: #eeeeee; border: none; padding: 10px 16px; cursor: pointer; font-weight: 600; border-radius: 4px; color: #333; transition: 0.2s; }
+    .tab-btn.active { background: var(--bleu-etat); color: #fff; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+    .form-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+    .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 0.88rem; }
+    .form-group input, .form-group select, .form-group textarea { padding: 9px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.94rem; }
+    .btn { border: none; padding: 9px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+    .btn-primary { background: var(--bleu-etat); color: #fff; }
+    .btn-primary:hover { background: var(--bleu-hover); }
+    .btn-success { background: var(--vert-ok); color: #fff; padding: 6px 10px; font-size: 0.82rem; }
+    .btn-danger { background: var(--rouge-etat); color: #fff; padding: 6px 10px; font-size: 0.82rem; }
+    .btn-warning { background: var(--orange-warn); color: #fff; padding: 6px 10px; font-size: 0.82rem; }
+    .btn-outline { background: #fff; color: var(--bleu-etat); border: 1px solid var(--bleu-etat); }
+    .alert { padding: 12px 16px; border-radius: 4px; margin-bottom: 16px; font-weight: 600; display: none; }
+    .alert-ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .alert-err { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .stat-box { background: #f8f9ff; border-left: 4px solid var(--bleu-etat); padding: 14px; border-radius: 4px; }
+    .stat-box .num { font-size: 1.7rem; font-weight: 800; color: var(--bleu-etat); }
+    .stat-box .lbl { font-size: 0.85rem; color: #555; }
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; align-items: center; background: #f9f9f9; padding: 12px; border-radius: 4px; }
+    .filter-bar input, .filter-bar select { padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { border-bottom: 1px solid #e5e5e5; padding: 10px 8px; text-align: left; }
+    th { background: #f1f3f9; color: #1e1e1e; cursor: pointer; user-select: none; white-space: nowrap; }
+    th:hover { background: #e2e6f5; }
+    .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.78rem; font-weight: 700; display: inline-block; }
     .badge-ok { background: #d4edda; color: #155724; }
     .badge-wait { background: #fff3cd; color: #856404; }
-    .badge-refuse { background: #f8d7da; color: #721c24; }
+    .badge-err { background: #f8d7da; color: #721c24; }
     .hidden { display: none !important; }
-    .header-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
   </style>
 </head>
 <body>
 
-  <header class="fr-header">
-    <div class="fr-container header-bar">
-      <div>
-        <a href="index.html" style="text-decoration:none; color:inherit;">
-          <strong>RÉPUBLIQUE FRANÇAISE</strong> — Préfecture de l'Essonne
-        </a>
-      </div>
-      <div>
-        <a href="index.html" class="btn-primary" style="text-decoration:none;">← Retour au site</a>
-      </div>
-    </div>
-  </header>
+  <div class="top-bar">
+    <div><strong>RÉPUBLIQUE FRANÇAISE</strong> — Préfecture de l'Essonne (91)</div>
+    <div><a href="index.html">← Retour à l'accueil du site</a></div>
+  </div>
 
-  <main class="auth-wrapper">
-    <div id="global-alert" class="alert"></div>
+  <div class="auth-wrapper">
+    <div id="alert-box" class="alert"></div>
 
-    <!-- SECTION AUTHENTIFICATION -->
+    <!-- ==================== ZONE AUTHENTIFICATION ==================== -->
     <div id="auth-section" class="card">
       <div class="tabs">
         <button class="tab-btn active" onclick="switchAuthTab('login')">Connexion</button>
         <button class="tab-btn" onclick="switchAuthTab('register')">Créer un compte</button>
-        <button class="tab-btn" onclick="switchAuthTab('reset')">Mot de passe oublié</button>
+        <button class="tab-btn" onclick="switchAuthTab('password')">Modifier mot de passe</button>
       </div>
 
       <!-- CONNEXION -->
       <form id="form-login" onsubmit="handleLogin(event)">
-        <h2>Connexion à votre espace</h2>
+        <h3>Se connecter à votre espace</h3>
         <div class="form-grid">
           <div class="form-group">
             <label>Adresse mail (RP)</label>
@@ -74,233 +87,235 @@
             <input type="password" id="login-password" required />
           </div>
         </div>
-        <button type="submit" class="btn-primary">Se connecter</button>
+        <button type="submit" class="btn btn-primary">Connexion</button>
       </form>
 
       <!-- INSCRIPTION -->
       <form id="form-register" class="hidden" onsubmit="handleRegister(event)">
-        <h2>Créer un compte</h2>
+        <h3>Créer un compte</h3>
         <div class="form-group">
           <label>Type de compte</label>
-          <select id="reg-type" onchange="toggleRegisterFields()" required>
+          <select id="reg-type" onchange="toggleRegisterFields()">
             <option value="civil">Civil</option>
-            <option value="prefecture">Professionnel (Personnel de la Préfecture)</option>
-            <option value="service_etat">Services de l'État (Gendarmerie / Police / Pompiers / SAMU)</option>
             <option value="entreprise">Entreprise</option>
+            <option value="service">Service de l'État (FDO / FDS)</option>
+            <option value="prefecture">Préfecture (Personnel)</option>
           </select>
         </div>
 
-        <!-- Champs spécifiques Préfecture -->
-        <div id="fields-prefecture" class="hidden">
+        <div id="fields-service" class="form-grid hidden">
           <div class="form-group">
-            <label>Code Préfecture (Obligatoire)</label>
-            <input type="password" id="reg-code-pref" placeholder="Code secret Préfecture" />
+            <label>Service d'appartenance</label>
+            <select id="reg-service">
+              <option value="Gendarmerie">Gendarmerie Nationale</option>
+              <option value="Police Nationale">Police Nationale</option>
+              <option value="Sapeurs-Pompiers">Sapeurs-Pompiers (SDIS 91)</option>
+              <option value="SAMU">SAMU 91</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>NIGEND / Matricule</label>
+            <input type="text" id="reg-matricule" placeholder="Ex: 123456" />
           </div>
         </div>
 
-        <!-- Champs spécifiques Services de l'État -->
-        <div id="fields-service" class="hidden">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Service</label>
-              <select id="reg-service">
-                <option value="Gendarmerie">Gendarmerie Nationale</option>
-                <option value="Police Nationale">Police Nationale</option>
-                <option value="Sapeurs-Pompiers">Sapeurs-Pompiers</option>
-                <option value="SAMU">SAMU</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>NIGEND / Matricule</label>
-              <input type="text" id="reg-identifiant-service" placeholder="Ex: NIGEND ou Matricule" />
-            </div>
-          </div>
+        <div id="fields-entreprise" class="form-grid hidden">
+          <div class="form-group"><label>Nom de l'entreprise</label><input type="text" id="reg-ent-nom" /></div>
+          <div class="form-group"><label>SIRET</label><input type="text" id="reg-ent-siret" /></div>
+          <div class="form-group"><label>Secteur d'activité</label><input type="text" id="reg-ent-secteur" /></div>
         </div>
 
-        <!-- Champs spécifiques Entreprise -->
-        <div id="fields-entreprise" class="hidden">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Nom de l'entreprise</label>
-              <input type="text" id="reg-entreprise-nom" />
-            </div>
-            <div class="form-group">
-              <label>SIRET (optionnel)</label>
-              <input type="text" id="reg-siret" />
-            </div>
-            <div class="form-group">
-              <label>Secteur d'activité</label>
-              <input type="text" id="reg-secteur" />
-            </div>
-          </div>
+        <div id="fields-prefecture" class="form-group hidden">
+          <label>Code Préfecture (Obligatoire)</label>
+          <input type="password" id="reg-pref-code" placeholder="Code secret Préfecture" />
         </div>
 
         <div class="form-grid">
-          <div class="form-group">
-            <label>Nom</label>
-            <input type="text" id="reg-nom" required />
-          </div>
-          <div class="form-group">
-            <label>Prénom</label>
-            <input type="text" id="reg-prenom" required />
-          </div>
-          <div class="form-group">
-            <label>Date de Naissance</label>
-            <input type="date" id="reg-dob" required />
-          </div>
-          <div class="form-group">
-            <label>Adresse mail (RP)</label>
-            <input type="email" id="reg-email" required />
-          </div>
-          <div class="form-group">
-            <label>#Discord</label>
-            <input type="text" id="reg-discord" placeholder="Ex: pseudo#1234 ou @pseudo" required />
-          </div>
-          <div class="form-group">
-            <label>Mot de passe</label>
-            <input type="password" id="reg-password" required />
-          </div>
-          <div class="form-group">
-            <label>Confirmer mot de passe</label>
-            <input type="password" id="reg-password-confirm" required />
-          </div>
+          <div class="form-group"><label>Nom</label><input type="text" id="reg-nom" required /></div>
+          <div class="form-group"><label>Prénom</label><input type="text" id="reg-prenom" required /></div>
+          <div class="form-group"><label>Date de Naissance</label><input type="date" id="reg-dob" required /></div>
+          <div class="form-group"><label>Adresse mail (RP)</label><input type="email" id="reg-email" required /></div>
+          <div class="form-group"><label>#Discord</label><input type="text" id="reg-discord" placeholder="pseudo#0000" required /></div>
+          <div class="form-group"><label>Mot de passe</label><input type="password" id="reg-pass" required /></div>
+          <div class="form-group"><label>Confirmer mot de passe</label><input type="password" id="reg-pass2" required /></div>
         </div>
-        <button type="submit" class="btn-primary">Créer mon compte</button>
+        <button type="submit" class="btn btn-primary">Créer mon compte</button>
       </form>
 
-      <!-- MOT DE PASSE OUBLIE -->
-      <form id="form-reset" class="hidden" onsubmit="handleResetPassword(event)">
-        <h2>Modifier / Réinitialiser mon mot de passe</h2>
+      <!-- MODIFIER MOT DE PASSE -->
+      <form id="form-password" class="hidden" onsubmit="handleChangePassword(event)">
+        <h3>Modifier votre mot de passe</h3>
         <div class="form-grid">
-          <div class="form-group">
-            <label>Adresse mail (RP)</label>
-            <input type="email" id="reset-email" required />
-          </div>
-          <div class="form-group">
-            <label>#Discord (pour vérification)</label>
-            <input type="text" id="reset-discord" required />
-          </div>
-          <div class="form-group">
-            <label>Nouveau mot de passe</label>
-            <input type="password" id="reset-password" required />
-          </div>
+          <div class="form-group"><label>Adresse mail (RP)</label><input type="email" id="pwd-email" required /></div>
+          <div class="form-group"><label>Ancien mot de passe</label><input type="password" id="pwd-old" required /></div>
+          <div class="form-group"><label>Nouveau mot de passe</label><input type="password" id="pwd-new" required /></div>
         </div>
-        <button type="submit" class="btn-primary">Mettre à jour le mot de passe</button>
+        <button type="submit" class="btn btn-primary">Mettre à jour</button>
       </form>
     </div>
 
-    <!-- TABLEAU DE BORD CONNECTÉ -->
+    <!-- ==================== TABLEAU DE BORD CONNECTÉ ==================== -->
     <div id="dashboard-section" class="hidden">
-      <div class="card header-bar">
+      <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
         <div>
-          <h2 id="dash-welcome" style="margin:0;">Bienvenue</h2>
-          <small id="dash-role" style="color:#555;"></small>
+          <h2 id="dash-welcome" style="margin-bottom:4px;">Bienvenue</h2>
+          <div id="dash-role-info" style="color:#555; font-size:0.95rem;"></div>
         </div>
-        <button class="btn-danger" onclick="logout()">Se déconnecter</button>
-      </div>
-
-      <!-- ESPACE PRÉFECTURE : GESTION GRADES & VALIDATION PROMOTIONS -->
-      <div id="panel-prefecture" class="hidden">
-        <div class="card">
-          <h3>🏛️ Gestion des Grades par Service</h3>
-          <form onsubmit="addGrade(event)" class="form-grid">
-            <div class="form-group">
-              <label>Service</label>
-              <select id="grade-service">
-                <option value="Gendarmerie">Gendarmerie</option>
-                <option value="Police Nationale">Police Nationale</option>
-                <option value="Sapeurs-Pompiers">Sapeurs-Pompiers</option>
-                <option value="SAMU">SAMU</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Nom du Grade</label>
-              <input type="text" id="grade-nom" required placeholder="Ex: Brigadier-Chef" />
-            </div>
-            <div class="form-group">
-              <label>Ordre hiérarchique</label>
-              <input type="number" id="grade-ordre" value="1" min="1" required />
-            </div>
-            <div class="form-group">
-              <label>Jours requis (ancienneté)</label>
-              <input type="number" id="grade-jours" value="7" min="0" required />
-            </div>
-            <div class="form-group" style="justify-content:flex-end;">
-              <button type="submit" class="btn-primary">+ Ajouter le grade</button>
-            </div>
-          </form>
-          <table>
-            <thead>
-              <tr><th>Service</th><th>Ordre</th><th>Grade</th><th>Jours requis</th><th>Action</th></tr>
-            </thead>
-            <tbody id="table-grades"></tbody>
-          </table>
-        </div>
-
-        <div class="card">
-          <h3>📋 Demandes de Promotion en attente</h3>
-          <table>
-            <thead>
-              <tr><th>Service</th><th>Effectif</th><th>Grade actuel → Visé</th><th>Type</th><th>Motif</th><th>Statut</th><th>Actions</th></tr>
-            </thead>
-            <tbody id="table-demandes-pref"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- ESPACE SERVICES DE L'ÉTAT : EFFECTIFS & PROMOTIONS -->
-      <div id="panel-service" class="hidden">
-        <div class="card">
-          <h3>👮 Ajouter un Effectif</h3>
-          <form onsubmit="addEffectif(event)" class="form-grid">
-            <div class="form-group">
-              <label>Nom</label>
-              <input type="text" id="eff-nom" required />
-            </div>
-            <div class="form-group">
-              <label>Prénom</label>
-              <input type="text" id="eff-prenom" required />
-            </div>
-            <div class="form-group">
-              <label>Matricule / NIGEND</label>
-              <input type="text" id="eff-matricule" required />
-            </div>
-            <div class="form-group">
-              <label>Grade actuel</label>
-              <select id="eff-grade" required></select>
-            </div>
-            <div class="form-group">
-              <label>Date d'arrivée</label>
-              <input type="date" id="eff-date-arrivee" required />
-            </div>
-            <div class="form-group">
-              <label>Date du grade actuel</label>
-              <input type="date" id="eff-date-grade" required />
-            </div>
-            <div class="form-group" style="justify-content:flex-end;">
-              <button type="submit" class="btn-primary">+ Inscrire l'effectif</button>
-            </div>
-          </form>
-        </div>
-
-        <div class="card">
-          <h3>📊 Effectifs & Avancements</h3>
-          <table>
-            <thead>
-              <tr><th>Nom & Prénom</th><th>Matricule</th><th>Grade actuel</th><th>Jours dans le grade</th><th>Prochain grade</th><th>Action</th></tr>
-            </thead>
-            <tbody id="table-effectifs"></tbody>
-          </table>
-        </div>
+        <button class="btn btn-danger" onclick="logout()">Se déconnecter</button>
       </div>
 
       <!-- ESPACE CIVIL / ENTREPRISE -->
-      <div id="panel-standard" class="hidden card">
-        <h3>Mon Profil</h3>
-        <p id="profil-details"></p>
+      <div id="panel-civil" class="card hidden">
+        <h3>Mon Espace Personnel</h3>
+        <p>Votre compte est bien actif et enregistré dans la base de données de la Préfecture de l'Essonne.</p>
       </div>
+
+      <!-- ESPACE SERVICE DE L'ÉTAT (FDO / FDS) -->
+      <div id="panel-service" class="hidden">
+        <div class="stats-grid">
+          <div class="stat-box"><div class="num" id="srv-stat-total">0</div><div class="lbl">Effectifs du service</div></div>
+          <div class="stat-box"><div class="num" id="srv-stat-eligible">0</div><div class="lbl">Éligibles à une promotion</div></div>
+          <div class="stat-box"><div class="num" id="srv-stat-attente">0</div><div class="lbl">Demandes en attente</div></div>
+        </div>
+
+        <div class="card">
+          <h3>➕ Inscrire un nouvel effectif</h3>
+          <form onsubmit="ajouterEffectif(event)">
+            <div class="form-grid">
+              <div class="form-group"><label>Nom</label><input type="text" id="eff-nom" required /></div>
+              <div class="form-group"><label>Prénom</label><input type="text" id="eff-prenom" required /></div>
+              <div class="form-group"><label>Matricule / NIGEND</label><input type="text" id="eff-matricule" required /></div>
+              <div class="form-group"><label>Grade initial</label><select id="eff-grade" required></select></div>
+              <div class="form-group"><label>Date d'arrivée dans le service</label><input type="date" id="eff-date-arrivee" required /></div>
+              <div class="form-group"><label>Date d'obtention du grade actuel</label><input type="date" id="eff-date-grade" required /></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Enregistrer l'effectif</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+            <h3 style="margin:0;">📋 Liste complète des effectifs du service</h3>
+            <button class="btn btn-outline" onclick="exportCSV('service')">📥 Exporter en CSV</button>
+          </div>
+          <div class="filter-bar">
+            <input type="text" id="srv-search" placeholder="🔍 Rechercher nom, prénom, matricule..." oninput="renderServiceTable()" style="flex:1; min-width:200px;" />
+            <select id="srv-filter-grade" onchange="renderServiceTable()"><option value="">Tous les grades</option></select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th onclick="sortData('service', 'nom')">Nom & Prénom ↕</th>
+                  <th onclick="sortData('service', 'matricule')">Matricule ↕</th>
+                  <th onclick="sortData('service', 'grade_actuel')">Grade actuel ↕</th>
+                  <th onclick="sortData('service', 'date_arrivee')">Arrivée ↕</th>
+                  <th onclick="sortData('service', 'jours')">Ancienneté grade ↕</th>
+                  <th>Éligibilité</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="table-eff-service"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESPACE PRÉFECTURE -->
+      <div id="panel-prefecture" class="hidden">
+        <div class="stats-grid">
+          <div class="stat-box"><div class="num" id="pref-stat-eff">0</div><div class="lbl">Total Effectifs (Tous services)</div></div>
+          <div class="stat-box"><div class="num" id="pref-stat-attente">0</div><div class="lbl">Demandes en attente</div></div>
+          <div class="stat-box"><div class="num" id="pref-stat-grades">0</div><div class="lbl">Grades configurés</div></div>
+        </div>
+
+        <!-- ANNUAIRE COMPLET INTER-SERVICES -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+            <h3 style="margin:0;">🌐 Annuaire complet de tous les effectifs (Tous services)</h3>
+            <button class="btn btn-outline" onclick="exportCSV('prefecture')">📥 Exporter tout en CSV</button>
+          </div>
+          <div class="filter-bar">
+            <input type="text" id="pref-search" placeholder="🔍 Rechercher nom, prénom, matricule..." oninput="renderPrefEffectifsTable()" style="flex:1; min-width:200px;" />
+            <select id="pref-filter-service" onchange="renderPrefEffectifsTable()">
+              <option value="">Tous les services</option>
+              <option value="Gendarmerie">Gendarmerie</option>
+              <option value="Police Nationale">Police Nationale</option>
+              <option value="Sapeurs-Pompiers">Sapeurs-Pompiers</option>
+              <option value="SAMU">SAMU</option>
+            </select>
+            <select id="pref-filter-grade" onchange="renderPrefEffectifsTable()"><option value="">Tous les grades</option></select>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th onclick="sortData('pref', 'service')">Service ↕</th>
+                  <th onclick="sortData('pref', 'nom')">Nom & Prénom ↕</th>
+                  <th onclick="sortData('pref', 'matricule')">Matricule ↕</th>
+                  <th onclick="sortData('pref', 'grade_actuel')">Grade actuel ↕</th>
+                  <th onclick="sortData('pref', 'date_arrivee')">Date d'arrivée ↕</th>
+                  <th onclick="sortData('pref', 'jours')">Jours dans le grade ↕</th>
+                  <th>Éligibilité</th>
+                </tr>
+              </thead>
+              <tbody id="table-eff-pref"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- VALIDATION DES DEMANDES -->
+        <div class="card">
+          <h3>⚖️ Demandes de promotion</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Service</th>
+                  <th>Agent</th>
+                  <th>Promotion</th>
+                  <th>Type</th>
+                  <th>Motif</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="table-demandes-pref"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CONFIGURATION DES GRADES -->
+        <div class="card">
+          <h3>⚙️ Paramétrage des Grades par Service</h3>
+          <form onsubmit="ajouterGrade(event)" style="margin-bottom:18px;">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Service</label>
+                <select id="grade-service">
+                  <option value="Gendarmerie">Gendarmerie</option>
+                  <option value="Police Nationale">Police Nationale</option>
+                  <option value="Sapeurs-Pompiers">Sapeurs-Pompiers</option>
+                  <option value="SAMU">SAMU</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Nom du grade</label><input type="text" id="grade-nom" placeholder="Ex: Gendarme Adjoint Volontaire" required /></div>
+              <div class="form-group"><label>Ordre hiérarchique (1 = bas)</label><input type="number" id="grade-ordre" min="1" value="1" required /></div>
+              <div class="form-group"><label>Jours requis avant promo suivante</label><input type="number" id="grade-jours" min="0" value="15" required /></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Ajouter le grade</button>
+          </form>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Service</th><th>Ordre</th><th>Grade</th><th>Jours requis</th><th>Action</th></tr></thead>
+              <tbody id="table-grades-pref"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </div>
-  </main>
+  </div>
 
   <script>
     // ==========================================
@@ -309,237 +324,167 @@
     const SUPABASE_URL = "https://mvmrnfpvmsyydmcmgsmm.supabase.co";
     const SUPABASE_KEY = "sb_publishable_YrRFbpLvZJl039FNhmdbLA_0egHR5NN";
     const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // Code secret pour créer un compte Préfecture
     const CODE_PREFECTURE = "PREF91-ESSONNE-2026!";
 
     let currentUser = JSON.parse(localStorage.getItem("pref91_user")) || null;
     let allGrades = [];
     let allEffectifs = [];
+    let allDemandes = [];
+    let sortState = { service: { col: "nom", asc: true }, pref: { col: "service", asc: true } };
 
-    function showAlert(msg, type = "success") {
-      const el = document.getElementById("global-alert");
-      el.textContent = msg;
-      el.className = "alert " + type;
-      setTimeout(() => { el.className = "alert"; }, 5000);
+    function showAlert(msg, type = "ok") {
+      const box = document.getElementById("alert-box");
+      box.textContent = msg;
+      box.className = "alert " + (type === "ok" ? "alert-ok" : "alert-err");
+      box.style.display = "block";
+      setTimeout(() => box.style.display = "none", 4500);
     }
 
     function switchAuthTab(tab) {
       document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
       event.target.classList.add("active");
-      document.getElementById("form-login").classList.toggle("hidden", tab !== "login");
-      document.getElementById("form-register").classList.toggle("hidden", tab !== "register");
-      document.getElementById("form-reset").classList.toggle("hidden", tab !== "reset");
+      ["form-login", "form-register", "form-password"].forEach(id => document.getElementById(id).classList.add("hidden"));
+      document.getElementById("form-" + tab).classList.remove("hidden");
     }
 
     function toggleRegisterFields() {
       const type = document.getElementById("reg-type").value;
-      document.getElementById("fields-prefecture").classList.toggle("hidden", type !== "prefecture");
-      document.getElementById("fields-service").classList.toggle("hidden", type !== "service_etat");
+      document.getElementById("fields-service").classList.toggle("hidden", type !== "service");
       document.getElementById("fields-entreprise").classList.toggle("hidden", type !== "entreprise");
+      document.getElementById("fields-prefecture").classList.toggle("hidden", type !== "prefecture");
     }
 
     // ==========================================
-    // AUTHENTIFICATION (SUPABASE)
+    // AUTHENTIFICATION
     // ==========================================
     async function handleRegister(e) {
       e.preventDefault();
       const type = document.getElementById("reg-type").value;
-      const pw = document.getElementById("reg-password").value;
-      const pwConfirm = document.getElementById("reg-password-confirm").value;
-
-      if (pw !== pwConfirm) return showAlert("Les mots de passe ne correspondent pas.", "error");
-      if (type === "prefecture" && document.getElementById("reg-code-pref").value !== CODE_PREFECTURE) {
-        return showAlert("Code Préfecture invalide.", "error");
+      const pass = document.getElementById("reg-pass").value;
+      if (pass !== document.getElementById("reg-pass2").value) return showAlert("Les mots de passe ne correspondent pas.", "err");
+      if (type === "prefecture" && document.getElementById("reg-pref-code").value !== CODE_PREFECTURE) {
+        return showAlert("Code Préfecture incorrect !", "err");
       }
 
       const payload = {
         type_compte: type,
-        service: type === "service_etat" ? document.getElementById("reg-service").value : null,
-        identifiant_service: type === "service_etat" ? document.getElementById("reg-identifiant-service").value : null,
-        entreprise_nom: type === "entreprise" ? document.getElementById("reg-entreprise-nom").value : null,
-        siret: type === "entreprise" ? document.getElementById("reg-siret").value : null,
-        secteur: type === "entreprise" ? document.getElementById("reg-secteur").value : null,
+        service: type === "service" ? document.getElementById("reg-service").value : null,
+        identifiant_service: type === "service" ? document.getElementById("reg-matricule").value : null,
+        entreprise_nom: type === "entreprise" ? document.getElementById("reg-ent-nom").value : null,
+        siret: type === "entreprise" ? document.getElementById("reg-ent-siret").value : null,
+        secteur: type === "entreprise" ? document.getElementById("reg-ent-secteur").value : null,
         nom: document.getElementById("reg-nom").value.trim(),
         prenom: document.getElementById("reg-prenom").value.trim(),
         date_naissance: document.getElementById("reg-dob").value,
         email: document.getElementById("reg-email").value.trim().toLowerCase(),
         discord: document.getElementById("reg-discord").value.trim(),
-        mot_de_passe: pw
+        mot_de_passe: pass
       };
 
       const { error } = await db.from("comptes").insert([payload]);
-      if (error) return showAlert("Erreur lors de l'inscription : " + error.message, "error");
-
-      showAlert("Compte créé avec succès ! Vous pouvez maintenant vous connecter.");
-      document.getElementById("form-register").reset();
+      if (error) return showAlert("Erreur : " + error.message, "err");
+      showAlert("Compte créé avec succès ! Vous pouvez vous connecter.");
       switchAuthTab("login");
     }
 
     async function handleLogin(e) {
       e.preventDefault();
       const email = document.getElementById("login-email").value.trim().toLowerCase();
-      const pw = document.getElementById("login-password").value;
+      const pass = document.getElementById("login-password").value;
 
-      const { data, error } = await db.from("comptes")
-        .select("*")
-        .eq("email", email)
-        .eq("mot_de_passe", pw)
-        .maybeSingle();
-
-      if (error || !data) return showAlert("Identifiants incorrects.", "error");
+      const { data, error } = await db.from("comptes").select("*").eq("email", email).eq("mot_de_passe", pass).single();
+      if (error || !data) return showAlert("Email ou mot de passe incorrect.", "err");
 
       currentUser = data;
       localStorage.setItem("pref91_user", JSON.stringify(data));
       showDashboard();
     }
 
-    async function handleResetPassword(e) {
+    async function handleChangePassword(e) {
       e.preventDefault();
-      const email = document.getElementById("reset-email").value.trim().toLowerCase();
-      const discord = document.getElementById("reset-discord").value.trim();
-      const newPw = document.getElementById("reset-password").value;
+      const email = document.getElementById("pwd-email").value.trim().toLowerCase();
+      const oldP = document.getElementById("pwd-old").value;
+      const newP = document.getElementById("pwd-new").value;
 
-      const { data, error } = await db.from("comptes")
-        .update({ mot_de_passe: newPw })
-        .eq("email", email)
-        .eq("discord", discord)
-        .select();
+      const { data } = await db.from("comptes").select("id").eq("email", email).eq("mot_de_passe", oldP).single();
+      if (!data) return showAlert("Identifiants incorrects.", "err");
 
-      if (error || !data || data.length === 0) {
-        return showAlert("Aucun compte trouvé avec cet email et ce Discord.", "error");
-      }
-      showAlert("Mot de passe mis à jour avec succès !");
-      document.getElementById("form-reset").reset();
+      await db.from("comptes").update({ mot_de_passe: newP }).eq("id", data.id);
+      showAlert("Mot de passe mis à jour !");
     }
 
     function logout() {
-      currentUser = null;
       localStorage.removeItem("pref91_user");
-      document.getElementById("auth-section").classList.remove("hidden");
-      document.getElementById("dashboard-section").classList.add("hidden");
+      currentUser = null;
+      location.reload();
     }
 
     // ==========================================
-    // TABLEAU DE BORD & CHARGEMENT DES DONNÉES
+    // CHARGEMENT DU TABLEAU DE BORD
     // ==========================================
     async function showDashboard() {
-      if (!currentUser) return;
       document.getElementById("auth-section").classList.add("hidden");
       document.getElementById("dashboard-section").classList.remove("hidden");
+      document.getElementById("dash-welcome").textContent = `Bonjour ${currentUser.prenom} ${currentUser.nom}`;
+      document.getElementById("dash-role-info").textContent = `Rôle : ${currentUser.type_compte.toUpperCase()} ${currentUser.service ? "— " + currentUser.service : ""}`;
 
-      document.getElementById("dash-welcome").textContent = `Bienvenue, ${currentUser.prenom} ${currentUser.nom}`;
-      document.getElementById("dash-role").textContent = `Type : ${currentUser.type_compte.toUpperCase()} ${currentUser.service ? "— " + currentUser.service : ""}`;
+      await refreshAllData();
 
-      document.getElementById("panel-prefecture").classList.toggle("hidden", currentUser.type_compte !== "prefecture");
-      document.getElementById("panel-service").classList.toggle("hidden", currentUser.type_compte !== "service_etat");
-      document.getElementById("panel-standard").classList.toggle("hidden", !["civil", "entreprise"].includes(currentUser.type_compte));
-
-      await loadGrades();
-      if (currentUser.type_compte === "prefecture") {
-        await loadDemandesPrefecture();
-      } else if (currentUser.type_compte === "service_etat") {
-        await loadEffectifs();
+      if (currentUser.type_compte === "service") {
+        document.getElementById("panel-service").classList.remove("hidden");
+        populateServiceGradeSelects();
+        renderServiceTable();
+      } else if (currentUser.type_compte === "prefecture") {
+        document.getElementById("panel-prefecture").classList.remove("hidden");
+        populatePrefGradeFilter();
+        renderPrefEffectifsTable();
+        renderDemandesPref();
+        renderGradesPref();
       } else {
-        document.getElementById("profil-details").innerHTML = `
-          <strong>Email :</strong> ${currentUser.email}<br>
-          <strong>Discord :</strong> ${currentUser.discord}<br>
-          ${currentUser.entreprise_nom ? `<strong>Entreprise :</strong> ${currentUser.entreprise_nom} (${currentUser.secteur || ""})` : ""}
-        `;
+        document.getElementById("panel-civil").classList.remove("hidden");
       }
     }
 
-    // ==========================================
-    // GESTION DES GRADES (PRÉFECTURE)
-    // ==========================================
-    async function loadGrades() {
-      const { data } = await db.from("grades").select("*").order("service").order("ordre", { ascending: true });
-      allGrades = data || [];
-
-      const tbody = document.getElementById("table-grades");
-      if (tbody) {
-        tbody.innerHTML = allGrades.map(g => `
-          <tr>
-            <td>${g.service}</td>
-            <td>${g.ordre}</td>
-            <td><strong>${g.nom_grade}</strong></td>
-            <td>${g.jours_requis} jours</td>
-            <td><button class="btn-danger" onclick="deleteGrade(${g.id})">Supprimer</button></td>
-          </tr>
-        `).join("");
-      }
-
-      // Remplir le select des grades pour le service connecté
-      if (currentUser && currentUser.service) {
-        const serviceGrades = allGrades.filter(g => g.service === currentUser.service);
-        const select = document.getElementById("eff-grade");
-        select.innerHTML = serviceGrades.map(g => `<option value="${g.nom_grade}">${g.nom_grade}</option>`).join("");
-      }
+    async function refreshAllData() {
+      const [gRes, eRes, dRes] = await Promise.all([
+        db.from("grades").select("*").order("ordre", { ascending: true }),
+        db.from("effectifs").select("*"),
+        db.from("demandes").select("*").order("created_at", { ascending: false })
+      ]);
+      allGrades = gRes.data || [];
+      allEffectifs = eRes.data || [];
+      allDemandes = dRes.data || [];
     }
 
-    async function addGrade(e) {
-      e.preventDefault();
-      const payload = {
-        service: document.getElementById("grade-service").value,
-        nom_grade: document.getElementById("grade-nom").value.trim(),
-        ordre: parseInt(document.getElementById("grade-ordre").value),
-        jours_requis: parseInt(document.getElementById("grade-jours").value)
-      };
-      const { error } = await db.from("grades").insert([payload]);
-      if (error) return showAlert("Erreur : " + error.message, "error");
-      showAlert("Grade ajouté et sauvegardé en base de données !");
-      e.target.reset();
-      await loadGrades();
+    function calcJours(dateStr) {
+      const diff = new Date() - new Date(dateStr);
+      return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
     }
 
-    async function deleteGrade(id) {
-      await db.from("grades").delete().eq("id", id);
-      await loadGrades();
+    function getGradeInfo(service, nomGrade) {
+      const srvGrades = allGrades.filter(g => g.service === service).sort((a,b) => a.ordre - b.ordre);
+      const idx = srvGrades.findIndex(g => g.nom_grade === nomGrade);
+      const current = srvGrades[idx] || null;
+      const next = (idx >= 0 && idx + 1 < srvGrades.length) ? srvGrades[idx + 1] : null;
+      return { current, next };
     }
 
     // ==========================================
-    // GESTION DES EFFECTIFS (SERVICES DE L'ÉTAT)
+    // LOGIQUE SERVICE DE L'ÉTAT
     // ==========================================
-    async function loadEffectifs() {
-      const { data } = await db.from("effectifs").select("*").eq("service", currentUser.service);
-      allEffectifs = data || [];
-
-      const serviceGrades = allGrades.filter(g => g.service === currentUser.service).sort((a, b) => a.ordre - b.ordre);
-      const tbody = document.getElementById("table-effectifs");
-
-      tbody.innerHTML = allEffectifs.map(eff => {
-        const jours = Math.floor((new Date() - new Date(eff.date_grade_actuel)) / (1000 * 60 * 60 * 24));
-        const idx = serviceGrades.findIndex(g => g.nom_grade === eff.grade_actuel);
-        const nextGrade = (idx !== -1 && idx + 1 < serviceGrades.length) ? serviceGrades[idx + 1] : null;
-
-        let actionHtml = "Grade max atteint";
-        if (nextGrade) {
-          const eligible = jours >= nextGrade.jours_requis;
-          if (eligible) {
-            actionHtml = `<button class="btn-success" onclick="demanderPromotion(${eff.id}, '${eff.nom} ${eff.prenom}', '${eff.grade_actuel}', '${nextGrade.nom_grade}', 'standard')">Promouvoir (${nextGrade.nom_grade})</button>`;
-          } else {
-            actionHtml = `<button class="btn-warning" onclick="demanderPromotion(${eff.id}, '${eff.nom} ${eff.prenom}', '${eff.grade_actuel}', '${nextGrade.nom_grade}', 'derogatoire')">Dérogation (${jours}/${nextGrade.jours_requis}j)</button>`;
-          }
-        }
-
-        return `
-          <tr>
-            <td>${eff.nom} ${eff.prenom}</td>
-            <td>${eff.matricule}</td>
-            <td><strong>${eff.grade_actuel}</strong></td>
-            <td>${jours} jours</td>
-            <td>${nextGrade ? nextGrade.nom_grade : "—"}</td>
-            <td>${actionHtml}</td>
-          </tr>
-        `;
-      }).join("");
+    function populateServiceGradeSelects() {
+      const srvGrades = allGrades.filter(g => g.service === currentUser.service);
+      const selAdd = document.getElementById("eff-grade");
+      const selFilter = document.getElementById("srv-filter-grade");
+      selAdd.innerHTML = srvGrades.map(g => `<option value="${g.nom_grade}">${g.nom_grade}</option>`).join("");
+      selFilter.innerHTML = `<option value="">Tous les grades</option>` + srvGrades.map(g => `<option value="${g.nom_grade}">${g.nom_grade}</option>`).join("");
     }
 
-    async function addEffectif(e) {
+    async function ajouterEffectif(e) {
       e.preventDefault();
       const payload = {
         service: currentUser.service,
-        nom: document.getElementById("eff-nom").value.trim(),
+        nom: document.getElementById("eff-nom").value.trim().toUpperCase(),
         prenom: document.getElementById("eff-prenom").value.trim(),
         matricule: document.getElementById("eff-matricule").value.trim(),
         grade_actuel: document.getElementById("eff-grade").value,
@@ -548,53 +493,167 @@
         ajoute_par: `${currentUser.prenom} ${currentUser.nom}`
       };
       const { error } = await db.from("effectifs").insert([payload]);
-      if (error) return showAlert("Erreur : " + error.message, "error");
-      showAlert("Effectif ajouté !");
+      if (error) return showAlert("Erreur : " + error.message, "err");
+      showAlert("Effectif ajouté avec succès !");
       e.target.reset();
-      await loadEffectifs();
+      await refreshAllData();
+      renderServiceTable();
     }
 
-    async function demanderPromotion(effId, nomEff, gradeActuel, gradeVise, typeDemande) {
-      let motif = "Ancienneté requise atteinte";
-      if (typeDemande === "derogatoire") {
-        motif = prompt("Motif de la demande dérogatoire (obligatoire) :");
-        if (!motif) return;
-      }
+    async function supprimerEffectif(id) {
+      if (!confirm("Supprimer définitivement cet effectif ?")) return;
+      await db.from("effectifs").delete().eq("id", id);
+      showAlert("Effectif supprimé.");
+      await refreshAllData();
+      renderServiceTable();
+    }
 
-      const { error } = await db.from("demandes").insert([{
-        effectif_id: effId,
-        service: currentUser.service,
-        nom_effectif: nomEff,
-        grade_actuel: gradeActuel,
-        grade_vise: gradeVise,
-        type_demande: typeDemande,
-        motif: motif,
-        statut: "en_attente",
-        demandeur: `${currentUser.prenom} ${currentUser.nom}`
+    function sortData(scope, col) {
+      if (sortState[scope].col === col) sortState[scope].asc = !sortState[scope].asc;
+      else { sortState[scope].col = col; sortState[scope].asc = true; }
+      if (scope === "service") renderServiceTable();
+      else renderPrefEffectifsTable();
+    }
+
+    function applySort(list, scope) {
+      const { col, asc } = sortState[scope];
+      return [...list].sort((a, b) => {
+        let va = col === "jours" ? calcJours(a.date_grade_actuel) : (a[col] || "").toString().toLowerCase();
+        let vb = col === "jours" ? calcJours(b.date_grade_actuel) : (b[col] || "").toString().toLowerCase();
+        if (va < vb) return asc ? -1 : 1;
+        if (va > vb) return asc ? 1 : -1;
+        return 0;
+      });
+    }
+
+    function renderServiceTable() {
+      const search = document.getElementById("srv-search").value.toLowerCase();
+      const fGrade = document.getElementById("srv-filter-grade").value;
+      let list = allEffectifs.filter(e => e.service === currentUser.service);
+
+      // Stats
+      let eligibleCount = 0;
+      list.forEach(e => {
+        const { current, next } = getGradeInfo(e.service, e.grade_actuel);
+        if (next && current && calcJours(e.date_grade_actuel) >= current.jours_requis) eligibleCount++;
+      });
+      document.getElementById("srv-stat-total").textContent = list.length;
+      document.getElementById("srv-stat-eligible").textContent = eligibleCount;
+      document.getElementById("srv-stat-attente").textContent = allDemandes.filter(d => d.service === currentUser.service && d.statut === "en_attente").length;
+
+      // Filtres
+      list = list.filter(e => {
+        const matchSearch = `${e.nom} ${e.prenom} ${e.matricule}`.toLowerCase().includes(search);
+        const matchGrade = !fGrade || e.grade_actuel === fGrade;
+        return matchSearch && matchGrade;
+      });
+      list = applySort(list, "service");
+
+      document.getElementById("table-eff-service").innerHTML = list.map(e => {
+        const jours = calcJours(e.date_grade_actuel);
+        const { current, next } = getGradeInfo(e.service, e.grade_actuel);
+        let eligHtml = `<span class="badge badge-wait">Grade max</span>`;
+        let promoBtn = "";
+
+        if (next && current) {
+          if (jours >= current.jours_requis) {
+            eligHtml = `<span class="badge badge-ok">✅ Éligible (${next.nom_grade})</span>`;
+            promoBtn = `<button class="btn btn-success" onclick="demanderPromo(${e.id}, '${e.nom} ${e.prenom}', '${e.grade_actuel}', '${next.nom_grade}', 'standard')">Promouvoir</button>`;
+          } else {
+            const reste = current.jours_requis - jours;
+            eligHtml = `<span class="badge badge-wait">⏳ Encore ${reste} j</span>`;
+            promoBtn = `<button class="btn btn-warning" onclick="demanderDerogation(${e.id}, '${e.nom} ${e.prenom}', '${e.grade_actuel}')">Dérogation</button>`;
+          }
+        }
+        return `<tr>
+          <td><strong>${e.nom}</strong> ${e.prenom}</td>
+          <td>${e.matricule || "-"}</td>
+          <td>${e.grade_actuel}</td>
+          <td>${e.date_arrivee}</td>
+          <td>${jours} jours</td>
+          <td>${eligHtml}</td>
+          <td style="display:flex; gap:5px;">${promoBtn} <button class="btn btn-danger" onclick="supprimerEffectif(${e.id})">Suppr.</button></td>
+        </tr>`;
+      }).join("");
+    }
+
+    async function demanderPromo(effId, nomEff, gradeActuel, gradeVise, type) {
+      const motif = type === "standard" ? "Critère d'ancienneté atteint" : prompt("Motif de la demande dérogatoire :");
+      if (!motif) return;
+      await db.from("demandes").insert([{
+        effectif_id: effId, service: currentUser.service, nom_effectif: nomEff,
+        grade_actuel: gradeActuel, grade_vise: gradeVise, type_demande: type,
+        motif, statut: "en_attente", demandeur: `${currentUser.prenom} ${currentUser.nom}`
       }]);
+      showAlert("Demande envoyée à la Préfecture !");
+      await refreshAllData();
+      renderServiceTable();
+    }
 
-      if (error) return showAlert("Erreur : " + error.message, "error");
-      showAlert("Demande de promotion envoyée à la Préfecture !");
+    function demanderDerogation(effId, nomEff, gradeActuel) {
+      const gradeVise = prompt("Nom exact du grade visé pour la dérogation :");
+      if (gradeVise) demanderPromo(effId, nomEff, gradeActuel, gradeVise.trim(), "derogatoire");
     }
 
     // ==========================================
-    // VALIDATION DES DEMANDES (PRÉFECTURE)
+    // LOGIQUE PRÉFECTURE
     // ==========================================
-    async function loadDemandesPrefecture() {
-      const { data } = await db.from("demandes").select("*").order("created_at", { ascending: false });
-      const tbody = document.getElementById("table-demandes-pref");
-      tbody.innerHTML = (data || []).map(d => `
+    function populatePrefGradeFilter() {
+      const uniqueGrades = [...new Set(allGrades.map(g => g.nom_grade))];
+      document.getElementById("pref-filter-grade").innerHTML = `<option value="">Tous les grades</option>` + uniqueGrades.map(g => `<option value="${g}">${g}</option>`).join("");
+    }
+
+    function renderPrefEffectifsTable() {
+      document.getElementById("pref-stat-eff").textContent = allEffectifs.length;
+      document.getElementById("pref-stat-attente").textContent = allDemandes.filter(d => d.statut === "en_attente").length;
+      document.getElementById("pref-stat-grades").textContent = allGrades.length;
+
+      const search = document.getElementById("pref-search").value.toLowerCase();
+      const fSrv = document.getElementById("pref-filter-service").value;
+      const fGrade = document.getElementById("pref-filter-grade").value;
+
+      let list = allEffectifs.filter(e => {
+        const mSearch = `${e.nom} ${e.prenom} ${e.matricule}`.toLowerCase().includes(search);
+        const mSrv = !fSrv || e.service === fSrv;
+        const mGrade = !fGrade || e.grade_actuel === fGrade;
+        return mSearch && mSrv && mGrade;
+      });
+      list = applySort(list, "pref");
+
+      document.getElementById("table-eff-pref").innerHTML = list.map(e => {
+        const jours = calcJours(e.date_grade_actuel);
+        const { current, next } = getGradeInfo(e.service, e.grade_actuel);
+        let elig = `<span class="badge badge-wait">-</span>`;
+        if (next && current) {
+          elig = jours >= current.jours_requis
+            ? `<span class="badge badge-ok">✅ Éligible</span>`
+            : `<span class="badge badge-wait">⏳ ${current.jours_requis - jours} j</span>`;
+        }
+        return `<tr>
+          <td><strong>${e.service}</strong></td>
+          <td>${e.nom} ${e.prenom}</td>
+          <td>${e.matricule || "-"}</td>
+          <td>${e.grade_actuel}</td>
+          <td>${e.date_arrivee}</td>
+          <td>${jours} j</td>
+          <td>${elig}</td>
+        </tr>`;
+      }).join("");
+    }
+
+    function renderDemandesPref() {
+      document.getElementById("table-demandes-pref").innerHTML = allDemandes.map(d => `
         <tr>
           <td>${d.service}</td>
           <td>${d.nom_effectif}</td>
           <td>${d.grade_actuel} → <strong>${d.grade_vise}</strong></td>
           <td>${d.type_demande === "derogatoire" ? "⚠️ Dérogatoire" : "✅ Standard"}</td>
           <td>${d.motif}</td>
-          <td><span class="badge ${d.statut === 'validee' ? 'badge-ok' : d.statut === 'refusee' ? 'badge-refuse' : 'badge-wait'}">${d.statut}</span></td>
+          <td><span class="badge ${d.statut === 'validee' ? 'badge-ok' : d.statut === 'refusee' ? 'badge-err' : 'badge-wait'}">${d.statut}</span></td>
           <td>
             ${d.statut === "en_attente" ? `
-              <button class="btn-success" onclick="traiterDemande(${d.id}, ${d.effectif_id}, '${d.grade_vise}', 'validee')">Valider</button>
-              <button class="btn-danger" onclick="traiterDemande(${d.id}, ${d.effectif_id}, '${d.grade_vise}', 'refusee')">Refuser</button>
+              <button class="btn btn-success" onclick="traiterDemande(${d.id}, ${d.effectif_id}, '${d.grade_vise}', 'validee')">Valider</button>
+              <button class="btn btn-danger" onclick="traiterDemande(${d.id}, ${d.effectif_id}, '${d.grade_vise}', 'refusee')">Refuser</button>
             ` : "Traitée"}
           </td>
         </tr>
@@ -608,10 +667,60 @@
         await db.from("effectifs").update({ grade_actuel: nouveauGrade, date_grade_actuel: today }).eq("id", effId);
       }
       showAlert(`Demande ${statut} !`);
-      await loadDemandesPrefecture();
+      await refreshAllData();
+      renderPrefEffectifsTable();
+      renderDemandesPref();
     }
 
-    // Initialisation si déjà connecté
+    function renderGradesPref() {
+      document.getElementById("table-grades-pref").innerHTML = allGrades.map(g => `
+        <tr>
+          <td>${g.service}</td>
+          <td>${g.ordre}</td>
+          <td><strong>${g.nom_grade}</strong></td>
+          <td>${g.jours_requis} jours</td>
+          <td><button class="btn btn-danger" onclick="supprimerGrade(${g.id})">Supprimer</button></td>
+        </tr>
+      `).join("");
+    }
+
+    async function ajouterGrade(e) {
+      e.preventDefault();
+      await db.from("grades").insert([{
+        service: document.getElementById("grade-service").value,
+        nom_grade: document.getElementById("grade-nom").value.trim(),
+        ordre: parseInt(document.getElementById("grade-ordre").value),
+        jours_requis: parseInt(document.getElementById("grade-jours").value)
+      }]);
+      showAlert("Grade ajouté !");
+      e.target.reset();
+      await refreshAllData();
+      renderGradesPref();
+      populatePrefGradeFilter();
+    }
+
+    async function supprimerGrade(id) {
+      if (!confirm("Supprimer ce grade ?")) return;
+      await db.from("grades").delete().eq("id", id);
+      await refreshAllData();
+      renderGradesPref();
+    }
+
+    // EXPORT CSV
+    function exportCSV(scope) {
+      const list = scope === "service" ? allEffectifs.filter(e => e.service === currentUser.service) : allEffectifs;
+      let csv = "Service;Nom;Prenom;Matricule;Grade;Date_Arrivee;Date_Grade\n";
+      list.forEach(e => {
+        csv += `${e.service};${e.nom};${e.prenom};${e.matricule || ""};${e.grade_actuel};${e.date_arrivee};${e.date_grade_actuel}\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `effectifs_${scope}_pref91.csv`;
+      a.click();
+    }
+
     if (currentUser) showDashboard();
   </script>
 </body>
