@@ -1,351 +1,67 @@
 <!doctype html>
 <html lang="fr" data-fr-scheme="light">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Connexion et création d’un espace personnel — Les services de l’État dans l’Essonne.">
-  <meta name="theme-color" content="#f5f5fe">
-  <title>Mon espace — Préfecture de l’Essonne</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.15.4/dist/dsfr.min.css">
-  <link rel="stylesheet" href="style.css">
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.15.4/dist/dsfr.module.min.js"></script>
-  <style>
-    :root { --account-blue:#000091; --account-ink:#161616; --account-muted:#666; --account-line:#dedee8; }
-    body { background:#f7f7f5; color:var(--account-ink); }
-    .account-topline { height:7px; background:linear-gradient(90deg,#000091 0 58%,#fff 58% 67%,#e1000f 67% 100%); }
-    .account-header .fr-container { max-width:1200px; }
-    .account-main { padding:clamp(2rem,5vw,4.5rem) 1rem 5rem; }
-    .account-layout { max-width:1120px; margin:0 auto; display:grid; grid-template-columns:minmax(230px,.78fr) minmax(0,1.22fr); gap:clamp(2rem,6vw,5rem); align-items:start; }
-    .account-intro { padding-top:1.2rem; }
-    .account-kicker { display:flex; align-items:center; gap:.65rem; color:var(--account-blue); font-size:.76rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; margin:0 0 .9rem; }
-    .account-kicker::before { content:""; width:8px; height:8px; background:#e1000f; border-radius:50%; }
-    .account-intro h1 { font-family:Georgia,"Times New Roman",serif; font-size:clamp(2.5rem,5vw,4.1rem); letter-spacing:-.045em; line-height:1.02; margin:0 0 1.25rem; }
-    .account-intro h1 span { color:var(--account-blue); }
-    .account-intro > p:not(.account-kicker) { color:#414141; font-size:1.08rem; line-height:1.65; max-width:31rem; }
-    .account-note { margin-top:2.3rem; padding:1rem 1.15rem; border-left:3px solid var(--account-blue); background:#fff; color:#555; font-size:.88rem; line-height:1.55; }
-    .account-note strong { display:block; color:#222; margin-bottom:.2rem; }
-    .account-panel { background:#fff; border:1px solid #e6e6e6; box-shadow:0 12px 38px rgba(16,27,72,.07); }
-    .account-panel__top { padding:1.6rem 1.7rem 0; border-bottom:1px solid var(--account-line); }
-    .account-panel__top h2 { font-family:Georgia,"Times New Roman",serif; font-size:1.65rem; letter-spacing:-.025em; margin:0 0 1rem; }
-    .account-tabs { display:flex; gap:.2rem; overflow-x:auto; }
-    .account-tab { flex:1 0 auto; border:0; border-bottom:3px solid transparent; background:transparent; color:#3a3a3a; padding:.7rem .65rem .8rem; font:inherit; font-size:.91rem; font-weight:650; cursor:pointer; }
-    .account-tab:hover { background:#f6f6fe; }
-    .account-tab[aria-selected="true"] { color:var(--account-blue); border-bottom-color:var(--account-blue); }
-    .account-panel__body { padding:1.65rem 1.7rem 1.8rem; }
-    .account-form { max-width:34rem; }
-    .account-form [hidden], [hidden] { display:none !important; }
-    .account-form .fr-input-group { margin-bottom:1.25rem; }
-    .account-form .fr-label { font-weight:600; }
-    .account-form .fr-hint-text { margin-top:.3rem; }
-    .account-form .fr-btn { margin-top:.25rem; }
-    .account-form__actions { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; margin-top:.5rem; }
-    .account-link-button { border:0; background:transparent; padding:.5rem .15rem; color:var(--account-blue); text-decoration:underline; text-underline-offset:.2em; font:inherit; cursor:pointer; }
-    .account-link-button:hover { color:#1212b5; }
-    .account-message { min-height:1.5rem; margin:1rem 0 0; font-size:.94rem; line-height:1.5; }
-    .account-message[data-kind="error"] { color:#b34000; }
-    .account-message[data-kind="success"] { color:#18753c; }
-    .account-message[data-kind="info"] { color:#3a3a3a; }
-    .account-type-choice { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin:.45rem 0 1.25rem; }
-    .type-option { display:flex; align-items:flex-start; gap:.65rem; min-height:5.3rem; padding:.85rem; border:1px solid #d8d8d8; cursor:pointer; }
-    .type-option:has(input:checked) { border:2px solid var(--account-blue); background:#f6f6fe; padding:calc(.85rem - 1px); }
-    .type-option input { margin-top:.2rem; accent-color:var(--account-blue); }
-    .type-option strong,.type-option small { display:block; }
-    .type-option small { margin-top:.22rem; color:#666; line-height:1.4; }
-    .account-dashboard { max-width:900px; margin:0 auto; }
-    .dashboard-heading { margin-bottom:1.7rem; }
-    .dashboard-heading .account-kicker { margin-bottom:.55rem; }
-    .dashboard-heading h1 { font-family:Georgia,"Times New Roman",serif; font-size:clamp(2.3rem,4vw,3.5rem); letter-spacing:-.04em; margin:0; }
-    .dashboard-card { background:#fff; border:1px solid #e6e6e6; box-shadow:0 12px 38px rgba(16,27,72,.07); padding:clamp(1.3rem,4vw,2.2rem); }
-    .dashboard-person { display:flex; align-items:center; gap:1rem; padding-bottom:1.45rem; border-bottom:1px solid var(--account-line); }
-    .person-mark { flex:0 0 3.3rem; height:3.3rem; border-radius:50%; display:grid; place-items:center; background:#e3e3fd; color:var(--account-blue); font-family:Georgia,serif; font-size:1.45rem; font-weight:bold; }
-    .dashboard-person h2 { margin:0 0 .3rem; font-family:Georgia,"Times New Roman",serif; font-size:1.5rem; }
-    .dashboard-email { margin:0; color:#666; }
-    .dashboard-details { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem 1.5rem; margin:1.5rem 0 0; }
-    .dashboard-details div { min-width:0; padding-bottom:.8rem; border-bottom:1px solid #eee; }
-    .dashboard-details dt { color:#666; font-size:.82rem; margin-bottom:.22rem; }
-    .dashboard-details dd { margin:0; font-weight:600; overflow-wrap:anywhere; }
-    .type-badge { display:inline-flex; align-items:center; margin-top:.45rem; padding:.22rem .65rem; border-radius:2rem; background:#e3e3fd; color:#000091; font-size:.78rem; font-weight:700; }
-    .dashboard-actions { display:flex; flex-wrap:wrap; gap:.8rem; margin-top:1.4rem; }
-    .change-password { max-width:32rem; margin-top:1.6rem; padding-top:1.3rem; border-top:1px solid var(--account-line); }
-    .change-password h3 { margin-bottom:.8rem; font-size:1.2rem; }
-    .account-footer { background:#fff; border-top:1px solid #e5e5e5; padding:1.2rem 1rem; color:#666; font-size:.82rem; }
-    .account-footer .fr-container { display:flex; flex-wrap:wrap; justify-content:space-between; gap:.75rem; }
-    @media (max-width:850px) { .account-layout { grid-template-columns:1fr; gap:1.6rem; } .account-intro { padding-top:0; } .account-intro h1 { max-width:12ch; } .account-note { margin-top:1.25rem; } }
-    @media (max-width:540px) { .account-panel__top { padding:1.15rem 1rem 0; } .account-panel__body { padding:1.2rem 1rem 1.4rem; } .account-tab { font-size:.82rem; padding-left:.45rem; padding-right:.45rem; } .account-type-choice { grid-template-columns:1fr; } .dashboard-person { align-items:flex-start; } .dashboard-details { grid-template-columns:1fr; gap:.7rem; } }
-    @media (prefers-reduced-motion:no-preference) { .account-panel,.account-intro { animation:rise-in .48s both; } .account-panel { animation-delay:.08s; } @keyframes rise-in { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } } }
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Espace de démonstration — Préfecture de l’Essonne"><meta name="theme-color" content="#f5f5fe">
+<title>Mon espace — Préfecture de l’Essonne</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.15.4/dist/dsfr.min.css"><link rel="stylesheet" href="style.css"><script type="module" src="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.15.4/dist/dsfr.module.min.js"></script>
+<style>
+:root{--navy:#142b4a;--blue:#000091;--red:#e1000f;--ink:#202832;--muted:#657080;--line:#d9e0e7;--paper:#fff;--wash:#f2f5f7;--green:#18753c;--amber:#8a4b08}*{box-sizing:border-box}body{background:var(--wash);color:var(--ink)}.account-topline{height:6px;background:linear-gradient(90deg,var(--blue) 0 58%,#fff 58% 67%,var(--red) 67%)}.fr-header__brand .fr-logo{font-family:Georgia,serif}.account-main{padding:clamp(1.5rem,4vw,3.8rem) 1rem 5rem}.account-layout{max-width:1160px;margin:auto;display:grid;grid-template-columns:minmax(240px,.78fr) minmax(0,1.22fr);gap:clamp(1.5rem,5vw,4.5rem);align-items:start}.account-intro{padding-top:1.2rem}.kicker{color:var(--blue);font-size:.75rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.account-intro h1,.dash-title{font-family:Georgia,'Times New Roman',serif;line-height:1.02;letter-spacing:-.04em}.account-intro h1{font-size:clamp(2.5rem,5vw,4.3rem);margin:.8rem 0 1rem}.account-intro h1 span{color:var(--blue)}.account-intro>p:not(.kicker){max-width:31rem;line-height:1.7;color:#4d5863}.demo-note{margin-top:2rem;padding:1rem 1.1rem;background:#fff;border-left:4px solid var(--blue);font-size:.88rem;color:var(--muted)}.demo-note strong{display:block;color:var(--ink)}.panel,.card{background:var(--paper);border:1px solid var(--line);box-shadow:0 12px 36px #142b4a0c}.panel-top{padding:1.35rem 1.5rem 0;border-bottom:1px solid var(--line)}.panel-top h2{font-family:Georgia,serif;font-size:1.55rem}.tabs{display:flex;gap:.2rem;overflow:auto}.tab{flex:1 0 auto;border:0;border-bottom:3px solid transparent;background:none;padding:.7rem .5rem;color:#3e4a56;font:inherit;font-size:.9rem;font-weight:700;cursor:pointer}.tab[aria-selected=true]{border-bottom-color:var(--blue);color:var(--blue)}.panel-body{padding:1.5rem}.form{max-width:45rem}.form [hidden],[hidden]{display:none!important}.form .fr-input-group{margin-bottom:1rem}.type-choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;margin:.6rem 0 1.2rem}.type-option{display:flex;gap:.6rem;align-items:flex-start;padding:.75rem;border:1px solid var(--line);background:#fff;cursor:pointer;min-height:4.7rem}.type-option:has(input:checked){border:2px solid var(--blue);background:#f4f4ff;padding:calc(.75rem - 1px)}.type-option input{margin-top:.25rem;accent-color:var(--blue)}.type-option strong,.type-option small{display:block}.type-option small{color:var(--muted);font-size:.78rem;line-height:1.35;margin-top:.15rem}.account-message{min-height:1.5rem;margin:.8rem 0 0;font-size:.92rem}.account-message[data-kind=error]{color:#b34000}.account-message[data-kind=success]{color:var(--green)}.account-message[data-kind=info]{color:#3a3a3a}.form-actions{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap}.link-button{border:0;background:none;color:var(--blue);text-decoration:underline;font:inherit;cursor:pointer}.dashboard{max-width:1200px;margin:auto}.dash-heading{display:flex;justify-content:space-between;gap:1rem;align-items:end;margin-bottom:1.4rem}.dash-title{font-size:clamp(2.2rem,4vw,3.5rem);margin:.35rem 0}.dash-subtitle{color:var(--muted);margin:0}.card{padding:clamp(1rem,3vw,1.8rem);margin-bottom:1rem}.person-row{display:flex;align-items:center;gap:1rem;padding-bottom:1.2rem;border-bottom:1px solid var(--line)}.avatar{width:3.2rem;height:3.2rem;display:grid;place-items:center;border-radius:50%;background:#e3e3fd;color:var(--blue);font:700 1.4rem Georgia}.person-row h2{font:700 1.35rem Georgia;margin:0 0 .25rem}.badge{display:inline-block;border-radius:999px;padding:.2rem .65rem;background:#e3e3fd;color:var(--blue);font-size:.78rem;font-weight:800}.badge.ok{background:#dff5e5;color:#18753c}.badge.wait{background:#fff0d1;color:#714400}.details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.9rem 1.2rem;margin:1.2rem 0 0}.details div{border-bottom:1px solid #edf0f2;padding-bottom:.6rem;min-width:0}.details dt{font-size:.78rem;color:var(--muted)}.details dd{margin:.18rem 0 0;font-weight:650;overflow-wrap:anywhere}.section-head{display:flex;justify-content:space-between;align-items:start;gap:1rem;margin-bottom:1rem}.section-head h2{font-family:Georgia,serif;font-size:1.45rem;margin:0}.section-head p{color:var(--muted);margin:.3rem 0}.workspace-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.42fr);gap:1rem}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{text-align:left;padding:.72rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f4f6f8;font-size:.78rem;color:#4e5965}td .fr-btn{margin:.15rem .15rem .15rem 0}.compact-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.compact-form .wide{grid-column:1/-1}.compact-form .fr-input-group{margin:0}.compact-form button{align-self:end;justify-self:start}.inline-form{display:flex;flex-wrap:wrap;gap:.65rem;align-items:end}.inline-form .fr-input-group{min-width:150px;flex:1;margin:0}.state-panel{border-top:4px solid var(--navy)}.notice{padding:.8rem 1rem;border-left:4px solid #6a6af4;background:#f4f4ff;font-size:.9rem}.actions{display:flex;gap:.55rem;flex-wrap:wrap}.dashboard-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.2rem}.change-password{max-width:35rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line)}.footer{padding:1.2rem;background:white;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}.footer .fr-container{display:flex;justify-content:space-between;gap:.8rem;flex-wrap:wrap}.empty{color:var(--muted);font-style:italic;padding:.6rem 0}.error-text{color:#b34000}.table-select{min-width:9rem}.subtle{color:var(--muted);font-size:.85rem}
+@media(max-width:900px){.account-layout{grid-template-columns:1fr}.account-intro{padding:0}.account-intro h1{max-width:13ch}.workspace-grid{grid-template-columns:1fr}}@media(max-width:580px){.panel-top{padding:1rem 1rem 0}.panel-body{padding:1rem}.type-choice{grid-template-columns:1fr}.details{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-heading{display:block}.compact-form{grid-template-columns:1fr}.compact-form .wide{grid-column:auto}.tab{font-size:.8rem}.dashboard{overflow:hidden}}@media(prefers-reduced-motion:no-preference){.panel,.account-intro{animation:enter .42s both}@keyframes enter{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}}
+</style>
 </head>
 <body>
-  <div class="fr-skiplinks"><nav class="fr-container" aria-label="Accès rapide"><ul class="fr-skiplinks__list"><li><a class="fr-link" href="#contenu">Aller au contenu</a></li></ul></nav></div>
-  <header class="fr-header account-header" role="banner">
-    <div class="fr-header__body"><div class="fr-container"><div class="fr-header__body-row">
-      <div class="fr-header__brand fr-enlarge-link"><div class="fr-header__brand-top"><div class="fr-header__logo"><a href="index.html" aria-label="Accueil — Préfecture de l’Essonne"><p class="fr-logo">Préfète<br>de l’Essonne</p></a></div><div class="fr-header__navbar"><button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="menu-mobile" aria-label="Ouvrir le menu" title="Menu">Menu</button></div></div><div class="fr-header__service"><a href="index.html" title="Accueil — Préfecture de l’Essonne"><p class="fr-header__service-title">Les services de l’État<br>dans l’Essonne</p></a><p class="fr-header__service-tagline">Liberté · Égalité · Fraternité</p></div></div>
-      <div class="fr-header__tools"><div class="fr-header__tools-links"><ul class="fr-btns-group"><li><a class="fr-btn fr-icon-home-4-line" href="index.html">Accueil</a></li></ul></div></div>
-    </div></div></div>
-    <div class="fr-header__menu fr-modal" id="menu-mobile" aria-label="Menu principal"><div class="fr-container"><button class="fr-btn--close fr-btn" aria-controls="menu-mobile" title="Fermer">Fermer</button><nav class="fr-nav" id="menu" role="navigation" aria-label="Menu principal"><ul class="fr-nav__list"><li class="fr-nav__item"><a class="fr-nav__link" href="index.html">Accueil</a></li><li class="fr-nav__item"><a class="fr-nav__link" href="#contenu">Mon espace</a></li></ul></nav></div></div>
-  </header>
-  <div class="account-topline" aria-hidden="true"></div>
-  <main id="contenu" class="account-main" tabindex="-1">
-    <section id="auth-view" class="account-layout" aria-labelledby="page-title">
-      <div class="account-intro"><p class="account-kicker">Services en ligne · Essonne (91)</p><h1 id="page-title">Votre espace,<br><span>en toute simplicité.</span></h1><p>Retrouvez vos démarches et services dans un espace personnel, adapté aux particuliers comme aux professionnels.</p><div class="account-note"><strong>Un espace de démonstration</strong>Ce compte est enregistré uniquement dans le navigateur utilisé. Il ne constitue pas un compte officiel de l’administration.</div></div>
-      <section class="account-panel" aria-label="Accès à votre espace">
-        <div class="account-panel__top"><h2>Mon espace personnel</h2><div class="account-tabs" role="tablist" aria-label="Actions de compte">
-          <button class="account-tab" id="tab-login" type="button" role="tab" aria-selected="true" aria-controls="panel-login" tabindex="0" data-tab="login">Connexion</button>
-          <button class="account-tab" id="tab-register" type="button" role="tab" aria-selected="false" aria-controls="panel-register" tabindex="-1" data-tab="register">Créer un compte</button>
-          <button class="account-tab" id="tab-password" type="button" role="tab" aria-selected="false" aria-controls="panel-password" tabindex="-1" data-tab="password">Mot de passe oublié / Modifier</button>
-        </div></div>
-        <div class="account-panel__body">
-          <form class="account-form" id="panel-login" role="tabpanel" aria-labelledby="tab-login" novalidate>
-            <div class="fr-input-group"><label class="fr-label" for="login-id">E-mail ou identifiant</label><input class="fr-input" id="login-id" name="identifier" type="text" autocomplete="username" required></div>
-            <div class="fr-input-group"><label class="fr-label" for="login-password">Mot de passe</label><input class="fr-input" id="login-password" name="password" type="password" autocomplete="current-password" required></div>
-            <div class="account-form__actions"><button class="fr-btn" type="submit">Se connecter</button><button class="account-link-button" type="button" data-open-tab="password">Mot de passe oublié ?</button></div>
-            <p class="account-message" id="login-message" role="status" aria-live="polite"></p>
-          </form>
-          <form class="account-form" id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden novalidate>
-            <fieldset class="fr-fieldset" aria-describedby="account-type-hint"><legend class="fr-label">Type de compte</legend><p class="fr-hint-text" id="account-type-hint">Choisissez le profil associé à votre espace.</p><div class="account-type-choice">
-              <label class="type-option"><input type="radio" name="accountType" value="civil" checked><span><strong>Civil</strong><small>Pour vos démarches personnelles</small></span></label>
-              <label class="type-option"><input type="radio" name="accountType" value="pro"><span><strong>Professionnel (Personnel de la Préfecture)</strong><small>Réservé au personnel de la Préfecture</small></span></label>
-            </div></fieldset>
-            <div class="fr-input-group"><label class="fr-label" for="register-last-name">Nom</label><input class="fr-input" id="register-last-name" name="lastName" type="text" autocomplete="family-name" required></div>
-            <div class="fr-input-group"><label class="fr-label" for="register-first-name">Prénom</label><input class="fr-input" id="register-first-name" name="firstName" type="text" autocomplete="given-name" required></div>
-            <div class="fr-input-group"><label class="fr-label" for="register-birth-date">Date de naissance</label><input class="fr-input" id="register-birth-date" name="birthDate" type="date" autocomplete="bday" required></div>
-            <div class="fr-input-group"><label class="fr-label" for="register-email">Adresse mail (RP)</label><input class="fr-input" id="register-email" name="email" type="email" autocomplete="email" required></div>
-            <div class="fr-input-group"><label class="fr-label" for="register-discord">#Discord</label><input class="fr-input" id="register-discord" name="discord" type="text" autocomplete="off" placeholder="pseudo#0000 ou @pseudo" required></div>
-            <div class="fr-input-group" id="prefecture-code-group" hidden><label class="fr-label" for="register-prefecture-code">Code Préfecture</label><input class="fr-input" id="register-prefecture-code" name="prefectureCode" type="password" autocomplete="off" aria-describedby="prefecture-code-hint"><p class="fr-hint-text" id="prefecture-code-hint">Requis pour créer un compte professionnel.</p></div>
-            <div class="fr-input-group"><label class="fr-label" for="register-password">Mot de passe</label><input class="fr-input" id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" aria-describedby="password-hint" required><p class="fr-hint-text" id="password-hint">8 caractères minimum.</p></div>
-            <div class="fr-input-group"><label class="fr-label" for="register-confirm">Confirmer le mot de passe</label><input class="fr-input" id="register-confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" required></div>
-            <button class="fr-btn" type="submit">Créer mon espace</button><p class="account-message" id="register-message" role="status" aria-live="polite"></p>
-          </form>
-          <form class="account-form" id="panel-password" role="tabpanel" aria-labelledby="tab-password" hidden novalidate>
-            <p class="fr-text--sm">Vous avez déjà un compte ? Identifiez-le avec son adresse e-mail ou son nom, puis choisissez un nouveau mot de passe. Aucun courriel de vérification ne peut être envoyé depuis cette démonstration.</p>
-            <div class="fr-input-group"><label class="fr-label" for="reset-id">E-mail ou identifiant du compte</label><input class="fr-input" id="reset-id" name="identifier" type="text" autocomplete="username" required></div>
-            <div class="fr-input-group"><label class="fr-label" for="reset-password">Nouveau mot de passe</label><input class="fr-input" id="reset-password" name="password" type="password" autocomplete="new-password" minlength="8" required></div>
-            <div class="fr-input-group"><label class="fr-label" for="reset-confirm">Confirmer le nouveau mot de passe</label><input class="fr-input" id="reset-confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" required></div>
-            <button class="fr-btn" type="submit">Réinitialiser le mot de passe</button><p class="account-message" id="reset-message" role="status" aria-live="polite"></p>
-          </form>
-        </div>
-      </section>
-    </section>
-    <section id="dashboard-view" class="account-dashboard" aria-labelledby="dashboard-title" hidden>
-      <header class="dashboard-heading"><p class="account-kicker">Espace connecté · Essonne (91)</p><h1 id="dashboard-title">Bienvenue dans votre espace.</h1></header>
-      <div class="dashboard-card">
-        <div class="dashboard-person"><div class="person-mark" id="person-initial" aria-hidden="true">•</div><div><h2 id="person-name">Compte</h2><span class="type-badge" id="person-type">Civil</span></div></div>
-        <dl class="dashboard-details"><div><dt>Nom</dt><dd id="person-last-name">—</dd></div><div><dt>Prénom</dt><dd id="person-first-name">—</dd></div><div><dt>Date de naissance</dt><dd id="person-birth-date">—</dd></div><div><dt>Adresse mail (RP)</dt><dd id="person-email">—</dd></div><div><dt>#Discord</dt><dd id="person-discord">—</dd></div><div><dt>Type de compte</dt><dd id="person-account-type">—</dd></div></dl>
-        <p class="fr-text--sm" style="margin:1.2rem 0 0">Votre espace personnel est prêt. Vous pouvez gérer votre mot de passe ou vous déconnecter de cet appareil.</p>
-        <div class="dashboard-actions"><button class="fr-btn fr-btn--secondary" id="show-change-password" type="button" aria-expanded="false" aria-controls="change-password-form">Modifier mon mot de passe</button><button class="fr-btn fr-btn--tertiary" id="logout-button" type="button">Se déconnecter</button></div>
-        <form class="account-form change-password" id="change-password-form" hidden novalidate><h3>Modifier le mot de passe</h3><div class="fr-input-group"><label class="fr-label" for="current-password">Mot de passe actuel</label><input class="fr-input" id="current-password" type="password" autocomplete="current-password" required></div><div class="fr-input-group"><label class="fr-label" for="new-password">Nouveau mot de passe</label><input class="fr-input" id="new-password" type="password" autocomplete="new-password" minlength="8" required></div><div class="fr-input-group"><label class="fr-label" for="new-password-confirm">Confirmer le nouveau mot de passe</label><input class="fr-input" id="new-password-confirm" type="password" autocomplete="new-password" minlength="8" required></div><button class="fr-btn" type="submit">Enregistrer le nouveau mot de passe</button><p class="account-message" id="change-message" role="status" aria-live="polite"></p></form>
-      </div>
-    </section>
-  </main>
-  <footer class="account-footer"><div class="fr-container"><span>République Française · Liberté, Égalité, Fraternité</span><a class="fr-link" href="index.html">Retour à l’accueil</a></div></footer>
-  <script>
-  (() => {
-    'use strict';
-    // Code de démonstration à personnaliser facilement avant toute utilisation.
-    const CODE_PREFECTURE = "PREF91-2026";
-    const ACCOUNTS_KEY = 'essonneDemoAccounts';
-    const SESSION_KEY = 'essonneDemoSession';
-    const iterations = 120000;
-    const byId = (id) => document.getElementById(id);
-    const message = (id, text = '', kind = 'info') => {
-      const el = byId(id);
-      el.textContent = text;
-      el.dataset.kind = text ? kind : '';
-    };
-    const readAccounts = () => {
-      const raw = localStorage.getItem(ACCOUNTS_KEY);
-      const accounts = raw ? JSON.parse(raw) : [];
-      return Array.isArray(accounts) ? accounts : [];
-    };
-    const saveAccounts = (accounts) => localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
-    const normalize = (value) => value.trim().toLocaleLowerCase('fr');
-    const accountIndex = (accounts, identifier) => {
-      const query = normalize(identifier);
-      return accounts.findIndex((account) => normalize(account.email) === query || normalize(account.name) === query);
-    };
-    const encode = (bytes) => Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
-    const makePasswordHash = async (password, saltHex = null) => {
-      if (!window.crypto || !window.crypto.subtle) throw new Error('Le navigateur doit fournir Web Crypto (HTTPS) pour sécuriser les mots de passe.');
-      const salt = saltHex ? Uint8Array.from(saltHex.match(/.{2}/g), (pair) => parseInt(pair, 16)) : crypto.getRandomValues(new Uint8Array(16));
-      const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
-      const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt, iterations, hash: 'SHA-256' }, key, 256);
-      return { salt: encode(salt), hash: encode(new Uint8Array(bits)) };
-    };
-    const passwordMatches = async (password, account) => {
-      const result = await makePasswordHash(password, account.salt);
-      return result.hash === account.passwordHash;
-    };
-    const getSessionAccount = () => {
-      const email = localStorage.getItem(SESSION_KEY);
-      if (!email) return null;
-      return readAccounts().find((account) => account.email === email) || null;
-    };
-    const setView = (loggedIn) => {
-      byId('auth-view').hidden = loggedIn;
-      byId('dashboard-view').hidden = !loggedIn;
-    };
-    const renderDashboard = (account) => {
-      const firstName = account.firstName || '';
-      const lastName = account.lastName || account.name || '';
-      const fullName = [firstName, lastName].filter(Boolean).join(' ') || 'Compte';
-      const accountType = account.type === 'pro' ? 'Professionnel - Personnel de la Préfecture' : 'Civil';
-      byId('person-name').textContent = fullName;
-      byId('person-last-name').textContent = lastName || '—';
-      byId('person-first-name').textContent = firstName || '—';
-      byId('person-birth-date').textContent = account.birthDate || '—';
-      byId('person-email').textContent = account.email || '—';
-      byId('person-discord').textContent = account.discord || '—';
-      byId('person-account-type').textContent = accountType;
-      byId('person-type').textContent = accountType;
-      byId('person-initial').textContent = Array.from(fullName.trim())[0]?.toLocaleUpperCase('fr') || '•';
-      setView(true);
-    };
-    const showTab = (tabName) => {
-      document.querySelectorAll('.account-tab').forEach((tab) => {
-        const selected = tab.dataset.tab === tabName;
-        tab.setAttribute('aria-selected', String(selected));
-        tab.tabIndex = selected ? 0 : -1;
-        byId(tab.getAttribute('aria-controls')).hidden = !selected;
-      });
-    };
-    document.querySelectorAll('.account-tab').forEach((tab) => tab.addEventListener('click', () => showTab(tab.dataset.tab)));
-    document.querySelectorAll('[data-open-tab]').forEach((button) => button.addEventListener('click', () => showTab(button.dataset.openTab)));
-    document.querySelectorAll('.account-tab').forEach((tab) => tab.addEventListener('keydown', (event) => {
-      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-      event.preventDefault();
-      const tabs = Array.from(document.querySelectorAll('.account-tab'));
-      const index = tabs.indexOf(tab);
-      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
-      tabs[next].focus();
-      showTab(tabs[next].dataset.tab);
-    }));
-    const registrationForm = byId('panel-register');
-    const prefectureCodeGroup = byId('prefecture-code-group');
-    const prefectureCodeInput = byId('register-prefecture-code');
-    const syncAccountTypeField = () => {
-      const isProfessional = registrationForm.elements.accountType.value === 'pro';
-      prefectureCodeGroup.hidden = !isProfessional;
-      prefectureCodeInput.required = isProfessional;
-      if (!isProfessional) prefectureCodeInput.value = '';
-    };
-    registrationForm.querySelectorAll('input[name="accountType"]').forEach((radio) => radio.addEventListener('change', syncAccountTypeField));
-    const formValuesMatch = (password, confirmation, messageId) => {
-      if (password.length < 8) { message(messageId, 'Le mot de passe doit contenir au moins 8 caractères.', 'error'); return false; }
-      if (password !== confirmation) { message(messageId, 'Les deux mots de passe ne correspondent pas.', 'error'); return false; }
-      return true;
-    };
-    byId('panel-login').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      message('login-message');
-      const form = event.currentTarget;
-      const identifier = form.elements.identifier.value.trim();
-      const password = form.elements.password.value;
-      if (!identifier || !password) { message('login-message', 'Renseignez votre identifiant et votre mot de passe.', 'error'); return; }
-      try {
-        const accounts = readAccounts();
-        const index = accountIndex(accounts, identifier);
-        if (index < 0 || !(await passwordMatches(password, accounts[index]))) { message('login-message', 'Identifiant ou mot de passe incorrect.', 'error'); return; }
-        localStorage.setItem(SESSION_KEY, accounts[index].email);
-        form.reset();
-        renderDashboard(accounts[index]);
-      } catch (error) { message('login-message', error.name === 'SyntaxError' ? 'Les données locales du compte sont illisibles.' : error.message || 'Connexion impossible dans ce navigateur.', 'error'); }
-    });
-    byId('panel-register').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      message('register-message');
-      const form = event.currentTarget;
-      const lastName = form.elements.lastName.value.trim();
-      const firstName = form.elements.firstName.value.trim();
-      const birthDate = form.elements.birthDate.value;
-      const email = normalize(form.elements.email.value);
-      const discord = form.elements.discord.value.trim();
-      const type = form.elements.accountType.value;
-      const password = form.elements.password.value;
-      if (!lastName || !firstName || !birthDate || !form.elements.birthDate.validity.valid || !email || !form.elements.email.validity.valid || !discord) { message('register-message', 'Renseignez tous les champs obligatoires avec des informations valides.', 'error'); return; }
-      if (type === 'pro' && form.elements.prefectureCode.value !== CODE_PREFECTURE) { message('register-message', 'Le Code Préfecture est incorrect.', 'error'); form.elements.prefectureCode.focus(); return; }
-      if (!formValuesMatch(password, form.elements.confirm.value, 'register-message')) return;
-      try {
-        const accounts = readAccounts();
-        if (accounts.some((account) => normalize(account.email) === email)) { message('register-message', 'Un compte existe déjà avec cette adresse e-mail.', 'error'); return; }
-        const credentials = await makePasswordHash(password);
-        const account = { name: `${firstName} ${lastName}`, firstName, lastName, birthDate, email, discord, type, salt: credentials.salt, passwordHash: credentials.hash, createdAt: new Date().toISOString() };
-        accounts.push(account);
-        saveAccounts(accounts);
-        localStorage.setItem(SESSION_KEY, email);
-        form.reset();
-        syncAccountTypeField();
-        renderDashboard(account);
-      } catch (error) { message('register-message', error.message || 'Création impossible : le stockage local est indisponible.', 'error'); }
-    });
-    byId('panel-password').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      message('reset-message');
-      const form = event.currentTarget;
-      const identifier = form.elements.identifier.value.trim();
-      const password = form.elements.password.value;
-      if (!identifier) { message('reset-message', 'Saisissez l’e-mail ou l’identifiant du compte.', 'error'); return; }
-      if (!formValuesMatch(password, form.elements.confirm.value, 'reset-message')) return;
-      try {
-        const accounts = readAccounts();
-        const index = accountIndex(accounts, identifier);
-        if (index < 0) { message('reset-message', 'Aucun compte correspondant n’a été trouvé sur cet appareil.', 'error'); return; }
-        const credentials = await makePasswordHash(password);
-        accounts[index].salt = credentials.salt;
-        accounts[index].passwordHash = credentials.hash;
-        saveAccounts(accounts);
-        form.reset();
-        message('reset-message', 'Mot de passe modifié. Vous pouvez maintenant vous connecter.', 'success');
-        showTab('login');
-      } catch (error) { message('reset-message', error.message || 'Modification impossible : stockage local indisponible.', 'error'); }
-    });
-    byId('show-change-password').addEventListener('click', (event) => {
-      const form = byId('change-password-form');
-      form.hidden = !form.hidden;
-      event.currentTarget.setAttribute('aria-expanded', String(!form.hidden));
-      if (!form.hidden) byId('current-password').focus();
-    });
-    byId('change-password-form').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      message('change-message');
-      const form = event.currentTarget;
-      const account = getSessionAccount();
-      if (!account) { localStorage.removeItem(SESSION_KEY); setView(false); message('login-message', 'Session expirée. Veuillez vous reconnecter.', 'info'); showTab('login'); return; }
-      const currentPassword = byId('current-password').value;
-      const nextPassword = byId('new-password').value;
-      if (!formValuesMatch(nextPassword, byId('new-password-confirm').value, 'change-message')) return;
-      try {
-        if (!(await passwordMatches(currentPassword, account))) { message('change-message', 'Le mot de passe actuel est incorrect.', 'error'); return; }
-        const credentials = await makePasswordHash(nextPassword);
-        const accounts = readAccounts();
-        const index = accounts.findIndex((entry) => entry.email === account.email);
-        if (index < 0) throw new Error('Compte introuvable dans ce navigateur.');
-        accounts[index].salt = credentials.salt;
-        accounts[index].passwordHash = credentials.hash;
-        saveAccounts(accounts);
-        form.reset();
-        message('change-message', 'Votre mot de passe a été modifié.', 'success');
-      } catch (error) { message('change-message', error.message || 'Modification impossible : stockage local indisponible.', 'error'); }
-    });
-    byId('logout-button').addEventListener('click', () => {
-      localStorage.removeItem(SESSION_KEY);
-      byId('change-password-form').reset();
-      byId('change-password-form').hidden = true;
-      byId('show-change-password').setAttribute('aria-expanded', 'false');
-      setView(false);
-      showTab('login');
-      message('login-message', 'Vous êtes déconnecté(e).', 'success');
-      byId('login-id').focus();
-    });
-    try {
-      const account = getSessionAccount();
-      if (account) renderDashboard(account);
-      else { localStorage.removeItem(SESSION_KEY); setView(false); }
-    } catch (error) {
-      setView(false);
-      message('login-message', 'Le stockage local est inaccessible dans ce navigateur.', 'error');
-    }
-  })();
-  </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","spa":2}' crossorigin="anonymous"></script>
-</body>
-</html>
+<div class="fr-skiplinks"><nav class="fr-container" aria-label="Accès rapide"><ul class="fr-skiplinks__list"><li><a class="fr-link" href="#contenu">Aller au contenu</a></li></ul></nav></div>
+<header class="fr-header" role="banner"><div class="fr-header__body"><div class="fr-container"><div class="fr-header__body-row"><div class="fr-header__brand fr-enlarge-link"><div class="fr-header__brand-top"><div class="fr-header__logo"><a href="index.html" aria-label="Accueil — Préfecture de l’Essonne"><p class="fr-logo">Préfète<br>de l’Essonne</p></a></div></div><div class="fr-header__service"><a href="index.html"><p class="fr-header__service-title">Les services de l’État<br>dans l’Essonne</p></a><p class="fr-header__service-tagline">Liberté · Égalité · Fraternité</p></div></div><div class="fr-header__tools"><ul class="fr-btns-group"><li><a class="fr-btn fr-icon-home-4-line" href="index.html">Accueil</a></li></ul></div></div></div></div></header><div class="account-topline" aria-hidden="true"></div>
+<main id="contenu" class="account-main" tabindex="-1">
+<section id="auth-view" class="account-layout" aria-labelledby="page-title"><div class="account-intro"><p class="kicker">Services en ligne · Essonne (91)</p><h1 id="page-title">Votre espace,<br><span>en toute simplicité.</span></h1><p>Un accès adapté aux particuliers, aux entreprises et aux personnels des services de l’État.</p><div class="demo-note"><strong>Environnement de démonstration</strong>Les données restent dans le navigateur utilisé. Cet espace ne constitue pas un service officiel sécurisé.</div></div>
+<section class="panel" aria-label="Accès à votre espace"><div class="panel-top"><h2>Mon espace personnel</h2><div class="tabs" role="tablist" aria-label="Actions de compte"><button class="tab" id="tab-login" role="tab" aria-selected="true" aria-controls="panel-login" data-tab="login" type="button">Connexion</button><button class="tab" id="tab-register" role="tab" aria-selected="false" aria-controls="panel-register" data-tab="register" type="button">Créer un compte</button><button class="tab" id="tab-password" role="tab" aria-selected="false" aria-controls="panel-password" data-tab="password" type="button">Mot de passe oublié</button></div></div><div class="panel-body">
+<form class="form" id="panel-login" role="tabpanel" aria-labelledby="tab-login" novalidate><div class="fr-input-group"><label class="fr-label" for="login-id">Adresse mail ou nom</label><input class="fr-input" id="login-id" name="identifier" autocomplete="username" required></div><div class="fr-input-group"><label class="fr-label" for="login-password">Mot de passe</label><input class="fr-input" id="login-password" name="password" type="password" autocomplete="current-password" required></div><div class="form-actions"><button class="fr-btn" type="submit">Se connecter</button><button class="link-button" type="button" data-open-tab="password">Mot de passe oublié ?</button></div><p class="account-message" id="login-message" role="status" aria-live="polite"></p></form>
+<form class="form" id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden novalidate>
+<fieldset class="fr-fieldset"><legend class="fr-label">Type de compte</legend><p class="fr-hint-text">Choisissez le profil associé à votre espace.</p><div class="type-choice">
+<label class="type-option"><input type="radio" name="accountType" value="civil" checked><span><strong>Civil</strong><small>Particulier</small></span></label><label class="type-option"><input type="radio" name="accountType" value="prefecture"><span><strong>Préfecture</strong><small>Personnel de la Préfecture</small></span></label><label class="type-option"><input type="radio" name="accountType" value="state"><span><strong>Services de l’État</strong><small>FDO / FDS · effectifs et RH</small></span></label><label class="type-option"><input type="radio" name="accountType" value="company"><span><strong>Entreprise</strong><small>Compte professionnel distinct</small></span></label></div></fieldset>
+<div class="compact-form"><div class="fr-input-group"><label class="fr-label" for="register-last-name">Nom</label><input class="fr-input" id="register-last-name" name="lastName" autocomplete="family-name" required></div><div class="fr-input-group"><label class="fr-label" for="register-first-name">Prénom</label><input class="fr-input" id="register-first-name" name="firstName" autocomplete="given-name" required></div><div class="fr-input-group"><label class="fr-label" for="register-birth-date">Date de naissance</label><input class="fr-input" id="register-birth-date" name="birthDate" type="date" autocomplete="bday" required></div><div class="fr-input-group"><label class="fr-label" for="register-email">Adresse mail (RP)</label><input class="fr-input" id="register-email" name="email" type="email" autocomplete="email" required></div><div class="fr-input-group"><label class="fr-label" for="register-discord">#Discord</label><input class="fr-input" id="register-discord" name="discord" placeholder="pseudo#0000 ou @pseudo" required></div></div>
+<div class="fr-input-group" id="prefecture-code-group" hidden><label class="fr-label" for="register-prefecture-code">Code générique Préfecture</label><input class="fr-input" id="register-prefecture-code" name="prefectureCode" type="password" autocomplete="off" aria-describedby="prefecture-code-hint"><p class="fr-hint-text" id="prefecture-code-hint">Code requis pour le profil Préfecture.</p></div>
+<div class="fr-input-group" id="state-fields" hidden><label class="fr-label" for="register-service">Service</label><select class="fr-select" id="register-service" name="service"><option value="">Sélectionnez un service</option><option>Gendarmerie</option><option>Police Nationale</option><option>Sapeurs-Pompiers</option><option>SAMU</option></select></div>
+<div class="fr-input-group" id="state-identifier-group" hidden><label class="fr-label" for="register-state-id" id="state-identifier-label">Identifiant professionnel</label><input class="fr-input" id="register-state-id" name="stateIdentifier" autocomplete="off"></div>
+<div id="company-fields" class="compact-form" hidden><div class="fr-input-group"><label class="fr-label" for="company-name">Nom de l’entreprise</label><input class="fr-input" id="company-name" name="companyName"></div><div class="fr-input-group"><label class="fr-label" for="company-number">SIRET / N° RP</label><input class="fr-input" id="company-number" name="companyNumber"></div><div class="fr-input-group wide"><label class="fr-label" for="company-sector">Secteur d’activité</label><input class="fr-input" id="company-sector" name="companySector"></div></div>
+<div class="fr-input-group"><label class="fr-label" for="register-password">Mot de passe</label><input class="fr-input" id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" required><p class="fr-hint-text">8 caractères minimum.</p></div><div class="fr-input-group"><label class="fr-label" for="register-confirm">Confirmer le mot de passe</label><input class="fr-input" id="register-confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" required></div><button class="fr-btn" type="submit">Créer mon espace</button><p class="account-message" id="register-message" role="status" aria-live="polite"></p></form>
+<form class="form" id="panel-password" role="tabpanel" aria-labelledby="tab-password" hidden novalidate><p class="subtle">Réinitialisation locale de démonstration : aucun courriel de vérification ne sera envoyé.</p><div class="fr-input-group"><label class="fr-label" for="reset-id">Adresse mail ou nom du compte</label><input class="fr-input" id="reset-id" name="identifier" required></div><div class="fr-input-group"><label class="fr-label" for="reset-password">Nouveau mot de passe</label><input class="fr-input" id="reset-password" name="password" type="password" minlength="8" required></div><div class="fr-input-group"><label class="fr-label" for="reset-confirm">Confirmer le nouveau mot de passe</label><input class="fr-input" id="reset-confirm" name="confirm" type="password" minlength="8" required></div><button class="fr-btn" type="submit">Réinitialiser</button><p class="account-message" id="reset-message" role="status" aria-live="polite"></p></form>
+</div></section></section>
+<section id="dashboard-view" class="dashboard" aria-labelledby="dashboard-title" hidden><header class="dash-heading"><div><p class="kicker">Espace connecté · Essonne (91)</p><h1 class="dash-title" id="dashboard-title">Bienvenue dans votre espace.</h1><p class="dash-subtitle" id="dashboard-subtitle"></p></div></header>
+<section class="card"><div class="person-row"><div class="avatar" id="person-initial" aria-hidden="true">•</div><div><h2 id="person-name">Compte</h2><span class="badge" id="person-type">Civil</span></div></div><dl class="details"><div><dt>Nom</dt><dd id="person-last-name">—</dd></div><div><dt>Prénom</dt><dd id="person-first-name">—</dd></div><div><dt>Date de naissance</dt><dd id="person-birth-date">—</dd></div><div><dt>Adresse mail (RP)</dt><dd id="person-email">—</dd></div><div><dt>#Discord</dt><dd id="person-discord">—</dd></div><div><dt>Profil</dt><dd id="person-account-type">—</dd></div><div id="detail-extra" hidden><dt>Informations professionnelles</dt><dd id="person-extra">—</dd></div></dl><div class="dashboard-actions"><button class="fr-btn fr-btn--secondary" id="show-change-password" type="button" aria-expanded="false" aria-controls="change-password-form">Modifier mon mot de passe</button><button class="fr-btn fr-btn--tertiary" id="logout-button" type="button">Se déconnecter</button></div><form class="form change-password" id="change-password-form" hidden novalidate><h3>Modifier le mot de passe</h3><div class="fr-input-group"><label class="fr-label" for="current-password">Mot de passe actuel</label><input class="fr-input" id="current-password" type="password" required></div><div class="fr-input-group"><label class="fr-label" for="new-password">Nouveau mot de passe</label><input class="fr-input" id="new-password" type="password" minlength="8" required></div><div class="fr-input-group"><label class="fr-label" for="new-password-confirm">Confirmer le nouveau mot de passe</label><input class="fr-input" id="new-password-confirm" type="password" minlength="8" required></div><button class="fr-btn" type="submit">Enregistrer</button><p class="account-message" id="change-message" role="status" aria-live="polite"></p></form></section>
+<section id="prefecture-dashboard" hidden><div class="card state-panel"><div class="section-head"><div><h2>Paramètres &amp; grades par service</h2><p>Configurez la hiérarchie sans modifier le code. Le délai s’applique avant de prétendre au grade suivant.</p></div></div><div class="inline-form"><div class="fr-input-group"><label class="fr-label" for="pref-service-select">Service</label><select class="fr-select" id="pref-service-select"></select></div></div><div class="table-wrap"><table><thead><tr><th>Ordre</th><th>Grade</th><th>Délai min. (jours)</th><th>Actions</th></tr></thead><tbody id="rank-table"></tbody></table></div><form id="rank-form" class="compact-form" novalidate><input type="hidden" name="rankId"><div class="fr-input-group"><label class="fr-label" for="rank-name">Nom du grade</label><input class="fr-input" id="rank-name" name="name" required></div><div class="fr-input-group"><label class="fr-label" for="rank-order">Ordre hiérarchique</label><input class="fr-input" id="rank-order" name="order" type="number" min="1" required></div><div class="fr-input-group"><label class="fr-label" for="rank-days">Durée minimale avant promotion (jours)</label><input class="fr-input" id="rank-days" name="days" type="number" min="0" value="0" required></div><button class="fr-btn" type="submit" id="rank-save-button">Ajouter le grade</button><button class="fr-btn fr-btn--tertiary" type="button" id="rank-cancel" hidden>Annuler</button></form><p class="account-message" id="rank-message" role="status" aria-live="polite"></p></div>
+<div class="card state-panel"><div class="section-head"><div><h2>Validation des demandes</h2><p>Demandes standard et dérogatoires émises par les ressources humaines.</p></div></div><div class="table-wrap"><table><thead><tr><th>Effectif</th><th>Service</th><th>Grade actuel → demandé</th><th>Type / justification</th><th>Décision</th></tr></thead><tbody id="request-table"></tbody></table></div><p class="account-message" id="request-message" role="status" aria-live="polite"></p></div></section>
+<section id="service-dashboard" hidden><div class="card state-panel"><div class="section-head"><div><h2>Inscrire un nouvel effectif</h2><p id="service-context"></p></div><span class="badge">Ressources humaines</span></div><form id="member-form" class="compact-form" novalidate><div class="fr-input-group"><label class="fr-label" for="member-last">Nom</label><input class="fr-input" id="member-last" name="last" required></div><div class="fr-input-group"><label class="fr-label" for="member-first">Prénom</label><input class="fr-input" id="member-first" name="first" required></div><div class="fr-input-group"><label class="fr-label" for="member-arrival">Date d’arrivée dans le service</label><input class="fr-input" id="member-arrival" name="arrival" type="date" required></div><div class="fr-input-group"><label class="fr-label" for="member-rank">Grade initial</label><select class="fr-select" id="member-rank" name="rank" required></select></div><div class="fr-input-group"><label class="fr-label" for="member-id" id="member-id-label">Matricule / NIGEND</label><input class="fr-input" id="member-id" name="identifier" required></div><button class="fr-btn" type="submit">Inscrire l’effectif</button></form><p class="account-message" id="member-message" role="status" aria-live="polite"></p></div>
+<div class="card state-panel"><div class="section-head"><div><h2>Effectifs &amp; promotions</h2><p>La promotion standard n’est disponible que lorsque le délai du grade est atteint.</p></div></div><div class="table-wrap"><table><thead><tr><th>Effectif</th><th>Identifiant</th><th>Grade actuel</th><th>Depuis le / jours écoulés</th><th>Prochain grade / délai</th><th>Promotion standard</th><th>Demande particulière</th></tr></thead><tbody id="member-table"></tbody></table></div><p class="account-message" id="promotion-message" role="status" aria-live="polite"></p></div></section>
+<section id="civil-dashboard" class="card" hidden><p class="notice">Votre espace personnel est prêt. Vous pouvez modifier votre mot de passe ou vous déconnecter.</p></section>
+</section></main><footer class="footer"><div class="fr-container"><span>République Française · Liberté, Égalité, Fraternité</span><a class="fr-link" href="index.html">Retour à l’accueil</a></div></footer>
+<script>
+(()=>{'use strict';
+const CODE_PREFECTURE='PREF91-2026',ACCOUNTS_KEY='essonneDemoAccounts',SESSION_KEY='essonneDemoSession',RANKS_KEY='essonneStateRanks',MEMBERS_KEY='essonneStateMembers',REQUESTS_KEY='essonnePromotionRequests',iterations=120000;
+const SERVICES=['Gendarmerie','Police Nationale','Sapeurs-Pompiers','SAMU'],defaults={'Gendarmerie':[['Gendarme Adjoint Volontaire',15],['Gendarme Adjoint Volontaire 1ère classe',30],['Gendarme',60],['Maréchal des logis-chef',90]],'Police Nationale':[['Gardien de la paix stagiaire',15],['Gardien de la paix',30],['Brigadier',60],['Brigadier-chef',90]],'Sapeurs-Pompiers':[['Sapeur',15],['Caporal',30],['Sergent',60],['Adjudant',90]],'SAMU':[['Assistant de régulation médicale',15],['Ambulancier',30],['Infirmier',60],['Médecin régulateur',90]]};
+const $=id=>document.getElementById(id),norm=v=>String(v||'').trim().toLocaleLowerCase('fr'),msg=(id,text='',kind='info')=>{const e=$(id);e.textContent=text;e.dataset.kind=text?kind:''},safeParse=(key,fallback)=>{try{const x=JSON.parse(localStorage.getItem(key));return x===null?fallback:x}catch{return fallback}},store=(key,x)=>localStorage.setItem(key,JSON.stringify(x)),uid=()=>crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`;
+function ranks(){let data=safeParse(RANKS_KEY,null);if(!data||typeof data!=='object'){data={};SERVICES.forEach(s=>data[s]=defaults[s].map((r,i)=>({id:`${s}-${i}`,name:r[0],order:i+1,days:r[1]})));store(RANKS_KEY,data)}SERVICES.forEach(s=>{if(!Array.isArray(data[s]))data[s]=defaults[s].map((r,i)=>({id:`${s}-${i}`,name:r[0],order:i+1,days:r[1]}))});return data}
+function members(){const m=safeParse(MEMBERS_KEY,[]);return Array.isArray(m)?m:[]}function requests(){const r=safeParse(REQUESTS_KEY,[]);return Array.isArray(r)?r:[]}function accounts(){const a=safeParse(ACCOUNTS_KEY,[]);return Array.isArray(a)?a:[]}function saveAccounts(a){store(ACCOUNTS_KEY,a)}
+const encode=b=>Array.from(b,x=>x.toString(16).padStart(2,'0')).join('');async function hashPassword(password,saltHex=null){if(!crypto?.subtle)throw Error('Web Crypto indisponible : utilisez un navigateur sécurisé (HTTPS).');const salt=saltHex?Uint8Array.from(saltHex.match(/.{2}/g),x=>parseInt(x,16)):crypto.getRandomValues(new Uint8Array(16));const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveBits']);const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations,hash:'SHA-256'},key,256);return{salt:encode(salt),hash:encode(new Uint8Array(bits))}}
+const matches=async(p,a)=>(await hashPassword(p,a.salt)).hash===a.passwordHash;const session=()=>{const email=localStorage.getItem(SESSION_KEY);return accounts().find(a=>a.email===email)||null};const identityIndex=(arr,q)=>arr.findIndex(a=>norm(a.email)===norm(q)||norm(a.name)===norm(q));
+function tab(name){document.querySelectorAll('.tab').forEach(t=>{const on=t.dataset.tab===name;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;$(t.getAttribute('aria-controls')).hidden=!on})}document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>tab(t.dataset.tab)));document.querySelectorAll('[data-open-tab]').forEach(b=>b.addEventListener('click',()=>tab(b.dataset.openTab)));document.querySelectorAll('.tab').forEach(t=>t.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const ts=[...document.querySelectorAll('.tab')],i=ts.indexOf(t),n=e.key==='Home'?0:e.key==='End'?ts.length-1:(i+(e.key==='ArrowRight'?1:ts.length-1))%ts.length;ts[n].focus();tab(ts[n].dataset.tab)}));
+const reg=$('panel-register'),typeRadios=reg.querySelectorAll('[name=accountType]');function syncType(){const t=reg.elements.accountType.value,p=t==='prefecture',s=t==='state',c=t==='company';$('prefecture-code-group').hidden=!p;$('register-prefecture-code').required=p;$('state-fields').hidden=!s;$('register-service').required=s;$('state-identifier-group').hidden=!s||!reg.elements.service.value;$('register-state-id').required=s&&!!reg.elements.service.value;$('company-fields').hidden=!c;['company-name','company-number','company-sector'].forEach(id=>$(id).required=c);if(s){$('state-identifier-label').textContent=reg.elements.service.value==='Gendarmerie'?'NIGEND':'Matricule / N° Agent';$('state-identifier-group').hidden=!reg.elements.service.value}}typeRadios.forEach(r=>r.addEventListener('change',syncType));$('register-service').addEventListener('change',syncType);syncType();
+function typeName(a){return({civil:'Civil — Particulier',prefecture:'Préfecture',state:`Services de l’État — ${a.service||''}`,company:'Entreprise'})[a.type]||a.type||'Civil'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function serviceRanks(service){return(ranks()[service]||[]).slice().sort((a,b)=>Number(a.order)-Number(b.order))}function rankById(s,id){return serviceRanks(s).find(r=>r.id===id)}function fmtDate(d){if(!d)return'—';const x=new Date(`${d}T00:00:00`);return Number.isNaN(+x)?d:x.toLocaleDateString('fr-FR')}function dayCount(date){return Math.max(0,Math.floor((Date.now()-new Date(`${date}T00:00:00`).getTime())/86400000))}function setView(on){$('auth-view').hidden=on;$('dashboard-view').hidden=!on}
+function renderDashboard(a){const first=a.firstName||'',last=a.lastName||a.name||'',full=[first,last].filter(Boolean).join(' ')||'Compte';$('person-name').textContent=full;$('person-last-name').textContent=last||'—';$('person-first-name').textContent=first||'—';$('person-birth-date').textContent=a.birthDate||'—';$('person-email').textContent=a.email||'—';$('person-discord').textContent=a.discord||'—';$('person-account-type').textContent=typeName(a);$('person-type').textContent=typeName(a);$('person-initial').textContent=Array.from(full)[0]?.toLocaleUpperCase('fr')||'•';$('prefecture-dashboard').hidden=a.type!=='prefecture';$('service-dashboard').hidden=a.type!=='state';$('civil-dashboard').hidden=a.type==='prefecture'||a.type==='state';$('dashboard-subtitle').textContent=a.type==='prefecture'?'Administration des grades et validation des promotions.':a.type==='state'?`Espace RH · ${a.service}`:'Gestion de votre profil personnel.';const extra=a.type==='company'?`${a.companyName||''} · ${a.companyNumber||''} · ${a.companySector||''}`:a.type==='state'?`${a.service} · ${a.stateIdentifier}`:'';$('detail-extra').hidden=!extra;$('person-extra').textContent=extra;setView(true);if(a.type==='prefecture')renderPrefecture();if(a.type==='state')renderService(a)}
+$('panel-login').addEventListener('submit',async e=>{e.preventDefault();msg('login-message');const f=e.currentTarget,id=f.elements.identifier.value.trim(),pw=f.elements.password.value;if(!id||!pw){msg('login-message','Renseignez votre identifiant et votre mot de passe.','error');return}try{const list=accounts(),i=identityIndex(list,id);if(i<0||!(await matches(pw,list[i]))){msg('login-message','Identifiant ou mot de passe incorrect.','error');return}localStorage.setItem(SESSION_KEY,list[i].email);f.reset();renderDashboard(list[i])}catch(err){msg('login-message',err.message||'Connexion impossible dans ce navigateur.','error')}});
+function validPw(p,c,id){if(p.length<8){msg(id,'Le mot de passe doit contenir au moins 8 caractères.','error');return false}if(p!==c){msg(id,'Les deux mots de passe ne correspondent pas.','error');return false}return true}
+reg.addEventListener('submit',async e=>{e.preventDefault();msg('register-message');const f=e.currentTarget,t=f.elements.accountType.value,email=norm(f.elements.email.value);if(!f.reportValidity())return;if(t==='prefecture'&&f.elements.prefectureCode.value!==CODE_PREFECTURE){msg('register-message','Le code Préfecture est incorrect.','error');f.elements.prefectureCode.focus();return}if(!validPw(f.elements.password.value,f.elements.confirm.value,'register-message'))return;try{const list=accounts();if(list.some(a=>norm(a.email)===email)){msg('register-message','Un compte existe déjà avec cette adresse mail.','error');return}const cr=await hashPassword(f.elements.password.value),account={name:`${f.elements.firstName.value.trim()} ${f.elements.lastName.value.trim()}`,firstName:f.elements.firstName.value.trim(),lastName:f.elements.lastName.value.trim(),birthDate:f.elements.birthDate.value,email,discord:f.elements.discord.value.trim(),type:t,service:t==='state'?f.elements.service.value:null,stateIdentifier:t==='state'?f.elements.stateIdentifier.value.trim():null,companyName:t==='company'?f.elements.companyName.value.trim():null,companyNumber:t==='company'?f.elements.companyNumber.value.trim():null,companySector:t==='company'?f.elements.companySector.value.trim():null,salt:cr.salt,passwordHash:cr.hash,createdAt:new Date().toISOString()};list.push(account);saveAccounts(list);localStorage.setItem(SESSION_KEY,email);f.reset();syncType();renderDashboard(account)}catch(err){msg('register-message',err.message||'Création impossible : stockage local indisponible.','error')}});
+$('panel-password').addEventListener('submit',async e=>{e.preventDefault();msg('reset-message');const f=e.currentTarget;if(!f.reportValidity()||!validPw(f.elements.password.value,f.elements.confirm.value,'reset-message'))return;try{const list=accounts(),i=identityIndex(list,f.elements.identifier.value);if(i<0){msg('reset-message','Aucun compte correspondant sur cet appareil.','error');return}const cr=await hashPassword(f.elements.password.value);list[i].salt=cr.salt;list[i].passwordHash=cr.hash;saveAccounts(list);f.reset();msg('reset-message','Mot de passe modifié. Vous pouvez vous connecter.','success');tab('login')}catch(err){msg('reset-message',err.message||'Modification impossible.','error')}});
+$('show-change-password').addEventListener('click',e=>{const f=$('change-password-form');f.hidden=!f.hidden;e.currentTarget.setAttribute('aria-expanded',String(!f.hidden));if(!f.hidden)$('current-password').focus()});$('change-password-form').addEventListener('submit',async e=>{e.preventDefault();msg('change-message');const a=session(),pw=$('new-password').value;if(!a){localStorage.removeItem(SESSION_KEY);setView(false);return}if(!validPw(pw,$('new-password-confirm').value,'change-message'))return;try{if(!(await matches($('current-password').value,a))){msg('change-message','Le mot de passe actuel est incorrect.','error');return}const list=accounts(),i=list.findIndex(x=>x.email===a.email),cr=await hashPassword(pw);list[i].salt=cr.salt;list[i].passwordHash=cr.hash;saveAccounts(list);e.currentTarget.reset();msg('change-message','Votre mot de passe a été modifié.','success')}catch(err){msg('change-message',err.message||'Modification impossible.','error')}});$('logout-button').addEventListener('click',()=>{localStorage.removeItem(SESSION_KEY);$('change-password-form').reset();$('change-password-form').hidden=true;$('show-change-password').setAttribute('aria-expanded','false');setView(false);tab('login');msg('login-message','Vous êtes déconnecté(e).','success');$('login-id').focus()});
+// Préfecture : gestion des grades, des demandes et décisions avec motif facultatif.
+const prefSelect=$('pref-service-select');prefSelect.innerHTML=SERVICES.map(s=>`<option>${esc(s)}</option>`).join('');function renderRanks(){const s=prefSelect.value,rs=serviceRanks(s);$('rank-table').innerHTML=rs.length?rs.map(r=>`<tr><td>${esc(r.order)}</td><td>${esc(r.name)}</td><td>${esc(r.days)}</td><td><button class="fr-btn fr-btn--sm fr-btn--secondary" data-edit-rank="${esc(r.id)}" type="button">Modifier</button> <button class="fr-btn fr-btn--sm fr-btn--tertiary" data-delete-rank="${esc(r.id)}" type="button">Supprimer</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">Aucun grade défini.</td></tr>'}
+function renderRequests(){const pend=requests().filter(r=>r.status==='pending');$('request-table').innerHTML=pend.length?pend.map(r=>{const m=members().find(x=>x.id===r.memberId),old=rankById(r.service,m?.rankId),target=rankById(r.service,r.targetRankId);return `<tr><td>${esc(m?`${m.first} ${m.last}`:'Effectif supprimé')}</td><td>${esc(r.service)}</td><td>${esc(old?.name||'—')} → ${esc(target?.name||'Grade supprimé')}</td><td><span class="badge ${r.kind==='special'?'wait':'ok'}">${r.kind==='special'?'Demande particulière':'Standard'}</span><br>${esc(r.justification||'—')}</td><td><div class="actions"><button class="fr-btn fr-btn--sm" data-decision="approve" data-request="${esc(r.id)}" type="button">Valider</button><button class="fr-btn fr-btn--sm fr-btn--secondary" data-decision="reject" data-request="${esc(r.id)}" type="button">Refuser</button></div></td></tr>`}).join(''):'<tr><td colspan="5" class="empty">Aucune demande en attente.</td></tr>'}
+function renderPrefecture(){renderRanks();renderRequests()}prefSelect.addEventListener('change',()=>{renderRanks();$('rank-form').reset();$('rank-save-button').textContent='Ajouter le grade';$('rank-form').elements.rankId.value='';$('rank-cancel').hidden=true});$('rank-form').addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget;if(!f.reportValidity())return;const all=ranks(),s=prefSelect.value,name=f.elements.name.value.trim(),order=Number(f.elements.order.value),days=Number(f.elements.days.value),id=f.elements.rankId.value;if(!name||order<1||days<0)return;const rs=all[s],duplicate=rs.some(r=>r.id!==id&&Number(r.order)===order);if(duplicate){msg('rank-message','Un grade utilise déjà cet ordre.','error');return}if(id){const i=rs.findIndex(r=>r.id===id);if(i<0){msg('rank-message','Grade introuvable.','error');return}rs[i]={...rs[i],name,order,days}}else rs.push({id:uid(),name,order,days});store(RANKS_KEY,all);f.reset();f.elements.rankId.value='';$('rank-save-button').textContent='Ajouter le grade';$('rank-cancel').hidden=true;msg('rank-message','Configuration enregistrée.','success');renderRanks()});$('rank-table').addEventListener('click',e=>{const edit=e.target.closest('[data-edit-rank]'),del=e.target.closest('[data-delete-rank]'),all=ranks(),s=prefSelect.value;if(edit){const r=serviceRanks(s).find(x=>x.id===edit.dataset.editRank);if(!r)return;const f=$('rank-form');f.elements.rankId.value=r.id;f.elements.name.value=r.name;f.elements.order.value=r.order;f.elements.days.value=r.days;$('rank-save-button').textContent='Enregistrer les modifications';$('rank-cancel').hidden=false;$('rank-name').focus()}if(del){if(!confirm('Supprimer ce grade ? Les effectifs et demandes déjà associés ne sont pas effacés.'))return;all[s]=all[s].filter(r=>r.id!==del.dataset.deleteRank);store(RANKS_KEY,all);renderRanks();msg('rank-message','Grade supprimé.','success')}});$('rank-cancel').addEventListener('click',()=>{$('rank-form').reset();$('rank-form').elements.rankId.value='';$('rank-save-button').textContent='Ajouter le grade';$('rank-cancel').hidden=true;msg('rank-message')});$('request-table').addEventListener('click',e=>{const b=e.target.closest('[data-decision]');if(!b)return;const arr=requests(),r=arr.find(x=>x.id===b.dataset.request);if(!r)return;const motif=prompt(b.dataset.decision==='approve'?'Motif facultatif de validation :':'Motif facultatif du refus :');if(motif===null)return;r.status=b.dataset.decision==='approve'?'approved':'rejected';r.decisionAt=new Date().toISOString();r.decisionMotif=motif.trim();r.decidedBy=session()?.email||'';if(r.status==='approved'){const ms=members(),m=ms.find(x=>x.id===r.memberId);if(m){m.rankId=r.targetRankId;m.rankEntryDate=r.promotionDate||new Date().toISOString().slice(0,10);store(MEMBERS_KEY,ms)}}store(REQUESTS_KEY,arr);msg('request-message',r.status==='approved'?'Promotion validée et grade mis à jour.':'Demande refusée.','success');renderRequests()});
+// RH / services : effectifs, avancement, promotion standard et demande dérogatoire.
+function renderService(a){$('service-context').textContent=`Service associé à ce compte : ${a.service}.`;const ranksFor=serviceRanks(a.service);$('member-id-label').textContent=a.service==='Gendarmerie'?'NIGEND':'Matricule / N° Agent';$('member-rank').innerHTML='<option value="">Sélectionnez un grade</option>'+ranksFor.map(r=>`<option value="${esc(r.id)}">${esc(r.name)}</option>`).join('');const list=members().filter(m=>m.service===a.service);$('member-table').innerHTML=list.length?list.map(m=>{const rs=serviceRanks(m.service),r=rs.find(x=>x.id===m.rankId),i=rs.findIndex(x=>x.id===m.rankId),next=rs[i+1],elapsed=dayCount(m.rankEntryDate),eligible=!!next&&elapsed>=Number(r?.days||0),hasPending=requests().some(q=>q.memberId===m.id&&q.status==='pending');return `<tr><td>${esc(m.first)} ${esc(m.last)}</td><td>${esc(m.identifier)}</td><td>${esc(r?.name||'Grade supprimé')}</td><td>${esc(fmtDate(m.rankEntryDate))}<br><span class="subtle">${elapsed} jour(s)</span></td><td>${next?`${esc(next.name)}<br><span class="badge ${eligible?'ok':'wait'}">${eligible?'Délai atteint':`${Math.max(0,Number(r?.days||0)-elapsed)} j restants`} · seuil ${esc(r?.days||0)} j</span>`:'Dernier grade configuré'}</td><td>${next?`<button class="fr-btn fr-btn--sm" data-standard="${esc(m.id)}" data-target="${esc(next.id)}" ${eligible?'':'disabled'} ${hasPending?'disabled':''} type="button">${hasPending?'Demande en attente':'Demander promotion'}</button>`:'—'}</td><td>${rs.length>1?`<button class="fr-btn fr-btn--sm fr-btn--secondary" data-special="${esc(m.id)}" ${hasPending?'disabled':''} type="button">Demande particulière</button>`:'—'}</td></tr>`}).join(''):'<tr><td colspan="7" class="empty">Aucun effectif inscrit pour ce service.</td></tr>'}
+$('member-form').addEventListener('submit',e=>{e.preventDefault();msg('member-message');const f=e.currentTarget;if(!f.reportValidity())return;const a=session(),ms=members(),identifier=f.elements.identifier.value.trim();if(ms.some(m=>m.service===a.service&&norm(m.identifier)===norm(identifier))){msg('member-message','Cet identifiant existe déjà dans ce service.','error');return}ms.push({id:uid(),service:a.service,last:f.elements.last.value.trim(),first:f.elements.first.value.trim(),arrival:f.elements.arrival.value,rankId:f.elements.rank.value,rankEntryDate:f.elements.arrival.value,identifier,createdAt:new Date().toISOString()});store(MEMBERS_KEY,ms);f.reset();renderService(a);msg('member-message','Effectif inscrit.','success')});$('member-table').addEventListener('click',e=>{const standard=e.target.closest('[data-standard]'),special=e.target.closest('[data-special]');if(!standard&&!special)return;const a=session(),ms=members(),m=ms.find(x=>x.id===(standard||special).dataset[standard?'standard':'special']);if(!m)return;let target,kind,justification='';if(standard){target=standard.dataset.target;kind='standard';const r=rankById(m.service,m.rankId);if(!r||dayCount(m.rankEntryDate)<Number(r.days)){msg('promotion-message','Délai minimal non atteint : promotion standard indisponible.','error');return}}else{kind='special';const options=serviceRanks(m.service),promptText=options.map((r,i)=>`${i+1}. ${r.name}`).join('\n');const choice=prompt(`Choisissez le grade cible (saisissez son numéro) :\n${promptText}`);if(choice===null)return;const selected=options[Number(choice)-1];if(!selected){msg('promotion-message','Choix du grade invalide.','error');return}target=selected.id;justification=prompt('Justification obligatoire de la demande particulière :')||'';if(!justification.trim()){msg('promotion-message','Une justification est requise.','error');return}}const date=prompt('Date de promotion souhaitée (AAAA-MM-JJ), laisser vide pour aujourd’hui :',new Date().toISOString().slice(0,10));if(date===null)return;const when=date.trim()||new Date().toISOString().slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(when)||Number.isNaN(new Date(`${when}T00:00:00`).getTime())){msg('promotion-message','Date de promotion invalide.','error');return}const arr=requests();if(arr.some(r=>r.memberId===m.id&&r.status==='pending')){msg('promotion-message','Une demande est déjà en attente pour cet effectif.','error');return}arr.push({id:uid(),memberId:m.id,service:a.service,targetRankId:target,kind,justification,promotionDate:when,status:'pending',requestedAt:new Date().toISOString(),requestedBy:a.email});store(REQUESTS_KEY,arr);renderService(a);msg('promotion-message','Demande transmise à la Préfecture pour validation.','success')});
+try{ranks();if(!Array.isArray(safeParse(MEMBERS_KEY,null)))store(MEMBERS_KEY,[]);if(!Array.isArray(safeParse(REQUESTS_KEY,null)))store(REQUESTS_KEY,[]);const a=session();if(a)renderDashboard(a);else{localStorage.removeItem(SESSION_KEY);setView(false)}}catch(err){setView(false);msg('login-message','Stockage local inaccessible dans ce navigateur.','error')}
+})();
+</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","spa":2}' crossorigin="anonymous"></script>
+</body></html>
