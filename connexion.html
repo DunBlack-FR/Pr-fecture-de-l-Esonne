@@ -435,8 +435,7 @@
     </div>
   </div>
 
-  <script>
-    // ⚠️ METTEZ VOS VRAIES CLÉS SUPABASE ICI ⚠️
+    <script>
     const SUPABASE_URL = "https://mvmrnfpvmsyydmcmgsmm.supabase.co";
     const SUPABASE_KEY = "sb_publishable_YrRFbpLvZJl039FNhmdbLA_0egHR5NN";
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -505,7 +504,6 @@
       const { data: newAcc, error } = await db.from("comptes").insert([payload]).select().single();
       if (error) return showAlert("Erreur : " + error.message, "err");
 
-      // Liaison automatique avec une fiche effectif existante
       if (type === "service" && newAcc) {
         const { data: effs } = await db.from("effectifs").select("*").eq("service", service);
         const match = (effs || []).find(ef =>
@@ -724,8 +722,12 @@
       await db.from("effectifs").delete().eq("id", id);
       showAlert("Effectif supprimé.");
       await refreshAllData();
-      renderServiceUnlinked();
-      renderServiceTable();
+      if (currentUser.type_compte === "prefecture") {
+        renderPrefEffectifsTable();
+      } else {
+        renderServiceUnlinked();
+        renderServiceTable();
+      }
     }
 
     function sortData(scope, col) {
@@ -890,4 +892,168 @@
       document.getElementById("pref-stat-attente").textContent = attenteCount;
       document.getElementById("pref-stat-grades").textContent = allGrades.length;
 
-      const badge = document.getElementById("badge-
+      const badge = document.getElementById("badge-demandes-count");
+      badge.textContent = attenteCount;
+      badge.classList.toggle("hidden", attenteCount === 0);
+
+      const search = document.getElementById("pref-search").value.toLowerCase();
+      const fSrv = document.getElementById("pref-filter-service").value;
+      const fGrade = document.getElementById("pref-filter-grade").value;
+
+      let list = allEffectifs.filter(e =>
+        `${e.nom} ${e.prenom} ${e.matricule}`.toLowerCase().includes(search) &&
+        (!fSrv || e.service === fSrv) &&
+        (!fGrade || e.grade_actuel === fGrade)
+      );
+      list = applySort(list, "pref");
+
+      document.getElementById("table-eff-pref").innerHTML = list.map(e => {
+        const jours = calcJours(e.date_grade_actuel);
+        const perms = (e.permissions_perso || []).map(p => `<span class="badge badge-rh">${p}</span>`).join("");
+        return `<tr>
+          <td><strong>${e.service}</strong></td>
+          <td>${e.nom} ${e.prenom}</td>
+          <td>${e.matricule || "-"}</td>
+          <td>${e.grade_actuel}</td>
+          <td>${jours} j</td>
+          <td>${e.compte_id ? '<span class="badge badge-ok">🔗 Lié</span>' : '<span class="badge badge-wait">Non lié</span>'} ${perms}</td>
+          <td style="display:flex; gap:4px;">
+            <button class="btn btn-outline" onclick="openPermModal(${e.id})">🔐</button>
+            <button class="btn btn-danger" onclick="supprimerEffectif(${e.id})">🗑️</button>
+          </td>
+        </tr>`;
+      }).join("");
+    }
+
+    function renderPrefComptesTable() {
+      const search = document.getElementById("cpt-search").value.toLowerCase();
+      const fType = document.getElementById("cpt-filter-type").value;
+      const fSrv = document.getElementById("cpt-filter-service").value;
+
+      const list = allComptes.filter(c =>
+        `${c.nom} ${c.prenom} ${c.email} ${c.discord} ${c.identifiant_service || ""}`.toLowerCase().includes(search) &&
+        (!fType || c.type_compte === fType) &&
+        (!fSrv || c.service === fSrv)
+      );
+
+      document.getElementById("table-comptes-pref").innerHTML = list.map(c => {
+        const eff = allEffectifs.find(e => e.compte_id === c.id);
+        let statutHtml = `<span class="badge badge-wait">N/A</span>`;
+        if (c.type_compte === "service") {
+          statutHtml = eff
+            ? `<span class="badge badge-ok">✅ ${eff.grade_actuel}</span>`
+            : `<button class="btn btn-success" onclick="openRecruitModal(${c.id})">➕ Créer fiche</button>`;
+        }
+        const info = c.type_compte === "service" ? (c.identifiant_service || "-") : (c.entreprise_nom || "-");
+        return `<tr>
+          <td><strong>${c.type_compte.toUpperCase()}</strong><br><small>${c.service || ""}</small></td>
+          <td><strong>${c.nom}</strong> ${c.prenom}</td>
+          <td>${c.email}<br><small>${c.discord}</small></td>
+          <td>${info}</td>
+          <td>${statutHtml}</td>
+          <td><button class="btn btn-danger" onclick="supprimerCompte(${c.id})">🗑️</button></td>
+        </tr>`;
+      }).join("");
+    }
+
+    async function supprimerCompte(id) {
+      if (!confirm("Supprimer définitivement ce compte ?")) return;
+      await db.from("comptes").delete().eq("id", id);
+      showAlert("Compte supprimé.");
+      await refreshAllData();
+      renderPrefComptesTable();
+    }
+
+    function renderDemandesPref() {
+      document.getElementById("table-demandes-pref").innerHTML = allDemandes.map(d => {
+        const badge = d.statut === "en_attente" ? "badge-wait" : d.statut === "validee" ? "badge-ok" : "badge-err";
+        const actions = d.statut === "en_attente"
+          ? `<button class="btn btn-success" onclick="traiterDemande(${d.id}, ${d.effectif_id}, '${d.grade_vise}', 'validee')">Valider</button>
+             <button class="btn btn-danger" onclick="traiterDemande(${d.id}, ${d.effectif_id}, '${d.grade_vise}', 'refusee')">Refuser</button>`
+          : "-";
+        return `<tr>
+          <td>${d.service}</td>
+          <td>${d.nom_effectif}</td>
+          <td>${d.grade_actuel} → <strong>${d.grade_vise}</strong></td>
+          <td>${d.type_demande}</td>
+          <td>${d.motif}</td>
+          <td><span class="badge ${badge}">${d.statut}</span></td>
+          <td style="display:flex; gap:4px;">${actions}</td>
+        </tr>`;
+      }).join("");
+    }
+
+    async function traiterDemande(demandeId, effId, nouveauGrade, decision) {
+      await db.from("demandes").update({ statut: decision }).eq("id", demandeId);
+      if (decision === "validee") {
+        const today = new Date().toISOString().split("T")[0];
+        await db.from("effectifs").update({ grade_actuel: nouveauGrade, date_grade_actuel: today }).eq("id", effId);
+      }
+      showAlert(`Demande ${decision === "validee" ? "validée" : "refusée"} !`);
+      await refreshAllData();
+      renderPrefEffectifsTable();
+      renderDemandesPref();
+    }
+
+    function renderGradesPref() {
+      document.getElementById("table-grades-pref").innerHTML = allGrades.map(g => {
+        const perms = [...(g.est_rh ? ["👑 RH"] : []), ...(g.permissions || [])].map(p => `<span class="badge badge-rh">${p}</span>`).join("");
+        return `<tr>
+          <td>${g.service}</td>
+          <td>${g.ordre}</td>
+          <td><strong>${g.nom_grade}</strong></td>
+          <td>${g.jours_requis} j</td>
+          <td>${perms || "-"}</td>
+          <td><button class="btn btn-danger" onclick="supprimerGrade(${g.id})">🗑️</button></td>
+        </tr>`;
+      }).join("");
+    }
+
+    async function ajouterGrade(e) {
+      e.preventDefault();
+      const payload = {
+        service: document.getElementById("grade-service").value,
+        nom_grade: document.getElementById("grade-nom").value.trim(),
+        ordre: parseInt(document.getElementById("grade-ordre").value, 10),
+        jours_requis: parseInt(document.getElementById("grade-jours").value, 10),
+        est_rh: document.getElementById("grade-est-rh").checked,
+        permissions: [...document.querySelectorAll(".g-perm:checked")].map(cb => cb.value)
+      };
+      const { error } = await db.from("grades").insert([payload]);
+      if (error) return showAlert("Erreur : " + error.message, "err");
+      showAlert("Grade ajouté !");
+      e.target.reset();
+      await refreshAllData();
+      populatePrefGradeFilter();
+      renderGradesPref();
+    }
+
+    async function supprimerGrade(id) {
+      if (!confirm("Supprimer ce grade ?")) return;
+      await db.from("grades").delete().eq("id", id);
+      await refreshAllData();
+      renderGradesPref();
+    }
+
+    function exportCSV(scope) {
+      let rows = [];
+      if (scope === "comptes") {
+        rows.push(["Type", "Service", "Nom", "Prenom", "Email", "Discord", "Matricule"]);
+        allComptes.forEach(c => rows.push([c.type_compte, c.service || "", c.nom, c.prenom, c.email, c.discord, c.identifiant_service || ""]));
+      } else {
+        const list = scope === "service" ? allEffectifs.filter(e => e.service === currentUser.service) : allEffectifs;
+        rows.push(["Service", "Nom", "Prenom", "Matricule", "Grade", "Date_Arrivee", "Date_Grade"]);
+        list.forEach(e => rows.push([e.service, e.nom, e.prenom, e.matricule, e.grade_actuel, e.date_arrivee, e.date_grade_actuel]));
+      }
+      const csv = rows.map(r => r.map(v => `"${(v || "").toString().replace(/"/g, '""')}"`).join(";")).join("\n");
+      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `export_${scope}_pref91.csv`;
+      a.click();
+    }
+
+    if (currentUser) showDashboard();
+  </script>
+</body>
+</html>
