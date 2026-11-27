@@ -566,7 +566,7 @@
 
       await refreshAllData();
 
-      if (currentUser.type_compte === "tribunal" || currentUser.type_compte === "prefecture") {
+      if (currentUser.type_compte === "tribunal" || currentUser.type_compte === "tribunal") {
         document.getElementById("trib-panel").classList.remove("hidden");
         populateTribGradeFilter();
         renderTribEffectifsTable();
@@ -620,7 +620,7 @@
       await db.from("effectifs").update(payload).eq("id", editingEffId);
       closeEditEffModal();
       await refreshAllData();
-      if (currentUser.type_compte === "tribunal" || currentUser.type_compte === "prefecture") renderTribEffectifsTable();
+      if (currentUser.type_compte === "tribunal" || currentUser.type_compte === "tribunal") renderTribEffectifsTable();
       else renderServiceTable();
       showAlert("Effectif mis à jour !");
     }
@@ -675,7 +675,7 @@
       showAlert("Fiche effectif créée et liée !");
       closeRecruitModal();
       await refreshAllData();
-      if (currentUser.type_compte === "tribunal" || currentUser.type_compte === "prefecture") {
+      if (currentUser.type_compte === "tribunal" || currentUser.type_compte === "tribunal") {
         renderTribEffectifsTable();
         renderTribComptesTable();
       } else {
