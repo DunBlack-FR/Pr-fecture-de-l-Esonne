@@ -1,31 +1,41 @@
-# Mise en place — espace sécurisé Tribunal de Paris
+# Déploiement — application statique de jeu de rôle avec Supabase
 
-## Livrables
+## Périmètre et limites
 
-- `index.html` + `site.css` + `app.js` : page d’accueil publique, visuelle et autonome. Elle réutilise le visuel du palais (`assets/palais-de-justice.webp`) ainsi que le logo fourni.
-- `admin.html` + `admin.css` + `admin.js` : interface de gestion interne des catégories, dossiers et documents, dont l’archivage et le téléchargement temporaire.
-- `schema.sql` : tables, bucket privé et politiques RLS Supabase.
-- `supabase-config.js` : valeurs factices à remplacer avant d’activer le SDK. Ne contient aucun secret réel.
-- `connexion.html` : redirection de compatibilité vers l’accueil; elle remplace l’ancien prototype à authentification locale. Aucun stockage local ne sert de contrôle d’accès.
+Cette application est un site de **jeu de rôle**, sans lien d’authentification ou de vérification avec les services publics. Nom, date, service, identifiant, grade et RH sont des déclarations destinées au jeu : aucune identité, fonction, matricule ou appartenance réelle n’est validée. N’intégrez pas de vraies données personnelles, dossiers, procédures, secrets opérationnels ni documents réels. Le dépôt statique n’est pas adapté aux données judiciaires ou RH réelles.
 
-## Prérequis Supabase (à effectuer avant usage)
+La page `connexion.html` crée un compte Supabase Auth et transmet des champs de profil déclaratifs dans les user metadata. Un trigger SQL les copie à `public.profiles`; le rôle global est toujours forcé à `viewer`. Les profils déclarés RH n’obtiennent aucun droit d’office. La promotion RH est un jeton d’invitation unique, expirant et vérifié par la fonction SQL `redeem_service_invite`; seul son hash est conservé. Les RH sont limités à un service. Un responsable autorisé peut créer un effectif via RPC, qui lie automatiquement un compte déjà confirmé avec la même adresse courriel; si le compte est créé ou confirmé plus tard, le trigger SQL le lie automatiquement. Les identifiants déclarés ne sont jamais utilisés comme preuve d’identité ou comme clé de liaison.
 
-1. Créez un projet Supabase de test/prod et activez **Authentication → Email**. Configurez les URL de redirection autorisées et le fournisseur d’envoi courriel selon vos règles. La page d’accueil expose maintenant une inscription par courriel si Supabase Auth l’autorise. Désactivez « Allow new users to sign up » dans Auth si vous ne souhaitez que des comptes créés par un administrateur. L’inscription publique attribue le rôle viewer par défaut et ne donne aucun droit admin.
-2. Ouvrez le SQL Editor, appliquez `schema.sql`. Le schéma configure les tables et un bucket Storage **privé** `documentation`; RLS n’accorde lecture/écriture qu’aux profils admin.
-3. Créez le premier utilisateur dans Supabase Auth. Dans SQL Editor, appliquez ensuite manuellement la dernière requête commentée du schéma, en remplaçant l’adresse de courriel. Vérifiez le rôle dans `public.profiles`. Les nouveaux utilisateurs reçoivent par défaut `viewer`, non admin.
-4. Dans le `supabase-config.js` situé à la racine de CE site, remplacez les deux valeurs fictives par l’URL exacte du projet et sa **clé publique anon/publishable** correspondante. La page `index.html` charge `app.js`, qui importe précisément `./supabase-config.js` : des paramètres présents dans l’ancien prototype HTML autonome ne configurent pas ce build. Assurez-vous que l’URL et la clé correspondent au même projet. Après modification, republiez le dossier/ZIP modifié (ne réutilisez pas une archive qui contient encore les valeurs fictives). Ces valeurs client sont publiques par conception; la protection repose sur Auth et RLS. **N’insérez jamais de clé `service_role` ni aucun secret dans un fichier web, dépôt ou navigateur.**
-5. Servez le répertoire avec un serveur HTTP(S) statique (pas `file://`). Par exemple `python3 -m http.server 8000`, puis utilisez `http://localhost:8000/`. En production, HTTPS est requis. Le CDN ESM `esm.sh` doit être joignable pour charger le client JS Supabase.
-6. Testez la connexion admin, le refus d’un compte viewer, création/archivage d’un dossier, envoi/téléchargement de fichier et refus d’accès sans session. Contrôlez les journaux Supabase et les politiques Storage.
+## Installation de Supabase
 
-## Fonctionnalités / limites
+1. Créez un projet Supabase (test d’abord). Activez l’authentification Email, configurez l’expéditeur, les confirmations, les exigences de mot de passe et les URL Site URL / Redirect URLs, notamment l’URL GitHub Pages et son chemin de dépôt se terminant par `connexion.html`.
+2. Dans SQL Editor, appliquez intégralement `schema.sql` avec le rôle propriétaire du projet. Il crée/complète `profiles`, la liste normalisée `services`, les rôles par service, invitations à usage unique, roster `personnel_members`, RPCs, triggers, RLS et le bucket privé existant.
+3. Configurez `supabase-config.js` avec Project URL et clé publique `anon`/publishable **du même projet**. Ces valeurs sont destinées au navigateur. N’y mettez jamais `service_role`, `sb_secret`, ou tout autre secret.
+4. Créez un compte d’administrateur global puis attribuez `role='admin'` uniquement en SQL Editor fiable, selon le commentaire en bas de `schema.sql`. Cette attribution n’est jamais une action de la page Web.
+5. Pour l’accès RH initial d’un service, générez hors ligne un jeton aléatoire long (au moins 24 caractères aléatoires, 32+ recommandés). Fournissez-le directement et de manière confidentielle à la personne choisie. En SQL Editor propriétaire, ajoutez une invitation en remplaçant le jeton et service dans le modèle commenté de `schema.sql`; utilisez une durée courte. Le serveur conserve `SHA-256(token)`, jamais le jeton clair. N’ajoutez pas ce jeton au site, dépôt, tickets ou URL.
+6. La personne crée un compte avec type `RH d’un service`, déclare exactement le service de l’invitation, confirme son adresse, se connecte et saisit le jeton dans l’espace connecté. Une invitation n’est valable qu’une fois, jusqu’à expiration, et uniquement pour un compte email confirmé déclarant le service prévu. Il s’agit d’une autorisation de jeu de rôle, pas d’une validation officielle.
+7. Publiez tous les fichiers du site statique sur GitHub Pages en HTTPS. Le module Supabase JS est chargé depuis `esm.sh`; ce CDN et le réseau doivent être disponibles. Conservez le chemin `supabase-config.js` attendu à la racine du site.
 
-- La fenêtre de l’accueil prend en charge l’inscription et la confirmation d’adresse par courriel (selon le paramétrage Auth), la connexion `signInWithPassword`, la réinitialisation/mise à jour du mot de passe et la déconnexion Supabase. La connexion réussie ouvre l’interface admin, qui vérifie séparément le rôle en base. L’espace d’administration vérifie le rôle dans `profiles`; les requêtes données/Storage sont de nouveau restreintes côté serveur par RLS.
-- Tant que les paramètres restent fictifs, l’interface affiche une configuration manquante et ne prétend pas authentifier. Un site statique et le rôle UI ne sont pas une frontière de sécurité; le SQL/RLS est indispensable.
-- Les documents sont stockés dans le bucket privé; téléchargement via URL signée courte. Limite UI et bucket: 25 Mo. Ajustez type MIME, limites et gestion du cycle de vie aux règles internes.
-- L’archivage est logique : les dossiers restent en base, cachés dans la vue active; l’archivage documentaire masque le document sans effacer le fichier. Suppression d’un dossier supprime ses lignes et tente de supprimer son contenu Storage. Les sauvegardes, rétention, journaux d’audit et procédures d’effacement restent à définir pour déploiement.
-- La page d’accueil conserve des liens externes officiels. Les actualités dynamiques et horaires sont volontairement omis ou renvoyés au site officiel afin de ne pas figer des informations possiblement obsolètes.
-- `site.css` charge les polices Google Fonts en option; en cas d’indisponibilité, replis serif/sans-serif locaux. La page utilise des images locales issues des pièces de référence.
+## Fonctionnalités
 
-## Sécurité / mise en production
+- Connexion, inscription, confirmation courriel, récupération et changement de mot de passe via Supabase Auth.
+- Champs profil persistés dans `profiles`: prénom, nom, date de naissance, identifiant Discord, compte/type déclaré; service/identifiant déclarés ou entreprise et secteur selon le choix. `profiles` permet à l’utilisateur de lire son propre profil; l’update direct est réservé au rôle administrateur global.
+- `redeem_service_invite(text)` vérifie côté SQL le jeton haché, l’expiration, l’usage unique, la session, la confirmation email et la correspondance entre service déclaré et invitation avant de créer le rôle `service_hr_manager` scoped.
+- `create_service_member(...)` contrôle côté serveur une permission `service_hr_manager` / `service_admin` du service visé (ou admin global), crée les données et lie un compte Auth confirmé par courriel si présent. Une confirmation ultérieure déclenche aussi le lien. La vue de roster est limitée à ses RH de service, admin global, et le membre lié.
+- La page montre la partie RH seulement si la table `service_roles` confirme le rôle et le service. C’est une commodité d’interface; RPC et RLS sont l’autorité réelle.
+- Interface admin existante, catégories/dossiers/documents et bucket Storage demeurent réservés au rôle global `admin` via RLS. RH de service n’obtient pas l’accès aux dossiers globaux.
 
-Aucun accès à un projet Supabase n’était fourni; aucune migration distante ni test d’authentification serveur n’a été exécuté. Faites relire `schema.sql` par le responsable sécurité/données et adaptez la politique au modèle d’accès réel avant d’y placer un dossier ou un document confidentiel. Les profils admin doivent être attribués par un canal de confiance; les fichiers et le contenu de dossiers peuvent relever de données sensibles, minimisez-les et définissez rétention, sauvegarde, journalisation et incidents. La configuration de démonstration n’est pas un service en production.
+## Vérifications avant mise en ligne
+
+- Appliquer le SQL sur un projet de test et traiter toute erreur de migration avant production.
+- Tester signup avec email confirmation activée et désactivée, champs persistés, profil `viewer`, refus d’un `account_type=service_hr` sans jeton, invitation invalide/expirée/déjà utilisée/service différent, invitation valide, impossibilité de lire un autre service, et refus d’appel RPC sans rôle adéquat.
+- Vérifier liens automatiques roster avec compte confirmé existant puis avec inscription ultérieure et confirmation après inscription; s’assurer qu’un email différent ne lie rien.
+- Tester séparément le rôle global admin et le refus d’accès à l’interface globale par un viewer/RH.
+- Configurer les limites Supabase Auth, quotas email, sauvegarde et surveillance. Les contrôles locaux ne remplacent pas un test du projet distant.
+
+## Hypothèses / limitations fonctionnelles
+
+- Liste initiale des services de jeu : Gendarmerie, Police Nationale, Sapeurs-Pompiers, SAMU, identifiants normalisés en `gendarmerie`, `police_nationale`, `sapeurs_pompiers`, `samu`.
+- Un compte est lié par correspondance exacte insensible à la casse de l’adresse email confirmée que le RH a saisie au roster. L’adresse email n’est pas une preuve d’identité réelle. En cas d’adresse modifiée après liaison, aucune reliaison automatique n’est faite.
+- L’UI RH fournie couvre le roster (lecture/création), pas le workflow de grades/promotion complet de l’ancien prototype, ni l’administration de jetons. Les jetons et changements de rôle passent par le canal SQL propriétaire.
+- Aucune migration distante, configuration de projet, invitation réelle, mail ou test navigateur distant n’a été effectué dans ce travail. La clé Supabase du dépôt demeure fictive jusqu’à configuration.

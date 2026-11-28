@@ -92,7 +92,7 @@
         <p class="auth-kicker">Services numériques · Accès à votre compte</p>
         <h1 id="page-title">Votre espace,<br><em>en confiance.</em></h1>
         <p>Connectez-vous à votre compte ou demandez sa création. Les accès aux informations et services sont déterminés par les règles vérifiées côté serveur.</p>
-        <aside class="auth-note"><strong>Protection et minimisation des données</strong>Les champs professionnels sont facultatifs, déclaratifs, non vérifiés et restent dans cette page : ils ne sont ni transmis à Supabase ni enregistrés. Seule l’adresse courriel et le mot de passe sont transmis à Supabase Auth. Aucun profil n’accorde de droit particulier. N’indiquez aucune information relative à un dossier ou à une procédure.</aside>
+        <aside class="auth-note"><strong>Protection et minimisation des données</strong>Les informations de profil sont déclaratives et stockées dans Supabase. Elles ne vérifient aucune identité ni qualité professionnelle. Un accès RH exige une invitation à usage unique contrôlée côté serveur. Site de jeu de rôle : ne saisissez aucune vraie donnée personnelle, administrative ou de dossier.</aside>
       </section>
       <section class="auth-card" aria-labelledby="auth-card-title">
         <div class="auth-card-head">
@@ -118,9 +118,13 @@
               <div class="auth-choices auth-choice-grid" aria-describedby="type-hint">
                 <label class="auth-choice"><input type="radio" name="account_type" value="citizen" checked><span><strong>Citoyen / particulier</strong><small>Compte personnel</small></span></label>
                 <label class="auth-choice"><input type="radio" name="account_type" value="justice_professional"><span><strong>Professionnel de justice</strong><small>Profession et identifiant déclarés</small></span></label>
-                <label class="auth-choice"><input type="radio" name="account_type" value="state_services"><span><strong>Services de l’État</strong><small>Service et identifiant déclarés</small></span></label>
+                <label class="auth-choice"><input type="radio" name="account_type" value="state_service"><span><strong>Service (jeu de rôle)</strong><small>Service et identifiant déclarés</small></span></label>
+                <label class="auth-choice"><input type="radio" name="account_type" value="service_hr"><span><strong>RH d’un service (jeu de rôle)</strong><small>Accès RH soumis à invitation sécurisée</small></span></label>
+                <label class="auth-choice"><input type="radio" name="account_type" value="company"><span><strong>Entreprise (jeu de rôle)</strong><small>Informations déclaratives</small></span></label>
               </div>
             </fieldset>
+            <div class="auth-row"><div class="field"><label for="register-first-name">Prénom</label><input id="register-first-name" name="first_name" autocomplete="given-name" maxlength="100" required></div><div class="field"><label for="register-last-name">Nom</label><input id="register-last-name" name="last_name" autocomplete="family-name" maxlength="100" required></div></div>
+            <div class="auth-row"><div class="field"><label for="register-birth-date">Date de naissance (fictive)</label><input id="register-birth-date" name="birth_date" type="date" autocomplete="bday" required></div><div class="field"><label for="register-discord">Identifiant Discord</label><input id="register-discord" name="discord_handle" maxlength="100" required></div></div>
             <div class="field"><label for="register-email">Adresse courriel</label><input id="register-email" name="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="254" required></div>
             <div class="field" id="justice-profession-group" hidden>
               <label for="justice-profession">Profession de justice</label>
@@ -133,10 +137,11 @@
             <div class="field" id="state-service-group" hidden>
               <label for="state-service">Administration / service de l’État</label>
               <select id="state-service" name="state_service" disabled>
-                <option value="">Sélectionnez un service</option><option value="justice">Justice</option><option value="police">Police nationale</option><option value="gendarmerie">Gendarmerie nationale</option><option value="prefecture">Préfecture</option><option value="other">Autre service de l’État</option>
+                <option value="">Sélectionnez un service</option><option value="gendarmerie">Gendarmerie</option><option value="police_nationale">Police Nationale</option><option value="sapeurs_pompiers">Sapeurs-Pompiers</option><option value="samu">SAMU</option>
               </select>
             </div>
             <div class="field" id="state-identifier-group" hidden><label for="state-identifier" id="state-identifier-label">Identifiant professionnel déclaré</label><input id="state-identifier" name="state_identifier" autocomplete="off" maxlength="120" disabled aria-describedby="state-identifier-hint"><p class="auth-hint" id="state-identifier-hint">Saisi à titre déclaratif seulement ; aucun matricule n’est vérifié ou utilisé pour ouvrir un accès.</p></div>
+            <div class="field" id="company-fields" hidden><label for="company-name">Entreprise</label><input id="company-name" name="company_name" maxlength="160" disabled><label for="company-number">Numéro de rôle (fictif)</label><input id="company-number" name="company_number" maxlength="80" disabled><label for="company-sector">Secteur</label><input id="company-sector" name="company_sector" maxlength="160" disabled></div>
             <div class="auth-row">
               <div class="field"><label for="register-password">Mot de passe</label><input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-hint"><p class="auth-hint" id="password-hint">8 caractères minimum ; les règles du service peuvent être plus strictes.</p></div>
               <div class="field"><label for="register-confirm">Confirmer le mot de passe</label><input id="register-confirm" name="password_confirmation" type="password" autocomplete="new-password" minlength="8" required></div>
@@ -155,7 +160,10 @@
             <p class="auth-status" id="recovery-status" role="status" aria-live="polite"></p>
           </form>
           <section class="auth-session" id="session-panel" aria-labelledby="session-title" hidden>
-            <h3 id="session-title">Vous êtes connecté(e)</h3><p id="session-email"></p><p>Cette page ne consulte et n’affiche aucun dossier ni droit d’accès. Les autorisations restent contrôlées par les politiques Supabase côté serveur.</p><button class="auth-submit" id="signout-button" type="button">Se déconnecter</button><p class="auth-status" id="session-status" role="status" aria-live="polite"></p>
+            <h3 id="session-title">Vous êtes connecté(e)</h3><p id="session-email"></p><p id="profile-summary"></p>
+            <div id="invite-box" hidden><h4>Activer l’accès RH de jeu de rôle</h4><p>Entrez l’invitation privée à usage unique fournie par l’administrateur de ce site. Elle ne valide pas une fonction réelle.</p><label for="invite-token">Jeton d’invitation</label><input id="invite-token" type="password" autocomplete="off" maxlength="256"><button class="auth-submit" id="redeem-invite" type="button">Vérifier l’invitation</button><p class="auth-status" id="invite-status" role="status" aria-live="polite"></p></div>
+            <div id="rh-panel" hidden><h4>Gestion d’effectifs (jeu de rôle)</h4><p id="rh-scope"></p><form id="member-form" class="auth-form"><div class="auth-row"><div class="field"><label for="member-first">Prénom</label><input id="member-first" maxlength="100" required></div><div class="field"><label for="member-last">Nom</label><input id="member-last" maxlength="100" required></div></div><div class="field"><label for="member-email">Courriel du compte à lier</label><input id="member-email" type="email" maxlength="254" required></div><div class="auth-row"><div class="field"><label for="member-arrival">Date d’arrivée</label><input id="member-arrival" type="date" required></div><div class="field"><label for="member-rank">Grade (déclaratif)</label><input id="member-rank" maxlength="120" required></div></div><div class="field"><label for="member-identifier">Identifiant de jeu de rôle</label><input id="member-identifier" maxlength="120" required></div><button class="auth-submit" type="submit">Créer et lier si le compte est confirmé</button></form><div id="member-list"></div><p class="auth-status" id="rh-status" role="status" aria-live="polite"></p></div>
+            <button class="auth-submit" id="signout-button" type="button">Se déconnecter</button><p class="auth-status" id="session-status" role="status" aria-live="polite"></p>
           </section>
         </div>
       </section>
@@ -215,28 +223,71 @@
       tabs.forEach((tab) => { tab.setAttribute('aria-selected', 'false'); tab.tabIndex = -1; });
       $('session-panel').hidden = false;
       $('session-email').textContent = user?.email ? `Compte authentifié : ${user.email}` : 'Session Supabase active.';
+      void loadProfileAndRh();
     }
     const accountType = () => document.querySelector('[name="account_type"]:checked')?.value || 'citizen';
     const requiredWhenShown = (id, required, enabled) => { const field = $(id); field.required = required; field.disabled = !enabled; };
     function updateAccountFields() {
       const type = accountType();
       const justice = type === 'justice_professional';
-      const state = type === 'state_services';
       $('justice-profession-group').hidden = !justice;
       $('justice-identifier-group').hidden = !justice;
-      $('state-service-group').hidden = !state;
-      $('state-identifier-group').hidden = !state;
       requiredWhenShown('justice-profession', justice, justice);
       requiredWhenShown('justice-identifier', justice, justice);
+      const state = type === 'state_service' || type === 'service_hr';
+      $('state-service-group').hidden = !state;
+      $('state-identifier-group').hidden = !state;
       requiredWhenShown('state-service', state, state);
       requiredWhenShown('state-identifier', state, state);
       const service = $('state-service').value;
-      const labels = { police:'Matricule professionnel déclaré', gendarmerie:'Identifiant professionnel déclaré', justice:'Identifiant professionnel déclaré', prefecture:'Identifiant professionnel déclaré', other:'Identifiant professionnel déclaré' };
-      $('state-identifier-label').textContent = labels[service] || 'Identifiant professionnel déclaré';
+      const company = type === 'company';
+      $('company-fields').hidden = !company;
+      ['company-name','company-number','company-sector'].forEach((id) => { $(id).disabled = !company; $(id).required = company; });
+      $('state-identifier-label').textContent = service ? 'Identifiant de jeu de rôle déclaré' : 'Identifiant professionnel déclaré';
     }
     document.querySelectorAll('[name="account_type"]').forEach((radio) => radio.addEventListener('change', updateAccountFields));
     $('state-service').addEventListener('change', updateAccountFields);
     updateAccountFields();
+    let activeProfile = null;
+    async function loadProfileAndRh() {
+      if (!supabase) return;
+      const { data: authData } = await supabase.auth.getUser();
+      if (!authData.user) return;
+      const { data: profile } = await supabase.from('profiles').select('account_type,first_name,last_name,state_service').eq('id', authData.user.id).maybeSingle();
+      activeProfile = profile;
+      $('profile-summary').textContent = profile ? `Profil déclaré : ${profile.first_name || ''} ${profile.last_name || ''} · ${profile.account_type}${profile.state_service ? ` · ${profile.state_service}` : ''}. Ces déclarations ne sont pas vérifiées.` : 'Profil indisponible.';
+      $('invite-box').hidden = !(profile?.account_type === 'service_hr' && profile.state_service);
+      const { data: roles } = await supabase.from('service_roles').select('service_id,role_key').eq('user_id', authData.user.id);
+      const scoped = (roles || []).filter(r => ['service_hr_manager','service_admin'].includes(r.role_key));
+      const permittedService = scoped.find(r => r.service_id === profile?.state_service)?.service_id || null;
+      $('rh-panel').hidden = !permittedService;
+      if (permittedService) {
+        $('rh-scope').textContent = `Portée autorisée par la base : ${permittedService}.`;
+        await loadMembers(permittedService);
+      }
+    }
+    async function loadMembers(service) {
+      const { data, error } = await supabase.from('personnel_members').select('first_name,last_name,joined_on,rank_name,identifier,contact_email,linked_user_id').eq('service_id', service).order('created_at', {ascending:false});
+      $('member-list').textContent = error ? 'Lecture refusée par les règles RLS.' : (data || []).map(m => `${m.first_name} ${m.last_name} — ${m.rank_name} — ${m.identifier} — ${m.linked_user_id ? 'compte lié' : 'en attente de confirmation'} (${m.contact_email})`).join(' | ') || 'Aucun effectif.';
+    }
+    $('redeem-invite').addEventListener('click', async () => {
+      const token = $('invite-token').value.trim();
+      if (!token || !supabase) return say('invite-status','Saisissez une invitation.','error');
+      const { data, error } = await supabase.rpc('redeem_service_invite', {p_token:token});
+      if (error) return say('invite-status','Invitation refusée ou expirée. Vérifiez que le compte confirmé a le service déclaré correspondant.','error');
+      $('invite-token').value = '';
+      say('invite-status',`Accès RH activé pour le service ${data}.`,'success');
+      await loadProfileAndRh();
+    });
+    $('member-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!activeProfile?.state_service) return say('rh-status','Aucun service autorisé.','error');
+      const args = {p_service:activeProfile.state_service,p_first:$('member-first').value.trim(),p_last:$('member-last').value.trim(),p_joined:$('member-arrival').value,p_rank:$('member-rank').value.trim(),p_identifier:$('member-identifier').value.trim(),p_email:$('member-email').value.trim()};
+      const {error} = await supabase.rpc('create_service_member', args);
+      if (error) return say('rh-status','Création refusée par le serveur. Vérifiez les droits et l’unicité des données.','error');
+      event.currentTarget.reset(); say('rh-status','Effectif ajouté. Le compte sera lié automatiquement après confirmation du courriel correspondant.','success');
+      await loadMembers(activeProfile.state_service);
+    });
     function setBusy(form, busy, label) {
       form.querySelectorAll('button[type="submit"]').forEach((button) => { button.disabled = busy; if (button.dataset.defaultLabel === undefined) button.dataset.defaultLabel = button.textContent; button.textContent = busy ? label : button.dataset.defaultLabel; });
     }
@@ -348,16 +399,14 @@
       try {
         const email = form.elements.email.value.trim();
         const redirectTo = new URL('connexion.html', document.baseURI).href;
-        // Aucun profil professionnel, identifiant, nom ni rôle n’est persisté dans Auth metadata.
-        // TODO sécurité : la vérification d’identité et toute habilitation requièrent un endpoint/RPC
-        // serveur authentifié, soumis à une politique RLS dédiée et à une revue; jamais de matching
-        // de matricule ou de dossier dans le navigateur. Le schéma fourni ne contient aucun profil
-        // professionnel : aucune écriture profiles n’est tentée. Les nouveaux profils restent viewer.
-        const { data, error } = await supabase.auth.signUp({ email, password, options:{ emailRedirectTo:redirectTo } });
+        // Metadata are self-declared profile attributes only. The SQL trigger forces role=viewer;
+        // RH permissions require redeem_service_invite() and are never accepted from client role fields.
+        const metadata = {account_type:accountType(),first_name:form.elements.first_name.value.trim(),last_name:form.elements.last_name.value.trim(),birth_date:form.elements.birth_date.value,discord_handle:form.elements.discord_handle.value.trim(),state_service:form.elements.state_service?.value || null,declared_identifier:form.elements.state_identifier?.value.trim() || form.elements.justice_identifier?.value.trim() || null,justice_profession:form.elements.justice_profession?.value || null,company_name:form.elements.company_name?.value.trim() || null,company_number:form.elements.company_number?.value.trim() || null,company_sector:form.elements.company_sector?.value.trim() || null};
+        const { data, error } = await supabase.auth.signUp({ email, password, options:{ emailRedirectTo:redirectTo, data:metadata } });
         if (error) throw error;
         form.reset(); updateAccountFields();
-        if (data.session) { showSession(data.user); say('session-status', 'Compte créé et session ouverte. La catégorie sélectionnée est indicative et n’accorde aucune habilitation.', 'success'); }
-        else { $('login-email').value = email; showTab('login'); say('login-status', 'Demande reçue. Si cette adresse peut être enregistrée, un courriel de confirmation sera envoyé. Confirmez-la avant la connexion. La catégorie sélectionnée n’a pas été enregistrée.', 'success'); }
+        if (data.session) { showSession(data.user); say('session-status', 'Compte créé. Profil enregistré à titre déclaratif; aucun rôle privilégié n’est accordé sans invitation RH serveur.', 'success'); }
+        else { $('login-email').value = email; showTab('login'); say('login-status', 'Demande reçue. Confirmez le courriel puis connectez-vous. Les informations déclaratives ont été enregistrées; les droits RH exigent une invitation à usage unique.', 'success'); }
       } catch (error) { say('register-status', authError(error, 'signup'), 'error'); }
       finally { setBusy(form, false); }
     });
@@ -405,6 +454,5 @@
     window.addEventListener('pagehide', () => authSubscription?.data?.subscription?.unsubscribe(), { once:true });
     start();
   </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
