@@ -1,1 +1,410 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url=index.html"><title>Connexion — Tribunal de Paris</title><script>location.replace('index.html')</script></head><body><p>La connexion Supabase est intégrée à l’<a href="index.html">accueil</a>. Si la redirection ne fonctionne pas, suivez ce lien.</p></body></html>
+<!doctype html>
+<html lang="fr" data-fr-scheme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Connexion et création de compte — Tribunal judiciaire de Paris.">
+  <meta name="theme-color" content="#102a43">
+  <title>Connexion — Tribunal judiciaire de Paris</title>
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="tribunal.css">
+  <style>
+    :root { --auth-ink:#172b3b; --auth-paper:#fffefa; --auth-wash:#f3f1eb; --auth-blue:#183d56; --auth-red:#bd4a3d; --auth-muted:#64727b; --auth-line:#d7d8d4; }
+    body { min-height:100vh; display:flex; flex-direction:column; background:var(--auth-wash); color:var(--auth-ink); }
+    .auth-topline { height:5px; background:linear-gradient(90deg,#183d56 0 58%,#fff 58% 67%,#bd4a3d 67%); }
+    .auth-header { background:var(--auth-paper); border-bottom:1px solid var(--auth-line); }
+    .auth-header .navrow { min-height:88px; height:auto; }
+    .auth-header .identity { color:var(--auth-ink); }
+    .auth-header .identity img { width:120px; }
+    .auth-home { padding:.68rem .9rem; border:1px solid #9aa6ab; font-size:.83rem; }
+    .auth-home:hover { background:#f3f1eb; }
+    .auth-main { flex:1; width:min(1130px,calc(100% - 48px)); margin:0 auto; padding:clamp(2.5rem,7vw,5.8rem) 0 5rem; }
+    .auth-grid { display:grid; grid-template-columns:minmax(230px,.77fr) minmax(0,1.23fr); align-items:start; gap:clamp(2rem,7vw,6rem); }
+    .auth-intro { padding-top:1rem; }
+    .auth-kicker { margin:0 0 1rem; color:#a3543c; font-size:.69rem; font-weight:800; letter-spacing:.16em; text-transform:uppercase; }
+    .auth-intro h1 { margin:0 0 1.15rem; color:#102a43; font:500 clamp(2.65rem,5vw,4.25rem)/1.04 var(--serif,Georgia,serif); letter-spacing:-.045em; }
+    .auth-intro h1 em { color:#a25b44; font-weight:500; }
+    .auth-intro > p:not(.auth-kicker) { max-width:30rem; color:#53616a; line-height:1.8; }
+    .auth-note { margin-top:2rem; padding:1rem 1.1rem; border-left:3px solid #ba8054; background:#fffefa; color:#59666e; font-size:.82rem; line-height:1.65; }
+    .auth-note strong { display:block; margin-bottom:.25rem; color:#172b3b; }
+    .auth-card { min-width:0; background:#fffefa; border:1px solid var(--auth-line); box-shadow:0 16px 48px rgb(16 42 67 / 9%); }
+    .auth-card-head { padding:1.5rem 1.6rem 0; }
+    .auth-card-head h2 { margin:0 0 1rem; color:#102a43; font:500 1.65rem/1.25 var(--serif,Georgia,serif); }
+    .auth-tabs { display:flex; gap:.2rem; overflow-x:auto; border-bottom:1px solid var(--auth-line); }
+    
+    .auth-tab[aria-selected="true"] { border-bottom-color:#183d56; color:#183d56; }
+    .auth-card-body { padding:1.55rem 1.6rem 1.8rem; }
+    .auth-panel[hidden], [hidden] { display:none !important; }
+    .auth-form { max-width:43rem; }
+    .auth-form > p:first-child { margin-top:0; }
+    .auth-form .field { margin:0 0 1.05rem; }
+    .auth-form label:not(.choice) { display:block; margin-bottom:.35rem; color:#263640; font-size:.83rem; font-weight:700; }
+    .auth-form input, .auth-form select { display:block; width:100%; min-height:2.85rem; padding:.65rem .75rem; border:1px solid #92999b; border-radius:0; background:white; color:#172b3b; font:inherit; }
+    .auth-form input:focus, .auth-form select:focus { outline:3px solid #183d56; outline-offset:2px; }
+    .auth-form input[aria-invalid="true"], .auth-form select[aria-invalid="true"] { border:2px solid #b34000; }
+    .auth-hint { margin:.35rem 0 0; color:#59666e; font-size:.77rem; line-height:1.5; }
+    .auth-form fieldset { min-width:0; margin:0 0 1.3rem; padding:0; border:0; }
+    .auth-form legend { margin-bottom:.35rem; color:#263640; font-size:.85rem; font-weight:800; }
+    .auth-choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.55rem; margin-top:.7rem; }
+    .auth-choice { display:flex; min-height:5.25rem; align-items:flex-start; gap:.55rem; padding:.8rem .7rem; border:1px solid var(--auth-line); background:white; cursor:pointer; }
+    .auth-choice:has(input:checked) { border:2px solid #183d56; padding:calc(.8rem - 1px) calc(.7rem - 1px); background:#f1f3f4; }
+    .auth-choice input { flex:0 0 auto; width:1rem; min-height:auto; height:1rem; margin:.16rem 0 0; accent-color:#183d56; }
+    .auth-choice strong, .auth-choice small { display:block; }
+    .auth-choice strong { font-size:.79rem; line-height:1.35; }
+    .auth-choice small { margin-top:.25rem; color:#59666e; font-size:.69rem; line-height:1.4; }
+    .auth-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; }
+    .auth-submit { display:inline-flex; min-height:2.9rem; align-items:center; justify-content:center; padding:.72rem 1.05rem; border:2px solid #183d56; background:#183d56; color:#fff; font-size:.88rem; font-weight:700; cursor:pointer; }
+    .auth-submit:hover { background:#102a43; }
+    .auth-submit:disabled { opacity:.65; cursor:wait; }
+    .auth-inline { display:flex; align-items:center; flex-wrap:wrap; gap:.75rem 1rem; }
+    
+    .auth-status { min-height:1.6rem; margin:.85rem 0 0; font-size:.84rem; line-height:1.55; }
+    .auth-status[data-kind="error"] { color:#a33b00; }
+    .auth-status[data-kind="success"] { color:#176b3a; }
+    .auth-status[data-kind="info"] { color:#3f4c55; }
+    .auth-config { margin:0 0 1.1rem; padding:.8rem 1rem; border-left:4px solid #a3543c; background:#f3f1eb; color:#4d5b63; font-size:.8rem; line-height:1.6; }
+    .auth-session { padding:1.3rem; border:1px solid var(--auth-line); background:#f7f6f1; }
+    .auth-session h3 { margin:0 0 .5rem; font:500 1.35rem var(--serif,Georgia,serif); }
+    .auth-session p { color:#53616a; overflow-wrap:anywhere; }
+    .auth-footer { margin-top:auto; background:#102a43; color:#f3f2ed; }
+    .auth-footer .footer-main { grid-template-columns:1.2fr 1fr 1fr; }
+    .auth-footer a { color:#f3f2ed; }
+    .auth-footer .identity > span { border-left-color:#71808a; }
+    .auth-footer .footer-bottom { border-top:1px solid #3b5060; }
+    @media(max-width:820px) { .auth-grid { grid-template-columns:1fr; gap:2rem; } .auth-intro { padding:0; } .auth-intro h1 { max-width:15ch; } .auth-footer .footer-main { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:580px) { .auth-main { width:calc(100% - 32px); padding-top:2.3rem; } .auth-header .navrow { min-height:74px; } .auth-header .identity img { width:86px; } .auth-home { padding:.55rem .6rem; font-size:.74rem; } .auth-card-head { padding:1.15rem 1rem 0; } .auth-card-head h2 { font-size:1.45rem; } .auth-card-body { padding:1.2rem 1rem 1.4rem; } .auth-choice-grid { grid-template-columns:1fr; } .auth-choice { min-height:0; } .auth-row { grid-template-columns:1fr; gap:0; } .auth-footer .footer-main { grid-template-columns:1fr; gap:1.4rem; } }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenu">Aller au contenu</a>
+  <header class="auth-header">
+    <div class="topline"><div class="shell topline-inner"><span>RÉPUBLIQUE FRANÇAISE <i aria-hidden="true"></i> JUSTICE</span><a href="https://www.justice.fr/" target="_blank" rel="noopener noreferrer">Le portail de la justice <span aria-hidden="true">↗</span></a></div></div>
+    <div class="shell navrow">
+      <a class="identity" href="index.html" aria-label="Tribunal judiciaire de Paris — accueil"><img src="tribunal-logo.png" alt="" width="204" height="63"><span>TRIBUNAL JUDICIAIRE<br><b>DE PARIS</b></span></a>
+      <a class="auth-home" href="index.html">← Retour à l’accueil</a>
+    </div>
+  </header>
+  <div class="auth-topline" aria-hidden="true"></div>
+  <main class="auth-main" id="contenu" tabindex="-1">
+    <div class="auth-grid">
+      <section class="auth-intro" aria-labelledby="page-title">
+        <p class="auth-kicker">Services numériques · Accès à votre compte</p>
+        <h1 id="page-title">Votre espace,<br><em>en confiance.</em></h1>
+        <p>Connectez-vous à votre compte ou demandez sa création. Les accès aux informations et services sont déterminés par les règles vérifiées côté serveur.</p>
+        <aside class="auth-note"><strong>Protection et minimisation des données</strong>Les champs professionnels sont facultatifs, déclaratifs, non vérifiés et restent dans cette page : ils ne sont ni transmis à Supabase ni enregistrés. Seule l’adresse courriel et le mot de passe sont transmis à Supabase Auth. Aucun profil n’accorde de droit particulier. N’indiquez aucune information relative à un dossier ou à une procédure.</aside>
+      </section>
+      <section class="auth-card" aria-labelledby="auth-card-title">
+        <div class="auth-card-head">
+          <h2 id="auth-card-title">Connexion à mon espace</h2>
+          <div class="auth-tabs" role="tablist" aria-label="Actions du compte">
+            <button class="auth-tab" id="tab-login" type="button" role="tab" aria-selected="true" aria-controls="panel-login" tabindex="0">Se connecter</button>
+            <button class="auth-tab" id="tab-register" type="button" role="tab" aria-selected="false" aria-controls="panel-register" tabindex="-1">Créer un compte</button>
+            <button class="auth-tab" id="tab-recovery" type="button" role="tab" aria-selected="false" aria-controls="panel-recovery" tabindex="-1">Mot de passe oublié</button>
+          </div>
+        </div>
+        <div class="auth-card-body">
+          <p class="auth-config" id="config-note" role="status">Vérification de la configuration du service d’authentification…</p>
+          <form class="auth-form auth-panel" id="panel-login" role="tabpanel" aria-labelledby="tab-login" tabindex="0" novalidate>
+            <p>Utilisez l’adresse courriel confirmée associée à votre compte.</p>
+            <div class="field"><label for="login-email">Adresse courriel</label><input id="login-email" name="email" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
+            <div class="field"><label for="login-password">Mot de passe</label><input id="login-password" name="password" type="password" autocomplete="current-password" required></div>
+            <div class="auth-inline"><button class="auth-submit" type="submit">Se connecter</button><button class="auth-link-button" type="button" data-show-tab="recovery">Mot de passe oublié ?</button></div>
+            <p class="auth-status" id="login-status" role="status" aria-live="polite"></p>
+          </form>
+          <form class="auth-form auth-panel" id="panel-register" role="tabpanel" aria-labelledby="tab-register" tabindex="0" hidden novalidate>
+            <p>Un compte Supabase Auth est créé par courriel. L’identité et la qualité professionnelle indiquées ne sont pas validées par ce formulaire.</p>
+            <fieldset><legend>Type de compte souhaité</legend><p class="auth-hint" id="type-hint">Ce choix sert uniquement à décrire la demande : il ne confère ni rôle ni autorisation.</p>
+              <div class="auth-choices auth-choice-grid" aria-describedby="type-hint">
+                <label class="auth-choice"><input type="radio" name="account_type" value="citizen" checked><span><strong>Citoyen / particulier</strong><small>Compte personnel</small></span></label>
+                <label class="auth-choice"><input type="radio" name="account_type" value="justice_professional"><span><strong>Professionnel de justice</strong><small>Profession et identifiant déclarés</small></span></label>
+                <label class="auth-choice"><input type="radio" name="account_type" value="state_services"><span><strong>Services de l’État</strong><small>Service et identifiant déclarés</small></span></label>
+              </div>
+            </fieldset>
+            <div class="field"><label for="register-email">Adresse courriel</label><input id="register-email" name="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="254" required></div>
+            <div class="field" id="justice-profession-group" hidden>
+              <label for="justice-profession">Profession de justice</label>
+              <select id="justice-profession" name="justice_profession" disabled>
+                <option value="">Sélectionnez votre profession</option>
+                <option value="lawyer">Avocat / avocate</option><option value="notary">Notaire</option><option value="bailiff">Commissaire de justice</option><option value="court_officer">Professionnel du greffe</option><option value="other">Autre profession juridique</option>
+              </select>
+            </div>
+            <div class="field" id="justice-identifier-group" hidden><label for="justice-identifier">Identifiant professionnel déclaré</label><input id="justice-identifier" name="justice_identifier" autocomplete="off" maxlength="120" disabled aria-describedby="justice-identifier-hint"><p class="auth-hint" id="justice-identifier-hint">Déclaration non vérifiée ; n’utilisez pas de donnée confidentielle. Toute validation doit être réalisée par un service habilité.</p></div>
+            <div class="field" id="state-service-group" hidden>
+              <label for="state-service">Administration / service de l’État</label>
+              <select id="state-service" name="state_service" disabled>
+                <option value="">Sélectionnez un service</option><option value="justice">Justice</option><option value="police">Police nationale</option><option value="gendarmerie">Gendarmerie nationale</option><option value="prefecture">Préfecture</option><option value="other">Autre service de l’État</option>
+              </select>
+            </div>
+            <div class="field" id="state-identifier-group" hidden><label for="state-identifier" id="state-identifier-label">Identifiant professionnel déclaré</label><input id="state-identifier" name="state_identifier" autocomplete="off" maxlength="120" disabled aria-describedby="state-identifier-hint"><p class="auth-hint" id="state-identifier-hint">Saisi à titre déclaratif seulement ; aucun matricule n’est vérifié ou utilisé pour ouvrir un accès.</p></div>
+            <div class="auth-row">
+              <div class="field"><label for="register-password">Mot de passe</label><input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-hint"><p class="auth-hint" id="password-hint">8 caractères minimum ; les règles du service peuvent être plus strictes.</p></div>
+              <div class="field"><label for="register-confirm">Confirmer le mot de passe</label><input id="register-confirm" name="password_confirmation" type="password" autocomplete="new-password" minlength="8" required></div>
+            </div>
+            <button class="auth-submit" type="submit">Demander la création du compte</button>
+            <p class="auth-status" id="register-status" role="status" aria-live="polite"></p>
+          </form>
+          <form class="auth-form auth-panel" id="panel-recovery" role="tabpanel" aria-labelledby="tab-recovery" tabindex="0" hidden novalidate>
+            <p id="recovery-intro">Saisissez l’adresse associée à votre compte. Si elle est enregistrée, un lien de réinitialisation sera envoyé.</p>
+            <div class="field" id="recovery-email-group"><label for="recovery-email">Adresse courriel</label><input id="recovery-email" name="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" required></div>
+            <div id="new-password-fields" hidden>
+              <div class="field"><label for="new-password">Nouveau mot de passe</label><input id="new-password" name="new_password" type="password" autocomplete="new-password" minlength="8" disabled required></div>
+              <div class="field"><label for="new-password-confirm">Confirmer le nouveau mot de passe</label><input id="new-password-confirm" name="new_password_confirmation" type="password" autocomplete="new-password" minlength="8" disabled required></div>
+            </div>
+            <div class="auth-inline"><button class="auth-submit" id="recovery-submit" type="submit">Envoyer le lien de réinitialisation</button><button class="auth-link-button" type="button" data-show-tab="login">Retour à la connexion</button></div>
+            <p class="auth-status" id="recovery-status" role="status" aria-live="polite"></p>
+          </form>
+          <section class="auth-session" id="session-panel" aria-labelledby="session-title" hidden>
+            <h3 id="session-title">Vous êtes connecté(e)</h3><p id="session-email"></p><p>Cette page ne consulte et n’affiche aucun dossier ni droit d’accès. Les autorisations restent contrôlées par les politiques Supabase côté serveur.</p><button class="auth-submit" id="signout-button" type="button">Se déconnecter</button><p class="auth-status" id="session-status" role="status" aria-live="polite"></p>
+          </section>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="auth-footer">
+    <div class="shell footer-main">
+      <a class="identity footer-brand" href="index.html" aria-label="Tribunal judiciaire de Paris — accueil"><img src="tribunal-logo.png" alt="" width="204" height="63"><span>TRIBUNAL JUDICIAIRE<br><b>DE PARIS</b></span></a>
+      <div><b>Vos droits et démarches</b><a href="https://www.justice.fr/" target="_blank" rel="noopener noreferrer">Justice.fr</a><a href="https://www.service-public.fr/" target="_blank" rel="noopener noreferrer">Service-Public.fr</a></div>
+      <div><b>Le tribunal</b><a href="https://www.tribunal-de-paris.justice.fr/75/contact" target="_blank" rel="noopener noreferrer">Contact officiel</a><a href="https://www.tribunal-de-paris.justice.fr/75/mentions-legales-site-du-tribunal-de-paris" target="_blank" rel="noopener noreferrer">Mentions légales officielles</a></div>
+    </div>
+    <div class="footer-bottom"><div class="shell"><span>République Française · Liberté, Égalité, Fraternité</span><span>Les accès et habilitations sont vérifiés côté serveur.</span></div></div>
+  </footer>
+  <script type="module">
+    // Configuration publique : la page réutilise le fichier partagé du site. Ne placez jamais
+    // ici de clé sb_secret/service_role ni de secret serveur. Alternative pour une configuration
+    // autonome, à décommenter seulement avec des valeurs PUBLIQUES valides, sans les partager :
+    // const SUPABASE_URL = 'https://VOTRE-PROJET.supabase.co';
+    // const SUPABASE_KEY = 'VOTRE_CLE_ANON_OU_PUBLISHABLE';
+    const CONFIG_MODULE = './supabase-config.js';
+    const SDK_MODULE = 'https://esm.sh/@supabase/supabase-js@2';
+    const $ = (id) => document.getElementById(id);
+    const tabs = [...document.querySelectorAll('[role="tab"]')];
+    const panels = [...document.querySelectorAll('.auth-panel')];
+    const configNote = $('config-note');
+    // La copie aplatie conserve le logo à la racine; l’archive de déploiement le range sous assets/.
+    document.querySelectorAll('img[src="tribunal-logo.png"]').forEach((image) => {
+      image.addEventListener('error', () => { image.src = new URL('assets/tribunal-logo.png', document.baseURI).href; }, { once:true });
+    });
+    let supabase = null;
+    let recoveryMode = false;
+    let authSubscription = null;
+    const say = (id, text = '', kind = 'info') => { const node = $(id); node.textContent = text; node.dataset.kind = text ? kind : ''; };
+    function showTab(name, focus = false) {
+      for (const tab of tabs) {
+        const selected = tab.id === `tab-${name}`;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        $(tab.getAttribute('aria-controls')).hidden = !selected;
+        if (selected && focus) tab.focus();
+      }
+      $('session-panel').hidden = true;
+    }
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => showTab(tab.id.replace('tab-', '')));
+      tab.addEventListener('keydown', (event) => {
+        if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+        event.preventDefault();
+        const index = tabs.indexOf(tab);
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+        showTab(tabs[next].id.replace('tab-', ''), true);
+      });
+    });
+    document.querySelectorAll('[data-show-tab]').forEach((button) => button.addEventListener('click', () => showTab(button.dataset.showTab, true)));
+    function showSession(user) {
+      panels.forEach((panel) => { panel.hidden = true; });
+      tabs.forEach((tab) => { tab.setAttribute('aria-selected', 'false'); tab.tabIndex = -1; });
+      $('session-panel').hidden = false;
+      $('session-email').textContent = user?.email ? `Compte authentifié : ${user.email}` : 'Session Supabase active.';
+    }
+    const accountType = () => document.querySelector('[name="account_type"]:checked')?.value || 'citizen';
+    const requiredWhenShown = (id, required, enabled) => { const field = $(id); field.required = required; field.disabled = !enabled; };
+    function updateAccountFields() {
+      const type = accountType();
+      const justice = type === 'justice_professional';
+      const state = type === 'state_services';
+      $('justice-profession-group').hidden = !justice;
+      $('justice-identifier-group').hidden = !justice;
+      $('state-service-group').hidden = !state;
+      $('state-identifier-group').hidden = !state;
+      requiredWhenShown('justice-profession', justice, justice);
+      requiredWhenShown('justice-identifier', justice, justice);
+      requiredWhenShown('state-service', state, state);
+      requiredWhenShown('state-identifier', state, state);
+      const service = $('state-service').value;
+      const labels = { police:'Matricule professionnel déclaré', gendarmerie:'Identifiant professionnel déclaré', justice:'Identifiant professionnel déclaré', prefecture:'Identifiant professionnel déclaré', other:'Identifiant professionnel déclaré' };
+      $('state-identifier-label').textContent = labels[service] || 'Identifiant professionnel déclaré';
+    }
+    document.querySelectorAll('[name="account_type"]').forEach((radio) => radio.addEventListener('change', updateAccountFields));
+    $('state-service').addEventListener('change', updateAccountFields);
+    updateAccountFields();
+    function setBusy(form, busy, label) {
+      form.querySelectorAll('button[type="submit"]').forEach((button) => { button.disabled = busy; if (button.dataset.defaultLabel === undefined) button.dataset.defaultLabel = button.textContent; button.textContent = busy ? label : button.dataset.defaultLabel; });
+    }
+    function authError(error, operation) {
+      const text = String(error?.message || '').toLowerCase();
+      const status = Number(error?.status || 0);
+      if (text.includes('invalid login credentials')) return 'Identifiants incorrects. Vérifiez l’adresse et le mot de passe.';
+      if (text.includes('email not confirmed')) return 'Adresse non confirmée. Consultez le courriel de confirmation avant de vous connecter.';
+      if (text.includes('user already registered')) return 'Demande reçue. Essayez de vous connecter ou de réinitialiser votre mot de passe.';
+      if (text.includes('password should be at least') || text.includes('password is too short')) return 'Mot de passe trop court selon la règle configurée dans Supabase.';
+      if (text.includes('signup is disabled')) return 'La création publique de comptes est désactivée dans les paramètres Auth.';
+      if (text.includes('redirect') || text.includes('site url')) return 'Adresse de retour refusée : configurez cette URL dans les redirections autorisées de Supabase.';
+      if (text.includes('network') || text.includes('fetch')) return 'Service Supabase injoignable. Vérifiez la connexion réseau et la disponibilité du projet.';
+      if (status === 429 || text.includes('rate limit')) return 'Trop de demandes rapprochées. Patientez avant de réessayer.';
+      if (operation === 'recovery') return 'Envoi impossible. Vérifiez l’adresse du site autorisée et la configuration des courriels Supabase.';
+      if (operation === 'signup') return 'Création impossible. Vérifiez les paramètres Auth, la politique de mot de passe et le service de courriel.';
+      return 'Opération refusée par Supabase. Vérifiez vos identifiants et la configuration du service.';
+    }
+    async function start() {
+      try {
+        // Ces constantes fictives sont partagées dans supabase-config.js; aucune valeur secrète n'est lue ici.
+        const config = await import(CONFIG_MODULE);
+        const SUPABASE_URL = config.SUPABASE_URL;
+        const SUPABASE_KEY = config.SUPABASE_ANON_KEY;
+        const validUrl = typeof SUPABASE_URL === 'string' && /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(SUPABASE_URL) && !/(VOTRE|YOUR|EXAMPLE|PROJECT|placeholder)/i.test(SUPABASE_URL);
+        const validPublicKey = (() => {
+          if (typeof SUPABASE_KEY !== 'string' || SUPABASE_KEY.length <= 30 || /(VOTRE|YOUR|EXAMPLE|PROJECT|placeholder)/i.test(SUPABASE_KEY)) return false;
+          if (SUPABASE_KEY.startsWith('sb_publishable_')) return true;
+          if (!SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('sb_secret_')) return false;
+          try {
+            const payload = SUPABASE_KEY.split('.')[1];
+            if (!payload) return false;
+            const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - payload.length % 4) % 4)));
+            return decoded.role === 'anon';
+          } catch { return false; }
+        })();
+        if (!validUrl || !validPublicKey) {
+          configNote.textContent = 'Authentification inactive : renseignez dans supabase-config.js l’URL HTTPS du projet et sa clé anon/publishable publique. Ne publiez jamais une clé secrète/service_role.';
+          say('login-status', 'Service indisponible tant que la configuration publique Supabase n’est pas valide.', 'error');
+          return;
+        }
+        const { createClient } = await import(SDK_MODULE);
+        supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
+        configNote.hidden = true;
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        const params = new URLSearchParams(location.search);
+        recoveryMode = params.get('type') === 'recovery' || location.hash.includes('type=recovery');
+        if (recoveryMode) {
+          $('recovery-email-group').hidden = true;
+          $('recovery-email').disabled = true;
+          $('new-password-fields').hidden = false;
+          $('new-password').disabled = false;
+          $('new-password-confirm').disabled = false;
+          $('recovery-submit').textContent = 'Enregistrer le nouveau mot de passe';
+          $('recovery-intro').textContent = 'Choisissez un nouveau mot de passe pour votre compte.';
+          showTab('recovery');
+          say('recovery-status', 'Lien reçu. Après validation du lien Supabase, définissez votre nouveau mot de passe.', 'info');
+        } else if (data.session) {
+          showSession(data.session.user);
+        }
+        authSubscription = supabase.auth.onAuthStateChange((event, session) => {
+          if (event === 'PASSWORD_RECOVERY') {
+            recoveryMode = true;
+            $('recovery-email-group').hidden = true;
+            $('recovery-email').disabled = true;
+            $('new-password-fields').hidden = false;
+            $('new-password').disabled = false;
+            $('new-password-confirm').disabled = false;
+            $('recovery-submit').textContent = 'Enregistrer le nouveau mot de passe';
+            $('recovery-intro').textContent = 'Choisissez un nouveau mot de passe pour votre compte.';
+            showTab('recovery');
+            say('recovery-status', 'Définissez votre nouveau mot de passe.', 'info');
+          } else if (event === 'SIGNED_OUT' || !session) {
+            $('session-panel').hidden = true;
+            showTab('login');
+          } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+            if (!recoveryMode) showSession(session.user);
+          }
+        });
+      } catch (error) {
+        configNote.hidden = false;
+        configNote.textContent = 'Impossible d’initialiser le service d’authentification. Vérifiez le chargement de supabase-config.js, le réseau et le SDK Supabase.';
+        say('login-status', 'Service d’authentification indisponible pour le moment.', 'error');
+      }
+    }
+    $('panel-login').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!supabase) return say('login-status', 'Connexion indisponible : configuration Supabase manquante ou invalide.', 'error');
+      if (!form.reportValidity()) return;
+      setBusy(form, true, 'Connexion…'); say('login-status', '');
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email:form.elements.email.value.trim(), password:form.elements.password.value });
+        if (error) throw error;
+        form.reset(); showSession(data.user); say('session-status', 'Session Supabase ouverte.', 'success');
+      } catch (error) { say('login-status', authError(error, 'login'), 'error'); }
+      finally { setBusy(form, false); }
+    });
+    $('panel-register').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!supabase) return say('register-status', 'Création indisponible : configuration Supabase manquante ou invalide.', 'error');
+      if (!form.reportValidity()) return;
+      const password = form.elements.password.value;
+      if (password.length < 8) return say('register-status', 'Le mot de passe doit comporter au moins 8 caractères.', 'error');
+      if (password !== form.elements.password_confirmation.value) return say('register-status', 'Les deux mots de passe ne correspondent pas.', 'error');
+      setBusy(form, true, 'Envoi…'); say('register-status', '');
+      try {
+        const email = form.elements.email.value.trim();
+        const redirectTo = new URL('connexion.html', document.baseURI).href;
+        // Aucun profil professionnel, identifiant, nom ni rôle n’est persisté dans Auth metadata.
+        // TODO sécurité : la vérification d’identité et toute habilitation requièrent un endpoint/RPC
+        // serveur authentifié, soumis à une politique RLS dédiée et à une revue; jamais de matching
+        // de matricule ou de dossier dans le navigateur. Le schéma fourni ne contient aucun profil
+        // professionnel : aucune écriture profiles n’est tentée. Les nouveaux profils restent viewer.
+        const { data, error } = await supabase.auth.signUp({ email, password, options:{ emailRedirectTo:redirectTo } });
+        if (error) throw error;
+        form.reset(); updateAccountFields();
+        if (data.session) { showSession(data.user); say('session-status', 'Compte créé et session ouverte. La catégorie sélectionnée est indicative et n’accorde aucune habilitation.', 'success'); }
+        else { $('login-email').value = email; showTab('login'); say('login-status', 'Demande reçue. Si cette adresse peut être enregistrée, un courriel de confirmation sera envoyé. Confirmez-la avant la connexion. La catégorie sélectionnée n’a pas été enregistrée.', 'success'); }
+      } catch (error) { say('register-status', authError(error, 'signup'), 'error'); }
+      finally { setBusy(form, false); }
+    });
+    $('panel-recovery').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      if (!supabase) return say('recovery-status', 'Réinitialisation indisponible avant la configuration Supabase.', 'error');
+      if (!form.reportValidity()) return;
+      setBusy(form, true, 'Traitement…'); say('recovery-status', '');
+      try {
+        if (recoveryMode) {
+          const password = $('new-password').value;
+          if (password.length < 8) throw new Error('Le mot de passe doit comporter au moins 8 caractères.');
+          if (password !== $('new-password-confirm').value) throw new Error('Les deux mots de passe ne correspondent pas.');
+          const { error } = await supabase.auth.updateUser({ password });
+          if (error) throw error;
+          recoveryMode = false;
+          form.reset();
+          $('recovery-email-group').hidden = false; $('recovery-email').disabled = false;
+          $('new-password-fields').hidden = true; $('new-password').disabled = true; $('new-password-confirm').disabled = true;
+          $('recovery-submit').textContent = 'Envoyer le lien de réinitialisation';
+          $('recovery-intro').textContent = 'Saisissez l’adresse associée à votre compte. Si elle est enregistrée, un lien de réinitialisation sera envoyé.';
+          history.replaceState(null, '', location.pathname);
+          showSession((await supabase.auth.getUser()).data.user);
+          say('session-status', 'Mot de passe modifié. Votre session est ouverte.', 'success');
+        } else {
+          const email = form.elements.email.value.trim();
+          const redirectTo = new URL('connexion.html?type=recovery', document.baseURI).href;
+          const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+          if (error) throw error;
+          form.reset(); say('recovery-status', 'Si cette adresse est enregistrée, un courriel de réinitialisation a été demandé.', 'success');
+        }
+      } catch (error) {
+        const custom = ['Le mot de passe doit comporter au moins 8 caractères.','Les deux mots de passe ne correspondent pas.'].includes(error.message);
+        say('recovery-status', custom ? error.message : authError(error, 'recovery'), 'error');
+      } finally { setBusy(form, false); }
+    });
+    $('signout-button').addEventListener('click', async () => {
+      if (!supabase) return;
+      $('signout-button').disabled = true;
+      try { const { error } = await supabase.auth.signOut(); if (error) throw error; showTab('login'); say('login-status', 'Session Supabase fermée.', 'success'); $('login-email').focus(); }
+      catch { say('session-status', 'La déconnexion a échoué. Réessayez.', 'error'); }
+      finally { $('signout-button').disabled = false; }
+    });
+    window.addEventListener('pagehide', () => authSubscription?.data?.subscription?.unsubscribe(), { once:true });
+    start();
+  </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
