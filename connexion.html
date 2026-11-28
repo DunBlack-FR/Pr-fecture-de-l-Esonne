@@ -31,11 +31,14 @@
     .auth-card-head { padding:1.5rem 1.6rem 0; }
     .auth-card-head h2 { margin:0 0 1rem; color:#102a43; font:500 1.65rem/1.25 var(--serif,Georgia,serif); }
     .auth-tabs { display:flex; gap:.2rem; overflow-x:auto; border-bottom:1px solid var(--auth-line); }
-    
+    /* Tabs keep explicit button styling instead of relying on browser defaults. */
+    .auth-tab { flex:0 0 auto; min-height:2.8rem; padding:.65rem .85rem; border:0; border-bottom:3px solid transparent; background:transparent; color:#53616a; font:inherit; font-size:.83rem; font-weight:700; cursor:pointer; }
+    .auth-tab:hover { background:#f3f1eb; color:#102a43; }
+    .auth-tab:focus-visible { outline:3px solid #183d56; outline-offset:-3px; }
     .auth-tab[aria-selected="true"] { border-bottom-color:#183d56; color:#183d56; }
     .auth-card-body { padding:1.55rem 1.6rem 1.8rem; }
     .auth-panel[hidden], [hidden] { display:none !important; }
-    .auth-form { max-width:43rem; }
+    .auth-form { display:block; max-width:43rem; }
     .auth-form > p:first-child { margin-top:0; }
     .auth-form .field { margin:0 0 1.05rem; }
     .auth-form label:not(.choice) { display:block; margin-bottom:.35rem; color:#263640; font-size:.83rem; font-weight:700; }
@@ -45,7 +48,7 @@
     .auth-hint { margin:.35rem 0 0; color:#59666e; font-size:.77rem; line-height:1.5; }
     .auth-form fieldset { min-width:0; margin:0 0 1.3rem; padding:0; border:0; }
     .auth-form legend { margin-bottom:.35rem; color:#263640; font-size:.85rem; font-weight:800; }
-    .auth-choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.55rem; margin-top:.7rem; }
+    .auth-choices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.55rem; margin-top:.7rem; }
     .auth-choice { display:flex; min-height:5.25rem; align-items:flex-start; gap:.55rem; padding:.8rem .7rem; border:1px solid var(--auth-line); background:white; cursor:pointer; }
     .auth-choice:has(input:checked) { border:2px solid #183d56; padding:calc(.8rem - 1px) calc(.7rem - 1px); background:#f1f3f4; }
     .auth-choice input { flex:0 0 auto; width:1rem; min-height:auto; height:1rem; margin:.16rem 0 0; accent-color:#183d56; }
@@ -133,7 +136,7 @@
               </select>
             </div>
             <div class="field" id="state-identifier-group" hidden><label for="state-identifier" id="state-identifier-label">Identifiant professionnel déclaré</label><input id="state-identifier" name="state_identifier" autocomplete="off" maxlength="120" disabled aria-describedby="state-identifier-hint"><p class="auth-hint" id="state-identifier-hint">Déclaration RP seulement. Aucune identité ou qualité n’est vérifiée; n’utilisez aucun identifiant réel.</p></div>
-            <div class="auth-row" id="company-fields" hidden><div class="field"><label for="company-name">Nom de l’entreprise</label><input id="company-name" name="company_name" maxlength="160" disabled></div><div class="field"><label for="company-position">Poste / rôle</label><input id="company-position" name="company_position" maxlength="120" disabled></div></div>
+            <div class="auth-row" id="company-fields" hidden><div class="field"><label for="company-name">Nom de l’entreprise</label><input id="company-name" name="company_name" maxlength="160" disabled></div><div class="field"><label for="company-number">SIRET / numéro RP</label><input id="company-number" name="company_number" maxlength="80" disabled></div><div class="field"><label for="company-sector">Secteur d’activité</label><input id="company-sector" name="company_sector" maxlength="160" disabled></div><div class="field"><label for="company-position">Poste / rôle</label><input id="company-position" name="company_position" maxlength="120" disabled></div></div>
             <div class="auth-row">
               <div class="field"><label for="register-password">Mot de passe</label><input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-hint"><p class="auth-hint" id="password-hint">8 caractères minimum ; les règles du service peuvent être plus strictes.</p></div>
               <div class="field"><label for="register-confirm">Confirmer le mot de passe</label><input id="register-confirm" name="password_confirmation" type="password" autocomplete="new-password" minlength="8" required></div>
@@ -228,13 +231,13 @@
       $('state-service-group').hidden = !state;
       requiredWhenShown('state-service', state, state);
       const service = $('state-service').value;
-      const identifierRequired = state && ['gendarmerie','police_nationale'].includes(service);
+      const identifierRequired = state && !!service;
       $('state-identifier-group').hidden = !identifierRequired;
       requiredWhenShown('state-identifier', identifierRequired, identifierRequired);
       $('state-identifier-label').textContent = service === 'gendarmerie' ? 'NIGEND déclaré (fictif)' : service === 'police_nationale' ? 'Matricule déclaré (fictif)' : 'Identifiant déclaré';
       const company = type === 'company';
       $('company-fields').hidden = !company;
-      ['company-name','company-position'].forEach((id) => { $(id).disabled = !company; $(id).required = company; });
+      ['company-name','company-number','company-sector','company-position'].forEach((id) => { $(id).disabled = !company; $(id).required = company; });
     }
     document.querySelectorAll('[name="account_type"]').forEach((radio) => radio.addEventListener('change', updateAccountFields));
     $('state-service').addEventListener('change', updateAccountFields);
@@ -393,7 +396,7 @@
         const redirectTo = new URL('connexion.html', document.baseURI).href;
         // Metadata are self-declared profile attributes only. The SQL trigger forces role=viewer;
         // RH permissions require redeem_service_invite() and are never accepted from client role fields.
-        const metadata = {account_type:accountType(),first_name:form.elements.first_name.value.trim(),last_name:form.elements.last_name.value.trim(),birth_date:form.elements.birth_date.value,discord_handle:form.elements.discord_handle.value.trim(),state_service:form.elements.state_service?.value || null,professional_department:accountType()==='professional'?'prefecture':null,declared_identifier:form.elements.state_identifier?.value.trim() || null,company_name:form.elements.company_name?.value.trim() || null,company_position:form.elements.company_position?.value.trim() || null};
+        const metadata = {account_type:accountType(),first_name:form.elements.first_name.value.trim(),last_name:form.elements.last_name.value.trim(),birth_date:form.elements.birth_date.value,discord_handle:form.elements.discord_handle.value.trim(),state_service:form.elements.state_service?.value || null,professional_department:accountType()==='professional'?'prefecture':null,declared_identifier:form.elements.state_identifier?.value.trim() || null,company_name:form.elements.company_name?.value.trim() || null,company_number:form.elements.company_number?.value.trim() || null,company_sector:form.elements.company_sector?.value.trim() || null,company_position:form.elements.company_position?.value.trim() || null};
         const { data, error } = await supabase.auth.signUp({ email, password, options:{ emailRedirectTo:redirectTo, data:metadata } });
         if (error) throw error;
         form.reset(); updateAccountFields();
@@ -446,5 +449,6 @@
     window.addEventListener('pagehide', () => authSubscription?.data?.subscription?.unsubscribe(), { once:true });
     start();
   </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"8607d2a720d14b038279025b2b5a82e5","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
