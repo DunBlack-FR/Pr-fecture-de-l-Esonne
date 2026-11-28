@@ -9,10 +9,10 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text,
   role text not null default 'viewer' check (role in ('viewer','admin')),
-  account_type text not null default 'citizen' check (account_type in ('citizen','justice_professional','state_service','company','service_hr')),
+  account_type text not null default 'citizen' check (account_type in ('citizen','professional','justice_professional','state_service','company','service_hr')),
   first_name text, last_name text, birth_date text, discord_handle text,
   state_service text, declared_identifier text, justice_profession text,
-  company_name text, company_number text, company_sector text,
+  professional_department text, company_name text, company_position text, company_number text, company_sector text,
   created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
 alter table public.profiles add column if not exists account_type text not null default 'citizen';
@@ -23,12 +23,14 @@ alter table public.profiles add column if not exists discord_handle text;
 alter table public.profiles add column if not exists state_service text;
 alter table public.profiles add column if not exists declared_identifier text;
 alter table public.profiles add column if not exists justice_profession text;
+alter table public.profiles add column if not exists professional_department text;
 alter table public.profiles add column if not exists company_name text;
+alter table public.profiles add column if not exists company_position text;
 alter table public.profiles add column if not exists company_number text;
 alter table public.profiles add column if not exists company_sector text;
 
 alter table public.profiles drop constraint if exists profiles_account_type_check;
-alter table public.profiles add constraint profiles_account_type_check check (account_type in ('citizen','justice_professional','state_service','company','service_hr'));
+alter table public.profiles add constraint profiles_account_type_check check (account_type in ('citizen','professional','justice_professional','state_service','company','service_hr'));
 
 create table if not exists public.services (
   id text primary key check (id in ('gendarmerie','police_nationale','sapeurs_pompiers','samu')),
@@ -122,13 +124,15 @@ declare m jsonb:=coalesce(new.raw_user_meta_data,'{}'::jsonb); v_service text;
 begin
   v_service:=nullif(m->>'state_service','');
   if not exists(select 1 from public.services where id=v_service) then v_service:=null; end if;
-  insert into public.profiles(id,email,role,account_type,first_name,last_name,birth_date,discord_handle,state_service,declared_identifier,justice_profession,company_name,company_number,company_sector)
+  insert into public.profiles(id,email,role,account_type,first_name,last_name,birth_date,discord_handle,state_service,declared_identifier,justice_profession,professional_department,company_name,company_position,company_number,company_sector)
   values(new.id,new.email,'viewer',
-    case when m->>'account_type' in ('citizen','justice_professional','state_service','company','service_hr') then m->>'account_type' else 'citizen' end,
+    case when m->>'account_type' in ('citizen','professional','justice_professional','state_service','company','service_hr') then m->>'account_type' else 'citizen' end,
     nullif(left(trim(m->>'first_name'),100),''),nullif(left(trim(m->>'last_name'),100),''),
     case when coalesce(m->>'birth_date','') ~ '^\d{4}-\d{2}-\d{2}$' then m->>'birth_date' else null end,
     nullif(left(trim(m->>'discord_handle'),100),''),v_service,
-    nullif(left(trim(m->>'declared_identifier'),120),''),nullif(left(trim(m->>'justice_profession'),80),''),nullif(left(trim(m->>'company_name'),160),''),
+    nullif(left(trim(m->>'declared_identifier'),120),''),nullif(left(trim(m->>'justice_profession'),80),''),
+    case when m->>'account_type'='professional' and m->>'professional_department'='prefecture' then 'prefecture' else null end,
+    nullif(left(trim(m->>'company_name'),160),''),nullif(left(trim(m->>'company_position'),120),''),
     nullif(left(trim(m->>'company_number'),80),''),nullif(left(trim(m->>'company_sector'),160),''))
   on conflict(id) do update set email=excluded.email;
   return new;

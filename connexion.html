@@ -113,35 +113,27 @@
             <p class="auth-status" id="login-status" role="status" aria-live="polite"></p>
           </form>
           <form class="auth-form auth-panel" id="panel-register" role="tabpanel" aria-labelledby="tab-register" tabindex="0" hidden novalidate>
-            <p>Un compte Supabase Auth est créé par courriel. L’identité et la qualité professionnelle indiquées ne sont pas validées par ce formulaire.</p>
-            <fieldset><legend>Type de compte souhaité</legend><p class="auth-hint" id="type-hint">Ce choix sert uniquement à décrire la demande : il ne confère ni rôle ni autorisation.</p>
+            <p>Un compte Supabase Auth est créé par courriel. Toutes les informations sont déclaratives et fictives; aucune identité, fonction ou appartenance n’est vérifiée.</p>
+            <fieldset><legend>Type de compte souhaité</legend><p class="auth-hint" id="type-hint">Ce choix décrit uniquement un profil de jeu de rôle : il ne confère ni rôle ni autorisation.</p>
               <div class="auth-choices auth-choice-grid" aria-describedby="type-hint">
-                <label class="auth-choice"><input type="radio" name="account_type" value="citizen" checked><span><strong>Citoyen / particulier</strong><small>Compte personnel</small></span></label>
-                <label class="auth-choice"><input type="radio" name="account_type" value="justice_professional"><span><strong>Professionnel de justice</strong><small>Profession et identifiant déclarés</small></span></label>
-                <label class="auth-choice"><input type="radio" name="account_type" value="state_service"><span><strong>Service (jeu de rôle)</strong><small>Service et identifiant déclarés</small></span></label>
-                <label class="auth-choice"><input type="radio" name="account_type" value="service_hr"><span><strong>RH d’un service (jeu de rôle)</strong><small>Accès RH soumis à invitation sécurisée</small></span></label>
-                <label class="auth-choice"><input type="radio" name="account_type" value="company"><span><strong>Entreprise (jeu de rôle)</strong><small>Informations déclaratives</small></span></label>
+                <label class="auth-choice"><input type="radio" name="account_type" value="citizen" checked><span><strong>Citoyen</strong><small>Compte personnel</small></span></label>
+                <label class="auth-choice"><input type="radio" name="account_type" value="professional"><span><strong>Professionnel — Préfecture</strong><small>Déclaration RP, sans vérification</small></span></label>
+                <label class="auth-choice"><input type="radio" name="account_type" value="state_service"><span><strong>Services de l’État</strong><small>Gendarmerie, Police Nationale, Sapeurs-Pompiers ou SAMU</small></span></label>
+                <label class="auth-choice"><input type="radio" name="account_type" value="company"><span><strong>Entreprise</strong><small>Compte professionnel distinct</small></span></label>
               </div>
             </fieldset>
-            <div class="auth-row"><div class="field"><label for="register-first-name">Prénom</label><input id="register-first-name" name="first_name" autocomplete="given-name" maxlength="100" required></div><div class="field"><label for="register-last-name">Nom</label><input id="register-last-name" name="last_name" autocomplete="family-name" maxlength="100" required></div></div>
+            <div class="auth-row"><div class="field"><label for="register-last-name">Nom</label><input id="register-last-name" name="last_name" autocomplete="family-name" maxlength="100" required></div><div class="field"><label for="register-first-name">Prénom</label><input id="register-first-name" name="first_name" autocomplete="given-name" maxlength="100" required></div></div>
             <div class="auth-row"><div class="field"><label for="register-birth-date">Date de naissance (fictive)</label><input id="register-birth-date" name="birth_date" type="date" autocomplete="bday" required></div><div class="field"><label for="register-discord">Identifiant Discord</label><input id="register-discord" name="discord_handle" maxlength="100" required></div></div>
-            <div class="field"><label for="register-email">Adresse courriel</label><input id="register-email" name="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="254" required></div>
-            <div class="field" id="justice-profession-group" hidden>
-              <label for="justice-profession">Profession de justice</label>
-              <select id="justice-profession" name="justice_profession" disabled>
-                <option value="">Sélectionnez votre profession</option>
-                <option value="lawyer">Avocat / avocate</option><option value="notary">Notaire</option><option value="bailiff">Commissaire de justice</option><option value="court_officer">Professionnel du greffe</option><option value="other">Autre profession juridique</option>
-              </select>
-            </div>
-            <div class="field" id="justice-identifier-group" hidden><label for="justice-identifier">Identifiant professionnel déclaré</label><input id="justice-identifier" name="justice_identifier" autocomplete="off" maxlength="120" disabled aria-describedby="justice-identifier-hint"><p class="auth-hint" id="justice-identifier-hint">Déclaration non vérifiée ; n’utilisez pas de donnée confidentielle. Toute validation doit être réalisée par un service habilité.</p></div>
+            <div class="field"><label for="register-email">Courriel RP</label><input id="register-email" name="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="254" required></div>
+            <div class="field" id="prefecture-code-group" hidden><label for="prefecture-code">Code Préfecture (démo RP)</label><input id="prefecture-code" name="prefecture_code" type="text" autocomplete="off" maxlength="40" disabled aria-describedby="prefecture-code-hint"><p class="auth-hint" id="prefecture-code-hint">Code générique de démonstration : <code>PREFECTURE-RP</code>. Vérification locale uniquement : ce code public n’est ni un secret ni une preuve et ne donne aucun accès, droit ou privilège.</p></div>
             <div class="field" id="state-service-group" hidden>
-              <label for="state-service">Administration / service de l’État</label>
+              <label for="state-service">Service de l’État</label>
               <select id="state-service" name="state_service" disabled>
                 <option value="">Sélectionnez un service</option><option value="gendarmerie">Gendarmerie</option><option value="police_nationale">Police Nationale</option><option value="sapeurs_pompiers">Sapeurs-Pompiers</option><option value="samu">SAMU</option>
               </select>
             </div>
-            <div class="field" id="state-identifier-group" hidden><label for="state-identifier" id="state-identifier-label">Identifiant professionnel déclaré</label><input id="state-identifier" name="state_identifier" autocomplete="off" maxlength="120" disabled aria-describedby="state-identifier-hint"><p class="auth-hint" id="state-identifier-hint">Saisi à titre déclaratif seulement ; aucun matricule n’est vérifié ou utilisé pour ouvrir un accès.</p></div>
-            <div class="field" id="company-fields" hidden><label for="company-name">Entreprise</label><input id="company-name" name="company_name" maxlength="160" disabled><label for="company-number">Numéro de rôle (fictif)</label><input id="company-number" name="company_number" maxlength="80" disabled><label for="company-sector">Secteur</label><input id="company-sector" name="company_sector" maxlength="160" disabled></div>
+            <div class="field" id="state-identifier-group" hidden><label for="state-identifier" id="state-identifier-label">Identifiant professionnel déclaré</label><input id="state-identifier" name="state_identifier" autocomplete="off" maxlength="120" disabled aria-describedby="state-identifier-hint"><p class="auth-hint" id="state-identifier-hint">Déclaration RP seulement. Aucune identité ou qualité n’est vérifiée; n’utilisez aucun identifiant réel.</p></div>
+            <div class="auth-row" id="company-fields" hidden><div class="field"><label for="company-name">Nom de l’entreprise</label><input id="company-name" name="company_name" maxlength="160" disabled></div><div class="field"><label for="company-position">Poste / rôle</label><input id="company-position" name="company_position" maxlength="120" disabled></div></div>
             <div class="auth-row">
               <div class="field"><label for="register-password">Mot de passe</label><input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" required aria-describedby="password-hint"><p class="auth-hint" id="password-hint">8 caractères minimum ; les règles du service peuvent être plus strictes.</p></div>
               <div class="field"><label for="register-confirm">Confirmer le mot de passe</label><input id="register-confirm" name="password_confirmation" type="password" autocomplete="new-password" minlength="8" required></div>
@@ -229,21 +221,20 @@
     const requiredWhenShown = (id, required, enabled) => { const field = $(id); field.required = required; field.disabled = !enabled; };
     function updateAccountFields() {
       const type = accountType();
-      const justice = type === 'justice_professional';
-      $('justice-profession-group').hidden = !justice;
-      $('justice-identifier-group').hidden = !justice;
-      requiredWhenShown('justice-profession', justice, justice);
-      requiredWhenShown('justice-identifier', justice, justice);
-      const state = type === 'state_service' || type === 'service_hr';
+      const professional = type === 'professional';
+      $('prefecture-code-group').hidden = !professional;
+      requiredWhenShown('prefecture-code', professional, professional);
+      const state = type === 'state_service';
       $('state-service-group').hidden = !state;
-      $('state-identifier-group').hidden = !state;
       requiredWhenShown('state-service', state, state);
-      requiredWhenShown('state-identifier', state, state);
       const service = $('state-service').value;
+      const identifierRequired = state && ['gendarmerie','police_nationale'].includes(service);
+      $('state-identifier-group').hidden = !identifierRequired;
+      requiredWhenShown('state-identifier', identifierRequired, identifierRequired);
+      $('state-identifier-label').textContent = service === 'gendarmerie' ? 'NIGEND déclaré (fictif)' : service === 'police_nationale' ? 'Matricule déclaré (fictif)' : 'Identifiant déclaré';
       const company = type === 'company';
       $('company-fields').hidden = !company;
-      ['company-name','company-number','company-sector'].forEach((id) => { $(id).disabled = !company; $(id).required = company; });
-      $('state-identifier-label').textContent = service ? 'Identifiant de jeu de rôle déclaré' : 'Identifiant professionnel déclaré';
+      ['company-name','company-position'].forEach((id) => { $(id).disabled = !company; $(id).required = company; });
     }
     document.querySelectorAll('[name="account_type"]').forEach((radio) => radio.addEventListener('change', updateAccountFields));
     $('state-service').addEventListener('change', updateAccountFields);
@@ -398,15 +389,16 @@
       setBusy(form, true, 'Envoi…'); say('register-status', '');
       try {
         const email = form.elements.email.value.trim();
+        if (accountType() === 'professional' && form.elements.prefecture_code.value.trim() !== 'PREFECTURE-RP') return say('register-status', 'Code démo incorrect. Ce contrôle local ne valide aucun statut réel.', 'error');
         const redirectTo = new URL('connexion.html', document.baseURI).href;
         // Metadata are self-declared profile attributes only. The SQL trigger forces role=viewer;
         // RH permissions require redeem_service_invite() and are never accepted from client role fields.
-        const metadata = {account_type:accountType(),first_name:form.elements.first_name.value.trim(),last_name:form.elements.last_name.value.trim(),birth_date:form.elements.birth_date.value,discord_handle:form.elements.discord_handle.value.trim(),state_service:form.elements.state_service?.value || null,declared_identifier:form.elements.state_identifier?.value.trim() || form.elements.justice_identifier?.value.trim() || null,justice_profession:form.elements.justice_profession?.value || null,company_name:form.elements.company_name?.value.trim() || null,company_number:form.elements.company_number?.value.trim() || null,company_sector:form.elements.company_sector?.value.trim() || null};
+        const metadata = {account_type:accountType(),first_name:form.elements.first_name.value.trim(),last_name:form.elements.last_name.value.trim(),birth_date:form.elements.birth_date.value,discord_handle:form.elements.discord_handle.value.trim(),state_service:form.elements.state_service?.value || null,professional_department:accountType()==='professional'?'prefecture':null,declared_identifier:form.elements.state_identifier?.value.trim() || null,company_name:form.elements.company_name?.value.trim() || null,company_position:form.elements.company_position?.value.trim() || null};
         const { data, error } = await supabase.auth.signUp({ email, password, options:{ emailRedirectTo:redirectTo, data:metadata } });
         if (error) throw error;
         form.reset(); updateAccountFields();
-        if (data.session) { showSession(data.user); say('session-status', 'Compte créé. Profil enregistré à titre déclaratif; aucun rôle privilégié n’est accordé sans invitation RH serveur.', 'success'); }
-        else { $('login-email').value = email; showTab('login'); say('login-status', 'Demande reçue. Confirmez le courriel puis connectez-vous. Les informations déclaratives ont été enregistrées; les droits RH exigent une invitation à usage unique.', 'success'); }
+        if (data.session) { showSession(data.user); say('session-status', 'Compte créé. Profil enregistré à titre déclaratif; aucun privilège n’est accordé par le choix du compte.', 'success'); }
+        else { $('login-email').value = email; showTab('login'); say('login-status', 'Demande reçue. Confirmez le courriel puis connectez-vous. Les informations déclaratives ont été enregistrées; aucune identité ou qualité n’est vérifiée et aucun privilège n’est accordé par le choix du compte.', 'success'); }
       } catch (error) { say('register-status', authError(error, 'signup'), 'error'); }
       finally { setBusy(form, false); }
     });
